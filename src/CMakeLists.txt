@@ -4,6 +4,7 @@ add_subdirectory("engine")
 add_subdirectory("enginedemo")
 
 if (USE_SDL)
+    SET(SDL2_DIR $ENV{SDL2_DIR})
 	add_subdirectory("sdl")
 else()
 	message(FATAL_ERROR
