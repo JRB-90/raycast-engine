@@ -7,3 +7,5 @@ project(raycast
     LANGUAGES C
     DESCRIPTION "Experiments in raycast 2.5D graphics"
 )
+
+add_subdirectory("src/enginedemo")
