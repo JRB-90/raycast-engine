@@ -7,9 +7,11 @@ project(engine
 )
 
 add_library(engine STATIC
-	engine_types.c
+    engine_screen.c
+	engine_color.c
+	engine_logic.c
 )
 
 target_include_directories(engine PUBLIC
-	${PROJECT_INCLUDE_DIR}
+	"${PROJECT_INCLUDE_DIR}/engine"
 )
