@@ -23,6 +23,8 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
+	printf("Render subsystem initialised\n");
+
 	clktimer timer;
 
 	for (int i = 0; i < 5; i++)
@@ -57,6 +59,7 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
+	printf("Render subsystem destroyed\n");
 	printf("Test complete\n");
 	getchar();
 }

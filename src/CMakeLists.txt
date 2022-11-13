@@ -5,8 +5,9 @@ add_subdirectory("engine")
 add_subdirectory("enginedemo")
 
 if (USE_SDL)
-    SET(SDL2_DIR $ENV{SDL2_DIR})
 	add_subdirectory("sdl")
+elseif(RPI)
+	#add_subdirectory("rpi")
 else()
 	message(FATAL_ERROR
 		"No subsystem implementation configured, cannot configure"
