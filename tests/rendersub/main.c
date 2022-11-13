@@ -4,15 +4,63 @@
 #include "engine_subsystems.h"
 #include "time_helper.h"
 
-int main(int argc, char** argv)
+void render_16bit(screen_buffer* const screen, uint16_t color)
 {
-	printf("Starting render subsystem test...\n");
+	uint16_t* pixels = (uint16_t*)screen->pixels;
 
+	clktimer timer;
+	resart_timer(&timer);
+	for (int j = 0; j < screen->sizeInPixels; j++)
+	{
+		pixels[j] = color;
+	}
+	deltatime drawTime = elapsed_millis(&timer);
+
+	resart_timer(&timer);
+	if (render_screen(screen))
+	{
+		fprintf(stderr, "Failed to render screen, exiting...");
+		destroy_render_subsystem(screen);
+		getchar();
+		exit(EXIT_FAILURE);
+	}
+	deltatime renderTime = elapsed_millis(&timer);
+
+	printf("%.3f\t%.3f\n", drawTime, renderTime);
+}
+
+void render_32bit(screen_buffer* const screen, uint32_t color)
+{
+	uint32_t* pixels = (uint32_t*)screen->pixels;
+
+	clktimer timer;
+	resart_timer(&timer);
+	for (int j = 0; j < screen->sizeInPixels; j++)
+	{
+		pixels[j] = color;
+	}
+	deltatime drawTime = elapsed_millis(&timer);
+
+	resart_timer(&timer);
+	if (render_screen(screen))
+	{
+		fprintf(stderr, "Failed to render screen, exiting...");
+		destroy_render_subsystem(screen);
+		getchar();
+		exit(EXIT_FAILURE);
+	}
+	deltatime renderTime = elapsed_millis(&timer);
+
+	printf("%.3f\t%.3f\n", drawTime, renderTime);
+}
+
+void run_format_test(colformat format)
+{
 	screen_format sformat =
 	{
 		.width = 640,
 		.height = 480,
-		.format = CF_ARGB
+		.format = format
 	};
 
 	screen_buffer screen = default_screen();
@@ -26,45 +74,45 @@ int main(int argc, char** argv)
 
 	printf("Render subsystem initialised\n");
 
-	clktimer timer;
-
-	for (int i = 0; i < 5; i++)
+	if (format == CF_ARGB)
 	{
-		uint32_t* pixels = (uint32_t*)screen.pixels;
-
-		resart_timer(&timer);
-		for (int j = 0; j < screen.sizeInPixels; j++)
-		{
-			pixels[j] = 0xFF00FF00;
-		}
-		print_elapsed_millis(&timer);
-
-		resart_timer(&timer);
-		if (render_screen(&screen))
-		{
-			fprintf(stderr, "Failed to render screen, exiting...");
-			destroy_render_subsystem(&screen);
-			getchar();
-			exit(EXIT_FAILURE);
-		}
-		print_elapsed_millis(&timer);
-
+		render_32bit(&screen, 0xFFFF0000);
 		sleep_secs(1);
-		
-		for (int j = 0; j < screen.sizeInPixels; j++)
-		{
-			pixels[j] = 0xFF0000FF;
-		}
-
-		if (render_screen(&screen))
-		{
-			fprintf(stderr, "Failed to render screen, exiting...");
-			destroy_render_subsystem(&screen);
-			getchar();
-			exit(EXIT_FAILURE);
-		}
-
+		render_32bit(&screen, 0xFF00FF00);
 		sleep_secs(1);
+		render_32bit(&screen, 0xFF0000FF);
+		sleep_secs(1);
+		printf("\n");
+	}
+	else if (format == CF_RGBA)
+	{
+		render_32bit(&screen, 0x0FF0000FF);
+		sleep_secs(1);
+		render_32bit(&screen, 0x00FF00FF);
+		sleep_secs(1);
+		render_32bit(&screen, 0x0000FFFF);
+		sleep_secs(1);
+		printf("\n");
+	}
+	else if (format == CF_RGB565)
+	{
+		render_16bit(&screen, 0b1111100000000000);
+		sleep_secs(1);
+		render_16bit(&screen, 0b0000011111100000);
+		sleep_secs(1);
+		render_16bit(&screen, 0b0000000000011111);
+		sleep_secs(1);
+		printf("\n");
+	}
+	else if (format == CF_BGR565)
+	{
+		render_16bit(&screen, 0b0000000000011111);
+		sleep_secs(1);
+		render_16bit(&screen, 0b0000011111100000);
+		sleep_secs(1);
+		render_16bit(&screen, 0b1111100000000000);
+		sleep_secs(1);
+		printf("\n");
 	}
 
 	if (destroy_render_subsystem(&screen))
@@ -73,6 +121,23 @@ int main(int argc, char** argv)
 		getchar();
 		exit(EXIT_FAILURE);
 	}
+}
+
+int main(int argc, char** argv)
+{
+	printf("Starting render subsystem test...\n");
+
+	printf("Setting CF ARGB\n");
+	run_format_test(CF_ARGB);
+
+	printf("Setting CF RGBA\n");
+	run_format_test(CF_RGBA);
+
+	printf("Setting CF RGB565\n");
+	run_format_test(CF_RGB565);
+
+	printf("Setting CF BGR565\n");
+	run_format_test(CF_BGR565);
 
 	printf("Render subsystem destroyed\n");
 	printf("Test complete\n");

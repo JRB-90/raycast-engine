@@ -5,7 +5,8 @@
 typedef enum {
     CF_ARGB,
     CF_RGBA,
-    CF_RGB565
+    CF_RGB565,
+    CF_BGR565
 } colformat;
 
 typedef struct {

@@ -194,6 +194,8 @@ Uint32 to_sdl_colformat(const colformat colorFormat)
         return SDL_PIXELFORMAT_RGBA8888;
     case CF_RGB565:
         return SDL_PIXELFORMAT_RGB565;
+    case CF_BGR565:
+        return SDL_PIXELFORMAT_BGR565;
     default:
         return SDL_PIXELFORMAT_RGBA8888;
     }
