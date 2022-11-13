@@ -9,5 +9,36 @@ project(raycast
     DESCRIPTION "Experiments in raycast 2.5D graphics"
 )
 
+if(MSVC)
+    add_compile_options(/W3)
+
+    if(IS_REL)
+        add_compile_options(/O2)
+    endif()
+elseif (UNIX)
+    add_compile_options(-Wall)
+
+    if(RPI)
+        add_compile_options(-lrt -mfloat-abi=hard -mfpu=vfp)
+    endif()    
+
+    if (IS_REL)
+        add_compile_options(-O6)
+    else()
+        add_compile_options(-g)
+    endif()
+endif()
+
+if(USE_SDL)
+    SET(SDL2_DIR $ENV{SDL2_DIR})
+    add_compile_definitions(_USE_SDL)
+elseif(RPI)
+    add_compile_definitions(_RPI)
+else()
+	message(FATAL_ERROR
+		"No subsystem implementation configured, cannot configure"
+	)
+endif()
+
 add_subdirectory("tests")
 add_subdirectory("src")
