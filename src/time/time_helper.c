@@ -95,3 +95,167 @@ void sleep_millis(uint32_t millis)
 
 #endif
 }
+
+clktick get_ticks()
+{
+#if TIMER_PLATFORM_WINDOWS
+
+	LARGE_INTEGER t;
+	if (QueryPerformanceCounter(&t))
+	{
+		return t.QuadPart;
+	}
+	else
+	{
+		fprintf(stderr, "Windows timer failed, exiting...\n");
+		exit(EXIT_FAILURE);
+	}
+
+#elif TIMER_PLATFORM_RPI
+
+	if (!isTimerInitialised)
+	{
+		InitRpiTimer();
+	}
+
+	return (tick_t)timerRegisters[1];
+
+#elif TIMER_PLATFORM_UNIX
+
+	struct timespec t;
+	if (clock_gettime(CLOCK_MONOTONIC, &t))
+	{
+		fprintf(stderr, "Unix timer failed, exiting...\n");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		return (t.tv_sec * (1000000000)) + (t.tv_nsec);
+	}
+
+#endif
+}
+
+deltatime get_delta_s(const clktick elapsedTicks)
+{
+#if TIMER_PLATFORM_WINDOWS
+
+	LARGE_INTEGER f;
+	if (QueryPerformanceFrequency(&f))
+	{
+		return (deltatime)elapsedTicks / ((deltatime)f.QuadPart);
+	}
+	else
+	{
+		fprintf(stderr, "Windows timer failed, exiting...\n");
+		exit(EXIT_FAILURE);
+	}
+
+#elif TIMER_PLATFORM_RPI
+
+	return (deltatime_t)(elapsedTicks / 1000000);
+
+#elif TIMER_PLATFORM_UNIX
+
+	return (deltatime_t)(elapsedTicks / 1000000000);
+
+#endif
+}
+
+deltatime get_delta_ms(const clktick elapsedTicks)
+{
+#if TIMER_PLATFORM_WINDOWS
+
+	LARGE_INTEGER f;
+	if (QueryPerformanceFrequency(&f))
+	{
+		return (deltatime)elapsedTicks / ((deltatime)f.QuadPart / 1000);
+	}
+	else
+	{
+		fprintf(stderr, "Windows timer failed, exiting...\n");
+		exit(EXIT_FAILURE);
+	}
+
+#elif TIMER_PLATFORM_RPI
+
+	return (deltatime_t)(elapsedTicks / 1000);
+
+#elif TIMER_PLATFORM_UNIX
+
+	return (deltatime_t)(elapsedTicks / 1000000);
+
+#endif
+}
+
+deltatime get_delta_us(const clktick elapsedTicks)
+{
+#if TIMER_PLATFORM_WINDOWS
+
+	LARGE_INTEGER f;
+	if (QueryPerformanceFrequency(&f))
+	{
+		return (deltatime)elapsedTicks / ((deltatime)f.QuadPart / 1000000);
+	}
+	else
+	{
+		fprintf(stderr, "Windows timer failed, exiting...\n");
+		exit(EXIT_FAILURE);
+	}
+
+#elif TIMER_PLATFORM_RPI
+
+	return (deltatime_t)(elapsedTicks);
+
+#elif TIMER_PLATFORM_UNIX
+
+	return (deltatime_t)(elapsedTicks / 1000);
+
+#endif
+}
+
+void start_timer(clktimer* const timer)
+{
+	timer->startTime = get_ticks();
+}
+
+void resart_timer(clktimer* const timer)
+{
+	timer->startTime = get_ticks();
+}
+
+deltatime restart_timer_secs(clktimer* const timer)
+{
+	deltatime delta = elapsed_secs(timer);
+	resart_timer(timer);
+
+	return delta;
+}
+
+deltatime restart_timer_millis(clktimer* const timer)
+{
+	deltatime delta = elapsed_millis(timer);
+	resart_timer(timer);
+
+	return delta;
+}
+
+deltatime elapsed_secs(const clktimer* const timer)
+{
+	return get_delta_s(get_ticks() - timer->startTime);
+}
+
+deltatime elapsed_millis(const clktimer* const timer)
+{
+	return get_delta_ms(get_ticks() - timer->startTime);
+}
+
+void print_elapsed_secs(const clktimer* const timer)
+{
+	printf("%f s\n", elapsed_secs(timer));
+}
+
+void print_elapsed_millis(const clktimer* const timer)
+{
+	printf("%f ms\n", elapsed_millis(timer));
+}

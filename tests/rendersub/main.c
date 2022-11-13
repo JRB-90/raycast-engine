@@ -23,16 +23,23 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
+	clktimer timer;
+
 	for (int i = 0; i < 5; i++)
 	{
 		uint32_t* pixels = (uint32_t*)screen.pixels;
 
+		resart_timer(&timer);
 		for (int j = 0; j < screen.sizeInPixels; j++)
 		{
 			pixels[j] = 0xFF00FF00;
 		}
+		print_elapsed_millis(&timer);
 
+		resart_timer(&timer);
 		render_screen(&screen);
+		print_elapsed_millis(&timer);
+
 		sleep_secs(1);
 		
 		for (int j = 0; j < screen.sizeInPixels; j++)

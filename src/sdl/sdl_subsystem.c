@@ -173,7 +173,7 @@ int update_input_state(input_state* const state)
         {
             state->quit = true;
 
-            return;
+            return 0;
         }
         else
         {

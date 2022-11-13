@@ -12,6 +12,23 @@ project(raycast
 add_subdirectory("tests")
 add_subdirectory("src")
 
-if (RPI)
-    add_compile_definitions(_RPI)
+if (MSVC)
+    add_compile_options(/W3)
+
+    if (IS_REL)
+        add_compile_options(/O2)
+    endif()
+elseif (UNIX)
+    if (RPI)
+        add_compile_definitions(_RPI)
+        add_compile_options(-lrt -mfloat-abi=hard -mfpu=vfp)
+    endif()
+
+    add_compile_options(-Wall)
+
+    if (IS_REL)
+        add_compile_options(-o6)
+    else()
+        add_compile_options(-g)
+    endif()
 endif()
