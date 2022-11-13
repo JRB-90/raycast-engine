@@ -81,14 +81,13 @@ int init_render_subsystem(
 		return -1;
 	}
 
+	printf("%u\n", display.finfo.capabilities);
+
 	display.originalVinfo = display.vinfo;
 	display.screenPixels = display.vinfo.xres * display.vinfo.yres;
 	display.screenSizeBytes = display.screenPixels * (display.vinfo.bits_per_pixel / 8);
 	display.vscreenPixels = display.vinfo.xres_virtual * display.vinfo.yres_virtual;
 	display.vscreenSizeBytes = display.vscreenPixels * (display.vinfo.bits_per_pixel / 8);
-
-	printf("Starting screen info\n");
-	print_scrinfo(&display.finfo, &display.vinfo);
 
 	display.vinfo.xres = format->width;
 	display.vinfo.xres_virtual = format->width;
@@ -99,18 +98,31 @@ int init_render_subsystem(
 	if (format->format == CF_ARGB)
 	{
 		display.vinfo.bits_per_pixel = 32;
-	}
-	else if (format->format == CF_RGBA)
-	{
-		display.vinfo.bits_per_pixel = 32;
+		display.vinfo.red.offset = 16;
+		display.vinfo.red.length = 8;
+		display.vinfo.green.offset = 8;
+		display.vinfo.green.length = 8;
+		display.vinfo.blue.offset = 0;
+		display.vinfo.blue.length = 8;
+		display.vinfo.transp.offset = 24;
+		display.vinfo.transp.length = 8;
 	}
 	else if (format->format == CF_RGB565)
 	{
 		display.vinfo.bits_per_pixel = 16;
+		display.vinfo.red.offset = 11;
+		display.vinfo.red.length = 5;
+		display.vinfo.green.offset = 5;
+		display.vinfo.green.length = 6;
+		display.vinfo.blue.offset = 0;
+		display.vinfo.blue.length = 5;
+		display.vinfo.transp.offset = 0;
+		display.vinfo.transp.length = 0;
 	}
 	else
 	{
-		display.vinfo.bits_per_pixel = 32;
+		fprintf(stderr, "Color format not recognised\n");
+		return -1;
 	}
 
 	if (ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.vinfo))
@@ -123,9 +135,6 @@ int init_render_subsystem(
 	display.screenSizeBytes = display.screenPixels * (display.vinfo.bits_per_pixel / 8);
 	display.vscreenPixels = display.vinfo.xres_virtual * display.vinfo.yres_virtual;
 	display.vscreenSizeBytes = display.vscreenPixels * (display.vinfo.bits_per_pixel / 8);
-
-	printf("\nUpdated screen info\n");
-	print_scrinfo(&display.finfo, &display.vinfo);
 
 	display.ttyfd = open(TTY_PATH, O_RDWR);
 	if (display.ttyfd == -1)

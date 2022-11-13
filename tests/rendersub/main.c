@@ -84,16 +84,6 @@ void run_format_test(colformat format)
 		sleep_secs(1);
 		printf("\n");
 	}
-	else if (format == CF_RGBA)
-	{
-		render_32bit(&screen, 0x0FF0000FF);
-		sleep_secs(1);
-		render_32bit(&screen, 0x00FF00FF);
-		sleep_secs(1);
-		render_32bit(&screen, 0x0000FFFF);
-		sleep_secs(1);
-		printf("\n");
-	}
 	else if (format == CF_RGB565)
 	{
 		render_16bit(&screen, 0b1111100000000000);
@@ -101,16 +91,6 @@ void run_format_test(colformat format)
 		render_16bit(&screen, 0b0000011111100000);
 		sleep_secs(1);
 		render_16bit(&screen, 0b0000000000011111);
-		sleep_secs(1);
-		printf("\n");
-	}
-	else if (format == CF_BGR565)
-	{
-		render_16bit(&screen, 0b0000000000011111);
-		sleep_secs(1);
-		render_16bit(&screen, 0b0000011111100000);
-		sleep_secs(1);
-		render_16bit(&screen, 0b1111100000000000);
 		sleep_secs(1);
 		printf("\n");
 	}
@@ -130,14 +110,8 @@ int main(int argc, char** argv)
 	printf("Setting CF ARGB\n");
 	run_format_test(CF_ARGB);
 
-	printf("Setting CF RGBA\n");
-	run_format_test(CF_RGBA);
-
 	printf("Setting CF RGB565\n");
 	run_format_test(CF_RGB565);
-
-	printf("Setting CF BGR565\n");
-	run_format_test(CF_BGR565);
 
 	printf("Render subsystem destroyed\n");
 	printf("Test complete\n");
