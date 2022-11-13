@@ -65,7 +65,7 @@ int init_render_subsystem(
     display.texture =
         SDL_CreateTexture(
             display.renderer,
-            ToSdlFormatFlag(format->format),
+            to_sdl_colformat(format->format),
             SDL_TEXTUREACCESS_STREAMING,
             format->width,
             format->height
@@ -78,7 +78,7 @@ int init_render_subsystem(
 
     screen->width = format->width;
     screen->height = format->height;
-    screen->bitsPP = ToBitsPerPixel(format->format);
+    screen->bitsPP = to_bpp(format->format);
     screen->bytesPP = screen->bitsPP / 8;
     screen->sizeInPixels = format->width * format->height;
     screen->stride = screen->width * screen->bytesPP;

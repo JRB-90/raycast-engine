@@ -11,3 +11,7 @@ project(raycast
 
 add_subdirectory("tests")
 add_subdirectory("src")
+
+if (RPI)
+    add_compile_definitions(_RPI)
+endif()
