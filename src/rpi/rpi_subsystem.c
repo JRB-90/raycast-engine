@@ -392,11 +392,11 @@ int pan_display(screen_buffer* const screen)
 		return -1;
 	}
 
-	if (ioctl(display.fbfd, FBIO_WAITFORVSYNC, 0))
+	/*if (ioctl(display.fbfd, FBIO_WAITFORVSYNC, 0))
 	{
 		printf("Failed to wait for vsync\n");
 		return -1;
-	}
+	}*/
 
 	return 0;
 }
