@@ -21,6 +21,7 @@ int main(int argc, char** argv)
 	if (init_render_subsystem(&sformat, &screen))
 	{
 		fprintf(stderr, "Failed to init render subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 #endif // _USE_SDL
@@ -28,6 +29,7 @@ int main(int argc, char** argv)
 	if (init_input_subsystem())
 	{
 		fprintf(stderr, "Failed to init input subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 
@@ -37,7 +39,16 @@ int main(int argc, char** argv)
 
 	while (!inputState.quit)
 	{
-		update_input_state(&inputState);
+		if (update_input_state(&inputState))
+		{
+			fprintf(stderr, "Failed to update input state, exiting...");
+			destroy_input_subsystem();
+#ifdef _USE_SDL
+			destroy_render_subsystem(&screen);
+#endif // _USE_SDL
+			getchar();
+			exit(EXIT_FAILURE);
+		}
 
 		printf(
 			"F:%d\tB:%d\tL:%d\tR:%d\t\n", 
@@ -53,6 +64,7 @@ int main(int argc, char** argv)
 	if (destroy_input_subsystem())
 	{
 		fprintf(stderr, "Failed to destroy input subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 
@@ -60,6 +72,7 @@ int main(int argc, char** argv)
 	if (destroy_render_subsystem(&screen))
 	{
 		fprintf(stderr, "Failed to destroy render subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 #endif // _USE_SDL

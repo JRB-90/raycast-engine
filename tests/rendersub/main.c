@@ -20,6 +20,7 @@ int main(int argc, char** argv)
 	if (init_render_subsystem(&sformat, &screen))
 	{
 		fprintf(stderr, "Failed to init render subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 
@@ -39,7 +40,13 @@ int main(int argc, char** argv)
 		print_elapsed_millis(&timer);
 
 		resart_timer(&timer);
-		render_screen(&screen);
+		if (render_screen(&screen))
+		{
+			fprintf(stderr, "Failed to render screen, exiting...");
+			destroy_render_subsystem(&screen);
+			getchar();
+			exit(EXIT_FAILURE);
+		}
 		print_elapsed_millis(&timer);
 
 		sleep_secs(1);
@@ -49,13 +56,21 @@ int main(int argc, char** argv)
 			pixels[j] = 0xFF0000FF;
 		}
 
-		render_screen(&screen);
+		if (render_screen(&screen))
+		{
+			fprintf(stderr, "Failed to render screen, exiting...");
+			destroy_render_subsystem(&screen);
+			getchar();
+			exit(EXIT_FAILURE);
+		}
+
 		sleep_secs(1);
 	}
 
 	if (destroy_render_subsystem(&screen))
 	{
 		fprintf(stderr, "Failed to destroy render subsystem, exiting...");
+		getchar();
 		exit(EXIT_FAILURE);
 	}
 

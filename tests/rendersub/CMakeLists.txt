@@ -24,6 +24,10 @@ if(USE_SDL)
 	target_link_libraries(rendersub PUBLIC
 		sdlsubsystem
 	)
+elseif(RPI)
+	target_link_libraries(rendersub PUBLIC
+		rpisubsystem
+	)
 else()
 	message(FATAL_ERROR
 		"No subsystem implementation configured, cannot configure"

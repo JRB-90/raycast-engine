@@ -5,9 +5,9 @@
 #if defined(_WIN32) || defined(_WIN6 )
 typedef unsigned __int64 clktick;
 #elif defined(_RPI)
-typedef long tick_t;
+typedef long clktick;
 #elif defined(__unix__)
-typedef uint64_t tick_t;
+typedef uint64_t clktick;
 #else
 #error "Only windows/rpi/unix supported in the time library"
 #endif

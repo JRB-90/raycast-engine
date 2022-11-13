@@ -7,7 +7,7 @@ add_subdirectory("enginedemo")
 if (USE_SDL)
 	add_subdirectory("sdl")
 elseif(RPI)
-	#add_subdirectory("rpi")
+	add_subdirectory("rpi")
 else()
 	message(FATAL_ERROR
 		"No subsystem implementation configured, cannot configure"

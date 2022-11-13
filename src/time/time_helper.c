@@ -115,10 +115,10 @@ clktick get_ticks()
 
 	if (!isTimerInitialised)
 	{
-		InitRpiTimer();
+		init_rpitimer();
 	}
 
-	return (tick_t)timerRegisters[1];
+	return (clktick)timerRegisters[1];
 
 #elif TIMER_PLATFORM_UNIX
 
@@ -153,11 +153,11 @@ deltatime get_delta_s(const clktick elapsedTicks)
 
 #elif TIMER_PLATFORM_RPI
 
-	return (deltatime_t)(elapsedTicks / 1000000);
+	return (deltatime)(elapsedTicks / 1000000);
 
 #elif TIMER_PLATFORM_UNIX
 
-	return (deltatime_t)(elapsedTicks / 1000000000);
+	return (deltatime)(elapsedTicks / 1000000000);
 
 #endif
 }
@@ -179,11 +179,11 @@ deltatime get_delta_ms(const clktick elapsedTicks)
 
 #elif TIMER_PLATFORM_RPI
 
-	return (deltatime_t)(elapsedTicks / 1000);
+	return (deltatime)(elapsedTicks / 1000);
 
 #elif TIMER_PLATFORM_UNIX
 
-	return (deltatime_t)(elapsedTicks / 1000000);
+	return (deltatime)(elapsedTicks / 1000000);
 
 #endif
 }
@@ -205,11 +205,11 @@ deltatime get_delta_us(const clktick elapsedTicks)
 
 #elif TIMER_PLATFORM_RPI
 
-	return (deltatime_t)(elapsedTicks);
+	return (deltatime)(elapsedTicks);
 
 #elif TIMER_PLATFORM_UNIX
 
-	return (deltatime_t)(elapsedTicks / 1000);
+	return (deltatime)(elapsedTicks / 1000);
 
 #endif
 }
