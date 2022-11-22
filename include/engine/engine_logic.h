@@ -29,8 +29,11 @@ typedef struct {
 typedef struct {
     engine_config config;
     screen_buffer screen;
+    input_state input;
 } rayengine;
 
 input_state blank_input_state();
 rayengine *init_engine(const engine_config const *config);
 void destroy_engine(rayengine *engine);
+int update_engine(rayengine* engine);
+int render_engine(rayengine* engine);

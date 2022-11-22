@@ -5,6 +5,9 @@
 #include "engine_screen.h"
 #include "engine_draw.h"
 #include "engine_color.h"
+#include "time_helper.h"
+
+const int CLEAR_ITR = 1000;
 
 void sig_handler(int signum);
 void cleanup(int status);
@@ -40,6 +43,41 @@ int main(int argc, char** argv)
     printf("Initialised\n");
 
     // TODO - Draw tests here
+
+    clktimer timer;
+    deltatime delta;
+
+    start_timer(&timer);
+    for (int i = 0; i < CLEAR_ITR; i++)
+    {
+        draw_clear_screen_16(&engine->screen, 0xFFFF);
+    }
+    delta = elapsed_millis(&timer);
+    printf("16 bit test took %.3fms %i iterations\n", delta, CLEAR_ITR);
+    render_engine(engine);
+
+    start_timer(&timer);
+    for (int i = 0; i < CLEAR_ITR; i++)
+    {
+        draw_clear_screen_32(&engine->screen, 0xFF00FF00);
+    }
+    delta = elapsed_millis(&timer);
+    printf("32 bit test took %.3fms %i iterations\n", delta, CLEAR_ITR);
+    render_engine(engine);
+
+    start_timer(&timer);
+    for (int i = 0; i < CLEAR_ITR; i++)
+    {
+        draw_clear_screen_64(&engine->screen, 0xFF0000FFFF0000FF);
+    }
+    delta = elapsed_millis(&timer);
+    printf("64 bit test took %.3fms %i iterations\n", delta, CLEAR_ITR);
+    render_engine(engine);
+
+    while (!engine->input.quit)
+    {
+        update_engine(engine);
+    }
 
     printf("Shutting down...\n");
     destroy_engine(engine);

@@ -34,6 +34,7 @@ rayengine *init_engine(const engine_config const* config)
 
     engine->config = *config;
     engine->screen = default_screen();
+    engine->input = blank_input_state();
 
     if (init_input_subsystem())
     {
@@ -58,4 +59,15 @@ void destroy_engine(rayengine *engine)
         destroy_input_subsystem();
         free(engine);
     }
+}
+
+int update_engine(rayengine *engine)
+{
+    return update_input_state(&engine->input);
+    // TODO - In future, update AI logic here too
+}
+
+int render_engine(rayengine *engine)
+{
+    return render_screen(&engine->screen);
 }
