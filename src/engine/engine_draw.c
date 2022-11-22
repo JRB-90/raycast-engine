@@ -4,21 +4,39 @@
 
 void draw_clear_screen_16(
 	const screen_buffer* const screen,
-	const col_rgb565* const color)
+	const uint16_t color)
 {
 	uint16_t *pix = (uint16_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 1;
+
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
 }
 
 void draw_clear_screen_32(
 	const screen_buffer* const screen, 
-	const col_rgb565* const color)
+	const uint32_t color)
 {
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 2;
 
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
 }
 
 void draw_clear_screen_64(
 	const screen_buffer* const screen, 
-	const col_rgb565* const color)
+	const uint64_t color)
 {
+	uint64_t* pix = (uint64_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 3;
 
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
 }
