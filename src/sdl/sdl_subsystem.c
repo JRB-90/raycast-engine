@@ -32,6 +32,8 @@ int init_render_subsystem(
 
     if (SDL_Init(SDL_INIT_EVERYTHING))
     {
+        fprintf(stderr, "Failed SDL init\n");
+
         return -1;
     }
 
@@ -47,6 +49,8 @@ int init_render_subsystem(
 
     if (display.window == NULL)
     {
+        fprintf(stderr, "Failed create window\n");
+
         return -1;
     }
 
@@ -59,6 +63,8 @@ int init_render_subsystem(
 
     if (display.renderer == NULL)
     {
+        fprintf(stderr, "Failed create renderer\n");
+
         return -1;
     }
 
@@ -73,6 +79,8 @@ int init_render_subsystem(
 
     if (display.texture == NULL)
     {
+        fprintf(stderr, "Failed create texture\n");
+
         return -1;
     }
 
