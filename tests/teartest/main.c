@@ -20,6 +20,9 @@ int main(int argc, char** argv)
 	barOffset = 0;
 	barWidth = 50;
 	clktimer clock;
+	clktimer clock2;
+	deltatime innerDrawDelta = 0;
+	deltatime innerFlipDelta = 0;
 
 	screen_format format =
 	{
@@ -35,9 +38,14 @@ int main(int argc, char** argv)
 
 	for (int i = 0; i < numRuns; i++)
 	{
+		start_timer(&clock2);
 		clear_screen();
 		draw_bars();
+		innerDrawDelta += elapsed_millis(&clock2);
+
+		start_timer(&clock2);
 		render_screen(&screen);
+		innerFlipDelta += elapsed_millis(&clock2);
 		barOffset++;
 	}
 
@@ -45,6 +53,8 @@ int main(int argc, char** argv)
 	deltatime aveDelta = delta / (deltatime)(numRuns);
 	printf("Time taken: %.3fms\n", delta);
 	printf("Ave frame:  %.3fms\n", aveDelta);
+	printf("Inner draw ave:  %.3fms\n", innerDrawDelta / (deltatime)(numRuns));
+	printf("Inner flip ave:  %.3fms\n", innerFlipDelta / (deltatime)(numRuns));
 
 	destroy_render_subsystem(&screen);
 
