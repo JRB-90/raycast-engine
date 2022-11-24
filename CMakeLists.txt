@@ -10,15 +10,18 @@ project(raycast
 )
 
 if(MSVC)
+    message("Using MSVC compiler")
     add_compile_options(/W3)
 
     if(IS_REL)
         add_compile_options(/O2)
     endif()
 elseif (UNIX)
+    message("Using GCC compiler")
     add_compile_options(-Wall)
-
+    
     if(RPI)
+        message("RPI subsystem selected")
         add_compile_options(-lrt -mfloat-abi=hard -mfpu=vfp)
     endif()    
 
@@ -30,6 +33,7 @@ elseif (UNIX)
 endif()
 
 if(USE_SDL)
+    message("SDL subsystem selected")
     SET(SDL2_DIR $ENV{SDL2_DIR})
     add_compile_definitions(_USE_SDL)
 elseif(RPI)

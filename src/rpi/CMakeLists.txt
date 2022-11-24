@@ -16,4 +16,5 @@ target_include_directories(rpisubsystem PUBLIC
 
 target_link_libraries(rpisubsystem PUBLIC
 	engine
+	pthread
 )
