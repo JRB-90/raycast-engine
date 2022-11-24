@@ -44,9 +44,11 @@ input_event events[64];
 bool lctrl;
 struct termios old;
 struct termios new;
+
 pthread_t pageFlipThread;
 pthread_mutex_t pageFlipMutex;
 atomic_bool isPageFlipWorkerRunning;
+atomic_bool isPageFlipPending;
 
 int flip_buffer(screen_buffer* const screen);
 void *page_flip_worker();
@@ -60,6 +62,7 @@ int init_render_subsystem(
 	screen_buffer* const screen)
 {
 	isPageFlipWorkerRunning = false;
+	isPageFlipPending = false;
 
 	display.fbfd = -1;
 	display.ttyfd = -1;
@@ -183,10 +186,8 @@ int init_render_subsystem(
 
 int destroy_render_subsystem(screen_buffer* const screen)
 {
-	//pthread_mutex_lock(&pageFlipMutex);
 	isPageFlipWorkerRunning = false;
 	pthread_join(pageFlipThread, NULL);
-	//pthread_mutex_unlock(&pageFlipMutex);
 	pthread_mutex_destroy(&pageFlipMutex);
 
 	if (screen->pixels != NULL)
@@ -217,57 +218,47 @@ int destroy_render_subsystem(screen_buffer* const screen)
 
 int render_screen(screen_buffer* const screen)
 {
-	unsigned int offset = display.activePage * display.pageSizeInBytes;
-	memcpy(display.fbPixels + offset, screen->pixels, screen->sizeInBytes);
-
-	return flip_buffer(screen);
-}
-
-int flip_buffer(screen_buffer* const screen)
-{
-	if (display.activePage == 0)
+	if (!isPageFlipPending)
 	{
-		display.vinfo.yoffset = 0;
-		display.activePage = 1;
-	}
-	else
-	{
-		display.vinfo.yoffset = display.vinfo.yres;
-		display.activePage = 0;
-	}
+		pthread_mutex_lock(&pageFlipMutex);
 
-	display.vinfo.activate = FB_ACTIVATE_VBL;
+		unsigned int offset = display.activePage * display.pageSizeInBytes;
+		memcpy(display.fbPixels + offset, screen->pixels, screen->sizeInBytes);
+		isPageFlipPending = true;
 
-	if (ioctl(display.fbfd, FBIOPAN_DISPLAY, &display.vinfo))
-	{
-		fprintf(stderr, "Failed to pan display\n");
-
-		return -1;
-	}
-
-	if (ioctl(display.fbfd, FBIO_WAITFORVSYNC, 0))
-	{
-		fprintf(stderr, "Failed to wait for vsync\n");
-
-		return -1;
+		pthread_mutex_unlock(&pageFlipMutex);
 	}
 
 	return 0;
 }
 
-int count = 0;
-
 void *page_flip_worker()
 {
 	while (isPageFlipWorkerRunning)
 	{
-		pthread_mutex_lock(&pageFlipMutex);
-		
-		printf("Hello, World %i\n", count);
-		count++;
-		usleep(250000);
+		if (isPageFlipPending)
+		{
+			pthread_mutex_lock(&pageFlipMutex);
 
-		pthread_mutex_unlock(&pageFlipMutex);
+			if (display.activePage == 0)
+			{
+				display.vinfo.yoffset = 0;
+				display.activePage = 1;
+			}
+			else
+			{
+				display.vinfo.yoffset = display.vinfo.yres;
+				display.activePage = 0;
+			}
+
+			display.vinfo.activate = FB_ACTIVATE_VBL;
+			ioctl(display.fbfd, FBIOPAN_DISPLAY, &display.vinfo);
+
+			pthread_mutex_unlock(&pageFlipMutex);
+
+			ioctl(display.fbfd, FBIO_WAITFORVSYNC, 0);
+			isPageFlipPending = false;
+		}
 	}
 
 	return NULL;
