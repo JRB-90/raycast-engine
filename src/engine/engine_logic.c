@@ -21,7 +21,7 @@ input_state blank_input_state()
     return inputState;
 }
 
-rayengine *init_engine(const engine_config const* config)
+rayengine *init_engine(const engine_config *const config)
 {
     rayengine *engine = (rayengine *)malloc(sizeof(rayengine));
 

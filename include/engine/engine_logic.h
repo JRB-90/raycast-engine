@@ -33,7 +33,7 @@ typedef struct {
 } rayengine;
 
 input_state blank_input_state();
-rayengine *init_engine(const engine_config const *config);
+rayengine *init_engine(const engine_config *const config);
 void destroy_engine(rayengine *engine);
 int update_engine(rayengine* engine);
 int render_engine(rayengine* engine);
