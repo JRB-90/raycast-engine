@@ -74,10 +74,7 @@ void run_16bit_tests()
 
     printf("Initialised\n");
 
-    draw_clear_screen_16(&engine->screen, 0b1111100000011111);
-    render_engine(engine);
-
-    /*clktimer timer;
+    clktimer timer;
 
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -101,7 +98,7 @@ void run_16bit_tests()
         draw_clear_screen_64(&engine->screen, 0b0000011111111111000001111111111100000111111111110000011111111111);
     }
     deltatime delta64 = elapsed_millis(&timer);
-    render_engine(engine);*/
+    render_engine(engine);
 
     sleep_secs(1);
 
@@ -109,9 +106,9 @@ void run_16bit_tests()
     destroy_engine(engine);
     printf("Shutdown\n");
 
-    //printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
-    //printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
-    //printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
+    printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
+    printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
+    printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
 }
 
 void run_32bit_tests()
@@ -138,7 +135,7 @@ void run_32bit_tests()
 
     printf("Initialised\n");
 
-    /*clktimer timer;
+    clktimer timer;
 
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -162,13 +159,13 @@ void run_32bit_tests()
         draw_clear_screen_64(&engine->screen, 0xFF0000FFFF0000FF);
     }
     deltatime delta64 = elapsed_millis(&timer);
-    render_engine(engine);*/
+    render_engine(engine);
 
     printf("Shutting down engine...\n");
     destroy_engine(engine);
     printf("Shutdown\n");
 
-    //printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
-    //printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
-    //printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
+    printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
+    printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
+    printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
 }

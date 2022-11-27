@@ -35,7 +35,7 @@ typedef struct RpiDisplay {
 	fb_var_screeninfo vinfo;
 	fb_var_screeninfo originalVinfo;
 	uint8_t activePage;
-	uint8_t* fbPixels;
+	void *fbPixels;
 } RpiDisplay;
 
 RpiDisplay display;
@@ -50,7 +50,6 @@ pthread_mutex_t pageFlipMutex;
 atomic_bool isPageFlipWorkerRunning;
 atomic_bool isPageFlipPending;
 
-int flip_buffer(screen_buffer* const screen);
 void *page_flip_worker();
 void print_scrinfo(
 	const fb_fix_screeninfo* const finfo,
@@ -75,18 +74,21 @@ int init_render_subsystem(
 	if (display.fbfd == -1)
 	{
 		fprintf(stderr, "Failed to open %s fd\n", FB_PATH);
+
 		return -1;
 	}
 
 	if (ioctl(display.fbfd, FBIOGET_FSCREENINFO, &display.finfo))
 	{
 		fprintf(stderr, "Failed to get fixed screen info\n");
+
 		return -1;
 	}
 
 	if (ioctl(display.fbfd, FBIOGET_VSCREENINFO, &display.vinfo))
 	{
 		fprintf(stderr, "Failed to get variable screen info\n");
+
 		return -1;
 	}
 
@@ -103,6 +105,7 @@ int init_render_subsystem(
 	else
 	{
 		fprintf(stderr, "Color format not recognised\n");
+
 		return -1;
 	}
 
@@ -110,30 +113,42 @@ int init_render_subsystem(
 	display.vinfo.xres_virtual = format->width;
 	display.vinfo.yres = format->height;
 	display.vinfo.yres_virtual = format->height * 2;
+
+	if (ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.vinfo))
+	{
+		fprintf(stderr, "Failed to set variable screen info\n");
+
+		return -1;
+	}
+	
 	display.vinfo.xoffset = 0;
-	display.vinfo.yoffset = 0;
+	display.vinfo.yoffset = display.vinfo.yres;
+	display.vinfo.activate = FB_ACTIVATE_VBL;
+	
+	if (ioctl(display.fbfd, FBIOPAN_DISPLAY, &display.vinfo))
+	{
+		fprintf(stderr, "Failed to pan display\n");
+
+		return -1;
+	}
 
 	display.pageSizeInPixels = display.vinfo.xres * display.vinfo.yres;
 	display.pageSizeInBytes = display.pageSizeInPixels * (display.vinfo.bits_per_pixel / 8);
 	display.virtualSizeInPixels = display.vinfo.xres_virtual * display.vinfo.yres_virtual;
 	display.virtualSizeInBytes = display.virtualSizeInPixels * (display.vinfo.bits_per_pixel / 8);
 
-	if (ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.vinfo))
-	{
-		fprintf(stderr, "Failed to set variable screen info\n");
-		return -1;
-	}
-
 	display.ttyfd = open(TTY_PATH, O_RDWR);
 	if (display.ttyfd == -1)
 	{
 		fprintf(stderr, "Failed to open %s fd\n", TTY_PATH);
+
 		return -1;
 	}
 
 	if (ioctl(display.ttyfd, KDSETMODE, KD_GRAPHICS))
 	{
 		fprintf(stderr, "Failed to set %s to graphics mode\n", TTY_PATH);
+
 		return -1;
 	}
 
@@ -154,8 +169,10 @@ int init_render_subsystem(
 		return -1;
 	}
 
+	memset(screen->pixels, 0, screen->sizeInBytes);
+
 	display.fbPixels =
-		(uint8_t*)mmap(
+		mmap(
 			0,
 			display.virtualSizeInBytes,
 			PROT_READ | PROT_WRITE,
@@ -170,6 +187,8 @@ int init_render_subsystem(
 
 		return -1;
 	}
+
+	memset(display.fbPixels, 0, display.virtualSizeInBytes);
 
 	pthread_mutex_init(&pageFlipMutex, NULL);
 	isPageFlipWorkerRunning = true;
@@ -222,8 +241,11 @@ int render_screen(screen_buffer* const screen)
 	{
 		pthread_mutex_lock(&pageFlipMutex);
 
+		uint8_t* fbPix8 = (uint8_t*)display.fbPixels;
+		uint8_t* scPix8 = (uint8_t*)screen->pixels;
+
 		unsigned int offset = display.activePage * display.pageSizeInBytes;
-		memcpy(display.fbPixels + offset, screen->pixels, screen->sizeInBytes);
+		memcpy(fbPix8 + offset, scPix8, screen->sizeInBytes);
 		isPageFlipPending = true;
 
 		pthread_mutex_unlock(&pageFlipMutex);
