@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-void draw_clear_screen_16(
+void draw_clear_screen16(
 	const screen_buffer* const screen,
 	const uint16_t color)
 {
@@ -15,7 +15,7 @@ void draw_clear_screen_16(
 	}
 }
 
-void draw_clear_screen_32(
+void draw_clear_screen32(
 	const screen_buffer* const screen, 
 	const uint32_t color)
 {
@@ -28,8 +28,8 @@ void draw_clear_screen_32(
 	}
 }
 
-void draw_clear_screen_64(
-	const screen_buffer* const screen, 
+void draw_clear_screen64(
+	const screen_buffer* const screen,
 	const uint64_t color)
 {
 	uint64_t* pix = (uint64_t*)screen->pixels;

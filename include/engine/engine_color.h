@@ -18,3 +18,5 @@ typedef uint16_t col_rgb565;
 typedef uint32_t col_argb;
 
 extern int to_bpp(const colformat colorFormat);
+extern col_rgb565 to_rgb565(const color* const color);
+extern col_argb to_argb(const color* const color);

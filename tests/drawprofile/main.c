@@ -7,12 +7,13 @@
 #include "engine_color.h"
 #include "time_helper.h"
 
+const int SWIDTH = 640;
+const int SHEIGHT = 480;
 const int CLEAR_ITR = 1000;
 
 void sig_handler(int signum);
 void cleanup(int status);
-void run_16bit_tests();
-void run_32bit_tests();
+void run_basic_tests(engine_config config);
 
 rayengine* engine;
 
@@ -22,11 +23,36 @@ int main(int argc, char** argv)
 
     engine = NULL;
 
-    run_16bit_tests();
-    run_32bit_tests();
+    engine_config config16 =
+    {
+        .type = ENGINE_GRID,
+        .format = (screen_format)
+        {
+            .format = CF_RGB565,
+            .width = SWIDTH,
+            .height = SHEIGHT
+        }
+    };
 
-    printf("====== Tests complete ======\n");
-    //getchar();
+    engine_config config32 =
+    {
+        .type = ENGINE_GRID,
+        .format = (screen_format)
+        {
+            .format = CF_ARGB,
+            .width = SWIDTH,
+            .height = SHEIGHT
+        }
+    };
+
+    printf("\nStarting 16 bpp tests\n");
+    run_basic_tests(config16);
+
+    printf("\nStarting 32 bpp tests\n");
+    run_basic_tests(config32);
+
+    printf("\n====== Tests complete ======\n");
+    getchar();
     exit(EXIT_SUCCESS);
 }
 
@@ -50,20 +76,9 @@ void cleanup(int status)
     exit(status);
 }
 
-void run_16bit_tests()
+void run_basic_tests(engine_config config)
 {
-    engine_config config =
-    {
-        .type = ENGINE_GRID,
-        .format = (screen_format)
-        {
-            .format = CF_RGB565,
-            .width = 640,
-            .height = 480
-        }
-    };
-
-    printf("Initialising engine for 16 bit color...\n");
+    printf("Initialising engine...\n");
 
     engine = init_engine(&config);
     if (engine == NULL)
@@ -79,7 +94,7 @@ void run_16bit_tests()
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen_16(&engine->screen, 0b1111100000011111);
+        draw_clear_screen16(&engine->screen, 0xFFFF);
     }
     deltatime delta16 = elapsed_millis(&timer);
     render_engine(engine);
@@ -87,7 +102,7 @@ void run_16bit_tests()
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen_32(&engine->screen, 0b11111111111000001111111111100000);
+        draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
     }
     deltatime delta32 = elapsed_millis(&timer);
     render_engine(engine);
@@ -95,68 +110,7 @@ void run_16bit_tests()
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen_64(&engine->screen, 0b0000011111111111000001111111111100000111111111110000011111111111);
-    }
-    deltatime delta64 = elapsed_millis(&timer);
-    render_engine(engine);
-
-    sleep_secs(1);
-
-    printf("Shutting down engine...\n");
-    destroy_engine(engine);
-    printf("Shutdown\n");
-
-    printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
-    printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
-    printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
-}
-
-void run_32bit_tests()
-{
-    engine_config config =
-    {
-        .type = ENGINE_GRID,
-        .format = (screen_format)
-        {
-            .format = CF_ARGB,
-            .width = 640,
-            .height = 480
-        }
-    };
-
-    printf("Initialising engine for 32 bit color...\n");
-
-    engine = init_engine(&config);
-    if (engine == NULL)
-    {
-        fprintf(stderr, "Failed to init engine, shutting down...\n");
-        cleanup(EXIT_FAILURE);
-    }
-
-    printf("Initialised\n");
-
-    clktimer timer;
-
-    start_timer(&timer);
-    for (int i = 0; i < CLEAR_ITR; i++)
-    {
-        draw_clear_screen_16(&engine->screen, 0xFFFF);
-    }
-    deltatime delta16 = elapsed_millis(&timer);
-    render_engine(engine);
-
-    start_timer(&timer);
-    for (int i = 0; i < CLEAR_ITR; i++)
-    {
-        draw_clear_screen_32(&engine->screen, 0xFF00FF00);
-    }
-    deltatime delta32 = elapsed_millis(&timer);
-    render_engine(engine);
-
-    start_timer(&timer);
-    for (int i = 0; i < CLEAR_ITR; i++)
-    {
-        draw_clear_screen_64(&engine->screen, 0xFF0000FFFF0000FF);
+        draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
     }
     deltatime delta64 = elapsed_millis(&timer);
     render_engine(engine);
@@ -165,7 +119,24 @@ void run_32bit_tests()
     destroy_engine(engine);
     printf("Shutdown\n");
 
-    printf("\n16 bit test took %.3fms %i iterations\n", delta16, CLEAR_ITR);
-    printf("32 bit test took %.3fms %i iterations\n", delta32, CLEAR_ITR);
-    printf("64 bit test took %.3fms %i iterations\n\n", delta64, CLEAR_ITR);
+    printf(
+        "16 bit test took %.3fms %i iterations, ave: %.3f\n",
+        delta16, 
+        CLEAR_ITR,
+        delta16 / (deltatime)CLEAR_ITR
+    );
+
+    printf(
+        "32 bit test took %.3fms %i iterations, ave: %.3fms\n",
+        delta32,
+        CLEAR_ITR,
+        delta32 / (deltatime)CLEAR_ITR
+    );
+
+    printf(
+        "64 bit test took %.3fms %i iterations, ave: %.3f\n",
+        delta64,
+        CLEAR_ITR,
+        delta64 / (deltatime)CLEAR_ITR
+    );
 }
