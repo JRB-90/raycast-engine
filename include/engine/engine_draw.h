@@ -3,17 +3,41 @@
 #include "engine_screen.h"
 #include "engine_color.h"
 
-extern void draw_clear_screen16(
+inline void draw_clear_screen16_inline(
 	const screen_buffer* const screen,
-	const uint16_t color
-);
+	const uint16_t color)
+{
+	uint16_t* pix = (uint16_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 1;
 
-extern void draw_clear_screen32(
-	const screen_buffer* const screen,
-	const uint32_t color
-);
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
+}
 
-extern void draw_clear_screen64(
+inline void draw_clear_screen32_inline(
 	const screen_buffer* const screen,
-	const uint64_t color
-);
+	const uint32_t color)
+{
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 2;
+
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
+}
+
+inline void draw_clear_screen64_inline(
+	const screen_buffer* const screen,
+	const uint64_t color)
+{
+	uint64_t* pix = (uint64_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 3;
+
+	for (int i = 0; i < pixCount; i++)
+	{
+		pix[i] = color;
+	}
+}
