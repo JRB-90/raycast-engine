@@ -94,7 +94,7 @@ void run_basic_tests(engine_config config)
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen16(&engine->screen, 0xFFFF);
+        draw_clear_screen16_inline(&engine->screen, 0xFFFF);
     }
     deltatime delta16 = elapsed_millis(&timer);
     render_engine(engine);
@@ -102,7 +102,7 @@ void run_basic_tests(engine_config config)
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
+        draw_clear_screen32_inline(&engine->screen, 0xFFFFFFFF);
     }
     deltatime delta32 = elapsed_millis(&timer);
     render_engine(engine);
@@ -110,7 +110,7 @@ void run_basic_tests(engine_config config)
     start_timer(&timer);
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
+        draw_clear_screen64_inline(&engine->screen, 0xFFFFFFFFFFFFFFFF);
     }
     deltatime delta64 = elapsed_millis(&timer);
     render_engine(engine);
@@ -139,4 +139,9 @@ void run_basic_tests(engine_config config)
         CLEAR_ITR,
         delta64 / (deltatime)CLEAR_ITR
     );
+}
+
+void run_basic_rect_tests(engine_config config)
+{
+    // TODO
 }
