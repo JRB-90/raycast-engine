@@ -49,14 +49,18 @@ inline void draw_filled_rect16(
 	int w, int h)
 {
 	uint16_t* pix = (uint16_t*)screen->pixels;
+	int pixelIndex = (screen->width * y) + x;
+	int offset = screen->width - w;
 
-	for (int j = y; j < y + h; j++)
+	for (int j = 0; j < h; j++)
 	{
-		for (int i = x; i < x + w; i++)
+		for (int i = 0; i < w; i++)
 		{
-			int pixelIndex = (screen->width * j) + i;
 			pix[pixelIndex] = color;
+			pixelIndex++;
 		}
+
+		pixelIndex += offset;
 	}
 }
 
@@ -67,14 +71,18 @@ inline void draw_filled_rect32(
 	int w, int h)
 {
 	uint32_t* pix = (uint32_t*)screen->pixels;
+	int pixelIndex = (screen->width * y) + x;
+	int offset = screen->width - w;
 
-	for (int j = y; j < y + h; j++)
+	for (int j = 0; j < h; j++)
 	{
-		for (int i = x; i < x + w; i++)
+		for (int i = 0; i < w; i++)
 		{
-			int pixelIndex = (screen->width * j) + i;
 			pix[pixelIndex] = color;
+			pixelIndex++;
 		}
+
+		pixelIndex += offset;
 	}
 }
 

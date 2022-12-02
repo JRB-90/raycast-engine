@@ -47,11 +47,11 @@ int main(int argc, char** argv)
         }
     };
 
-    /*printf("\nStarting 16 bpp basic tests\n");
-    run_basic_tests(config16);
+    //printf("\nStarting 16 bpp basic tests\n");
+    //run_basic_tests(config16);
 
-    printf("\nStarting 32 bpp basic tests\n");
-    run_basic_tests(config32);*/
+    //printf("\nStarting 32 bpp basic tests\n");
+    //run_basic_tests(config32);
 
     printf("\nStarting 16 bpp rect tests\n");
     run_basic_rect_tests(config16);
