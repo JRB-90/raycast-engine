@@ -6,8 +6,8 @@ const char* LINE_FILE = "lines.dat";
 const char* RECT_FILE = "rects.dat";
 const int WIDTH = 640;
 const int HEIGHT = 480;
-const int NUM_LINES = 100;
-const int NUM_RECTS = 100;
+const int NUM_LINES = 1000000;
+const int NUM_RECTS = 1000000;
 
 typedef enum {
 	line = 1,
