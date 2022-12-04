@@ -94,7 +94,40 @@ void render_grid_scene()
 {
     draw_clear_screen32(&engine->screen, 0x0000);
 
-    // TODO
+    int x = 0;
+    int y = 0;
+    int size = 5;
+
+    draw_grid32(
+        &engine->screen,
+        0xFF00FF00,
+        x,
+        y,
+        size,
+        64,
+        64
+    );
+
+    for (int j = 0; j < 64; j++)
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            if (scene->world.grid[i][j].type == GRID_WALL)
+            {
+                int posX = x + (i * size);
+                int posY = y + (j * size);
+
+                draw_filled_rect32(
+                    &engine->screen,
+                    0xFF0000FF,
+                    posX + 1,
+                    posY + 1,
+                    size - 1,
+                    size - 1
+                );
+            }
+        }
+    }
 
     render_engine(engine);
 }
