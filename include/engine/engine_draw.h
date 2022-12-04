@@ -95,7 +95,7 @@ inline void draw_unfilled_rect16(
 	int w, int h)
 {
 	uint16_t* pix = (uint16_t*)screen->pixels;
-	int pixelIndex = (screen->width * x) + y;
+	int pixelIndex = (screen->width * y) + x;
 	int offset = h * screen->width;
 
 	for (int i = x; i < x + w; i++)
@@ -105,7 +105,7 @@ inline void draw_unfilled_rect16(
 		pixelIndex++;
 	}
 
-	pixelIndex = (screen->width * x) + y;
+	pixelIndex = (screen->width * y) + x;
 
 	for (int i = y; i < y + h; i++)
 	{
@@ -122,7 +122,7 @@ inline void draw_unfilled_rect32(
 	int w, int h)
 {
 	uint32_t* pix = (uint32_t*)screen->pixels;
-	int pixelIndex = (screen->width * x) + y;
+	int pixelIndex = (screen->width * y) + x;
 	int offset = h * screen->width;
 
 	for (int i = x; i < x + w; i++)
@@ -132,7 +132,7 @@ inline void draw_unfilled_rect32(
 		pixelIndex++;
 	}
 
-	pixelIndex = (screen->width * x) + y;
+	pixelIndex = (screen->width * y) + x;
 
 	for (int i = y; i < y + h; i++)
 	{
