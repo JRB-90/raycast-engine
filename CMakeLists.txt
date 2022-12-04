@@ -18,7 +18,7 @@ if(MSVC)
     endif()
 elseif (UNIX)
     message("Using GCC compiler")
-    add_compile_options(-Wall)
+    add_compile_options(-Wall -lm)
     
     if(RPI)
         message("RPI subsystem selected")

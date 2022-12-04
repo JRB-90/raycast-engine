@@ -11,11 +11,13 @@ const int SWIDTH = 640;
 const int SHEIGHT = 480;
 const int CLEAR_ITR = 1000;
 const int RECT_ITR = 10000;
+const int LINE_ITR = 10000;
 
 void sig_handler(int signum);
 void cleanup(int status);
 void run_basic_tests(engine_config config);
 void run_basic_rect_tests(engine_config config);
+void run_basic_line_tests(engine_config config);
 
 rayengine* engine;
 
@@ -53,11 +55,21 @@ int main(int argc, char** argv)
     //printf("\nStarting 32 bpp basic tests\n");
     //run_basic_tests(config32);
 
-    printf("\nStarting 16 bpp rect tests\n");
-    run_basic_rect_tests(config16);
+    //printf("\nStarting 16 bpp rect tests\n");
+    //run_basic_rect_tests(config16);
 
-    printf("\nStarting 32 bpp rect tests\n");
-    run_basic_rect_tests(config32);
+    //printf("\nStarting 32 bpp rect tests\n");
+    //run_basic_rect_tests(config32);
+
+    //printf("\nStarting 16 bpp line tests\n");
+    //run_basic_line_tests(config16);
+
+    //printf("\nStarting 32 bpp line tests\n");
+    //run_basic_line_tests(config32);
+
+
+
+
 
     printf("\n====== Tests complete ======\n");
     getchar();
@@ -262,5 +274,74 @@ void run_basic_rect_tests(engine_config config)
         unfilledDelta,
         RECT_ITR,
         unfilledDelta / (deltatime)RECT_ITR
+    );
+}
+
+void run_basic_line_tests(engine_config config)
+{
+    printf("Initialising engine...\n");
+
+    engine = init_engine(&config);
+    if (engine == NULL)
+    {
+        fprintf(stderr, "Failed to init engine, shutting down...\n");
+        cleanup(EXIT_FAILURE);
+    }
+
+    printf("Initialised\n");
+
+    clktimer timer;
+    deltatime delta = 0;
+
+    if (config.format.format == CF_RGB565)
+    {
+        draw_clear_screen16(&engine->screen, 0xFFFF);
+        render_engine(engine);
+
+        for (int i = 0; i < LINE_ITR; i++)
+        {
+            start_timer(&timer);
+
+            draw_line16(
+                &engine->screen,
+                0b1111100000000000,
+                200, 200,
+                180, 100
+            );
+
+            delta += elapsed_millis(&timer);
+            render_engine(engine);
+        }
+    }
+    else if (config.format.format == CF_ARGB)
+    {
+        draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
+        render_engine(engine);
+
+        for (int i = 0; i < LINE_ITR; i++)
+        {
+            start_timer(&timer);
+
+            draw_line32(
+                &engine->screen,
+                0b1111100000000000,
+                200, 200,
+                180, 100
+            );
+
+            delta += elapsed_millis(&timer);
+            render_engine(engine);
+        }
+    }
+
+    printf("Shutting down engine...\n");
+    destroy_engine(engine);
+    printf("Shutdown\n");
+
+    printf(
+        "Line took %.3fms %i iterations, ave: %.3fms\n",
+        delta,
+        LINE_ITR,
+        delta / (deltatime)LINE_ITR
     );
 }

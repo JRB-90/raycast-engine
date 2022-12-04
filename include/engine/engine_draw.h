@@ -2,6 +2,8 @@
 
 #include "engine_screen.h"
 #include "engine_color.h"
+#include "engine_math.h"
+#include <inttypes.h>
 
 inline void draw_clear_screen16(
 	const screen_buffer* const screen,
@@ -139,3 +141,21 @@ inline void draw_unfilled_rect32(
 		pixelIndex += screen->width;
 	}
 }
+
+extern void draw_line16(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x1,
+	int y1,
+	int x2,
+	int y2
+);
+
+extern void draw_line32(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x1,
+	int y1,
+	int x2,
+	int y2
+);
