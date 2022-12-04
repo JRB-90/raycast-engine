@@ -15,8 +15,8 @@ const int SHEIGHT = 480;
 const int CLEAR_ITR = 1000;
 const int LINE_ITR = 10000;
 const int RECT_ITR = 10000;
-const char* LINE_FILE = "../../src/shapefilegen/lines.dat";
-const char* RECT_FILE = "../../src/shapefilegen/rects.dat";
+const char* LINE_FILE = "shapefiles/lines.dat";
+const char* RECT_FILE = "shapefiles/rects.dat";
 
 typedef enum {
     line = 1,

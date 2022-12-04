@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(PROJECT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(PROJECT_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 project(raycast
     VERSION 0.1

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-const char* LINE_FILE = "lines.dat";
-const char* RECT_FILE = "rects.dat";
+const char* LINE_FILE = "../../../../data/shapefiles/lines.dat";
+const char* RECT_FILE = "../../../../data/shapefiles/rects.dat";
 const int WIDTH = 640;
 const int HEIGHT = 480;
 const int NUM_LINES = 1000000;

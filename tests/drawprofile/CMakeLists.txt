@@ -33,3 +33,11 @@ else()
 		"No subsystem implementation configured, cannot configure"
 	)
 endif()
+
+add_custom_command(
+	TARGET drawprofile POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/shapefiles
+        ${CMAKE_CURRENT_BINARY_DIR}/shapefiles
+)
