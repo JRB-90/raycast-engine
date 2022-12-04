@@ -6,7 +6,7 @@ const char* LINE_FILE = "lines.dat";
 const char* RECT_FILE = "rects.dat";
 const int WIDTH = 640;
 const int HEIGHT = 480;
-const int NUM_RECTS = 100;
+const int NUM_LINES = 100;
 const int NUM_RECTS = 100;
 
 typedef enum {
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 	srand(time(NULL));
 
-	for (int i = 0; i < NUM_RECTS; i++)
+	for (int i = 0; i < NUM_LINES; i++)
 	{
 		write_4param_data(
 			lineFile,
@@ -51,6 +51,38 @@ int main(int argc, char** argv)
 	}
 
 	fclose(lineFile);
+
+	printf("Generating new rect positions...\n");
+
+	FILE* rectFile = fopen(RECT_FILE, "w+");
+
+	if (rectFile == NULL)
+	{
+		fprintf(stderr, "Failed to create/open lines file, now exiting...\n");
+		getchar();
+		exit(EXIT_FAILURE);
+	}
+
+	srand(time(NULL));
+
+	for (int i = 0; i < NUM_RECTS; i++)
+	{
+		int x = rand() % WIDTH;
+		int w = rand() % (WIDTH - x);
+		int y = rand() % HEIGHT;
+		int h = rand() % (HEIGHT - y);
+
+		write_4param_data(
+			rectFile,
+			(int)rect,
+			x,
+			y,
+			w,
+			h
+		);
+	}
+
+	fclose(rectFile);
 
 	printf("Generation complete\n");
 
