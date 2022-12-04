@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include "engine_screen.h"
 
 typedef struct {
     bool quit;
@@ -14,4 +15,25 @@ typedef struct {
     bool toggleRenderMode;
 } input_state;
 
+typedef enum {
+    ENGINE_GRID,
+    // TODO - As different types of engine are developed,
+    //        add in here (grid, 2.5d, 3d etc)
+} engine_type;
+
+typedef struct {
+    engine_type type;
+    screen_format format;
+} engine_config;
+
+typedef struct {
+    engine_config config;
+    screen_buffer screen;
+    input_state input;
+} rayengine;
+
 input_state blank_input_state();
+rayengine *init_engine(const engine_config *const config);
+void destroy_engine(rayengine *engine);
+int update_engine(rayengine* engine);
+int render_engine(rayengine* engine);

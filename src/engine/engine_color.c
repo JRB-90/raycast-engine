@@ -12,3 +12,21 @@ int to_bpp(const colformat colorFormat)
         return -1;
     }
 }
+
+col_rgb565 to_rgb565(const color* const color)
+{
+    uint16_t r = (color->r >> 3) << 11;
+    uint16_t g = (color->g >> 2) << 5;
+    uint16_t b = (color->b >> 3);
+
+    return r | g | b;
+}
+
+col_argb to_argb(const color* const color)
+{
+    return
+        ((uint32_t)color->a << 24) |
+        ((uint32_t)color->r << 16) |
+        ((uint32_t)color->g << 8) |
+        ((uint32_t)color->b);
+}
