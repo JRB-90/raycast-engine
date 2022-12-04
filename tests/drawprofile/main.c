@@ -68,26 +68,23 @@ int main(int argc, char** argv)
         }
     };
 
-    //printf("\nStarting 16 bpp basic tests\n");
-    //run_basic_tests(config16);
+    printf("\nStarting 16 bpp basic tests\n");
+    run_basic_tests(config16);
 
-    //printf("\nStarting 32 bpp basic tests\n");
-    //run_basic_tests(config32);
+    printf("\nStarting 32 bpp basic tests\n");
+    run_basic_tests(config32);
 
-    //printf("\nStarting 16 bpp line basic tests\n");
-    //run_basic_line_tests(config16);
+    printf("\nStarting 16 bpp line basic tests\n");
+    run_basic_line_tests(config16);
 
-    //printf("\nStarting 32 bpp line basic tests\n");
-    //run_basic_line_tests(config32);
+    printf("\nStarting 32 bpp line basic tests\n");
+    run_basic_line_tests(config32);
 
-    //printf("\nStarting 16 bpp rect basic tests\n");
-    //run_basic_rect_tests(config16);
+    printf("\nStarting 16 bpp rect basic tests\n");
+    run_basic_rect_tests(config16);
 
-    //printf("\nStarting 32 bpp rect basic tests\n");
-    //run_basic_rect_tests(config32);
-
-
-
+    printf("\nStarting 32 bpp rect basic tests\n");
+    run_basic_rect_tests(config32);
 
     printf("\nStarting 16 bpp line file tests\n");
     run_file_line_tests(config16);
