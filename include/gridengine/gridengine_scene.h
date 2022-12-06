@@ -2,9 +2,13 @@
 
 #include "engine_color.h"
 
+#define SCENE_WIDTH 64
+#define SCENE_HEIGHT 64
+
 typedef enum {
 	GRID_FLOOR,
-	GRID_WALL
+	GRID_WALL,
+	GRID_PSPAWN
 } grid_object_type;
 
 typedef struct {
