@@ -81,8 +81,7 @@ int main(int argc, char** argv)
         cleanup(EXIT_FAILURE);
     }
 
-    draw_clear_screen32(&engine->screen, 0x0000);
-    render_engine(engine);
+    render_grid_scene();
 
     input_state input = blank_input_state();
 
