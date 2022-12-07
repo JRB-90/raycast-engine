@@ -7,6 +7,7 @@
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
 #include "gridengine/gridengine_scene.h"
+#include "gridengine/gridengine_render.h"
 #include "time/time_helper.h"
 
 const colformat SFORMAT = CF_ARGB;
@@ -15,15 +16,6 @@ const int SHEIGHT = 480;
 const int SSIZE = 5;
 const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 20;
-
-typedef struct {
-    int x;
-    int y;
-    int scale;
-} map_pos;
-
-color wallColor;
-color pspawnColor;
 
 rayengine* engine;
 grid_scene* scene;
@@ -36,12 +28,7 @@ void sig_handler(int signum);
 void cleanup(int status);
 void build_test_scene();
 void move_map();
-void render_grid_scene();
-void render_tile(
-    const int row,
-    const int col,
-    const color const* color
-);
+void render_scene();
 
 int main(int argc, char** argv)
 {
@@ -49,9 +36,6 @@ int main(int argc, char** argv)
     scene = NULL;
 
     signal(SIGINT, sig_handler);
-
-    wallColor = to_col(255, 32, 32, 56);
-    pspawnColor = to_col(255, 32, 128, 32);
 
     mapPosition = (map_pos)
     {
@@ -79,11 +63,10 @@ int main(int argc, char** argv)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
-    render_grid_scene();
-
-    input_state input = blank_input_state();
+    render_scene();
 
     while (!engine->input.quit)
     {
@@ -94,7 +77,7 @@ int main(int argc, char** argv)
         {
             clktimer timer;
             start_timer(&timer);
-            render_grid_scene();
+            render_scene();
             deltatime delta = elapsed_millis(&timer);
             printf("Map render took %.3fms\n", delta);
         }
@@ -201,67 +184,12 @@ void move_map()
     }
 }
 
-void render_grid_scene()
+void render_scene()
 {
-    draw_clear_screen32(&engine->screen, to_argb(&scene->floorCol));
-
-    for (int j = 0; j < SCENE_HEIGHT; j++)
-    {
-        for (int i = 0; i < SCENE_WIDTH; i++)
-        {
-            if (scene->world.grid[i][j].type == GRID_WALL)
-            {
-                render_tile(i, j, &wallColor);
-            }
-            else if (scene->world.grid[i][j].type == GRID_PSPAWN)
-            {
-                render_tile(i, j, &pspawnColor);
-            }
-        }
-    }
-
-    if (drawGrid)
-    {
-        draw_grid32(
-            &engine->screen,
-            0xFF565656,
-            mapPosition.x,
-            mapPosition.y,
-            mapPosition.scale,
-            SCENE_WIDTH,
-            SCENE_HEIGHT
-        );
-    }
-
-    render_engine(engine);
-}
-
-void render_tile(
-    const int col, 
-    const int row,
-    const color const* color)
-{
-    int posX = mapPosition.x + (col * mapPosition.scale);
-    int posY = mapPosition.y + (row * mapPosition.scale);
-
-    if (posX < 0 ||
-        posX >= SWIDTH - mapPosition.scale)
-    {
-        return;
-    }
-
-    if (posY < 0 ||
-        posY >= SHEIGHT - mapPosition.scale)
-    {
-        return;
-    }
-
-    draw_filled_rect32(
-        &engine->screen,
-        to_argb(color),
-        posX,
-        posY,
-        mapPosition.scale,
-        mapPosition.scale
+    render_grid_scene(
+        engine,
+        scene,
+        &mapPosition,
+        drawGrid
     );
 }

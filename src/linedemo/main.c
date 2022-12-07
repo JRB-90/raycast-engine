@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 {
     engine = NULL;
     signal(SIGINT, sig_handler);
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 
     engine_config config16 =
     {
@@ -96,6 +96,7 @@ int main(int argc, char** argv)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     draw_clear_screen32(&engine->screen, 0x0000);

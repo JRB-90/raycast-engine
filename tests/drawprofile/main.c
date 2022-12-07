@@ -39,6 +39,7 @@ void run_file_line_tests(engine_config config);
 void run_file_rect_tests(engine_config config);
 
 rayengine* engine;
+param_4 params[LINES_TO_READ];
 
 int main(int argc, char** argv)
 {
@@ -99,7 +100,7 @@ int main(int argc, char** argv)
     run_file_rect_tests(config32);
 
     printf("\n====== Tests complete ======\n");
-    getchar();
+    int c = getchar();
     exit(EXIT_SUCCESS);
 }
 
@@ -132,6 +133,7 @@ void run_basic_tests(engine_config config)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     printf("Initialised\n");
@@ -200,6 +202,7 @@ void run_basic_line_tests(engine_config config)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     printf("Initialised\n");
@@ -269,6 +272,7 @@ void run_basic_rect_tests(engine_config config)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     printf("Initialised\n");
@@ -377,14 +381,15 @@ void run_file_line_tests(engine_config config)
 {
     printf("Reading line file...\n");
 
-    FILE* file = fopen(LINE_FILE, "r");
-    if (file == NULL)
+    FILE* file = NULL;
+    int err = fopen_s(&file, LINE_FILE, "r");
+
+    if (err != 0)
     {
         fprintf(stderr, "Failed to open line file, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-
-    param_4 params[LINES_TO_READ];
 
     for (int i = 0; i < LINES_TO_READ; i++)
     {
@@ -429,6 +434,7 @@ void run_file_line_tests(engine_config config)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     printf("Initialised\n");
@@ -493,14 +499,15 @@ void run_file_rect_tests(engine_config config)
 {
     printf("Reading rect file...\n");
 
-    FILE* file = fopen(RECT_FILE, "r");
-    if (file == NULL)
+    FILE* file = NULL;
+    int err = fopen_s(&file, RECT_FILE, "r");
+
+    if (err != 0)
     {
         fprintf(stderr, "Failed to open rect file, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-
-    param_4 params[RECTS_TO_READ];
 
     for (int i = 0; i < RECTS_TO_READ; i++)
     {
@@ -545,6 +552,7 @@ void run_file_rect_tests(engine_config config)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     printf("Initialised\n");

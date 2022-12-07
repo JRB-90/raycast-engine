@@ -27,16 +27,17 @@ int main(int argc, char** argv)
 {
 	printf("Generating new line positions...\n");
 
-	FILE* lineFile = fopen(LINE_FILE, "w+");
+	FILE* lineFile = NULL;
+	int err = fopen_s(&lineFile, LINE_FILE, "r");
 
-	if (lineFile == NULL)
+	if (err != 0)
 	{
 		fprintf(stderr, "Failed to create/open lines file, now exiting...\n");
-		getchar();
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	for (int i = 0; i < NUM_LINES; i++)
 	{
@@ -54,16 +55,17 @@ int main(int argc, char** argv)
 
 	printf("Generating new rect positions...\n");
 
-	FILE* rectFile = fopen(RECT_FILE, "w+");
+	FILE* rectFile = NULL;
+	err = fopen_s(&rectFile, RECT_FILE, "r");
 
-	if (rectFile == NULL)
+	if (err != 0)
 	{
-		fprintf(stderr, "Failed to create/open lines file, now exiting...\n");
-		getchar();
+		fprintf(stderr, "Failed to create/open rect file, now exiting...\n");
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	for (int i = 0; i < NUM_RECTS; i++)
 	{
@@ -86,7 +88,7 @@ int main(int argc, char** argv)
 
 	printf("Generation complete\n");
 
-	getchar();
+	int c = getchar();
 
 	return EXIT_SUCCESS;
 }

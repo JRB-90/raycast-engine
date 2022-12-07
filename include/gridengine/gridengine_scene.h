@@ -17,15 +17,27 @@ typedef struct {
 } grid_object;
 
 typedef struct {
-	grid_object grid[64][64];
+	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
 } world_grid;
+
+typedef struct {
+	color floorCol;
+	color ceilingCol;
+	color wallCol;
+	color pSpawnCol;
+} scene_cols;
 
 typedef struct {
 	char name[64];
 	world_grid world;
-	color floorCol;
-	color ceilingCol;
+	scene_cols colors;
 } grid_scene;
 
-grid_scene* create_scene(const char const* name);
+typedef struct {
+	int x;
+	int y;
+	int scale;
+} map_pos;
+
+grid_scene* create_scene(const char *const name);
 void destroy_scene(grid_scene* scene);

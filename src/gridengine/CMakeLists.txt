@@ -8,7 +8,7 @@ project(gridengine
 
 add_library(gridengine STATIC
     gridengine_scene.c
-)
+ "gridengine_render.c")
 
 target_include_directories(gridengine PUBLIC
 	"${PROJECT_INCLUDE_DIR}/gridengine"
