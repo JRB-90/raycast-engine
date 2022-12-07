@@ -1,5 +1,18 @@
 #include "engine_color.h"
 
+color to_col(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+{
+    color c =
+    {
+        .a = a,
+        .r = r,
+        .g = g,
+        .b = b
+    };
+
+    return c;
+}
+
 int to_bpp(const colformat colorFormat)
 {
     switch (colorFormat)

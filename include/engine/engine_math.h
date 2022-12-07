@@ -23,10 +23,10 @@ static inline int Sign(int value)
 
 static inline float ToRad(float deg)
 {
-	return (deg * M_PI) / 180.0;
+	return (deg * (float)M_PI) / 180.0f;
 }
 
 static inline float ToDeg(float rad)
 {
-	return (rad * 180.0) / M_PI;
+	return (rad * 180.0f) / (float)M_PI;
 }

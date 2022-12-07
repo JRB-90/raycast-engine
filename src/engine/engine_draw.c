@@ -175,3 +175,52 @@ void draw_line32(
 		}
 	}
 }
+
+void draw_grid32(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int startX,
+	int startY,
+	int gridSize,
+	int cols,
+	int rows)
+{
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	int endX = startX + (gridSize * cols);
+	int endY = startY + (gridSize * rows);
+	int pixelIndex = 0;
+	int lineCount = 0;
+
+	for (int j = startY; j <= endY; j++)
+	{
+		if (j >= 0 && j < screen->height)
+		{
+			pixelIndex = (screen->width * j) + startX;
+
+			if (lineCount % gridSize == 0)
+			{
+				for (int i = startX; i <= endX; i++)
+				{
+					if (i >= 0 && i < screen->width)
+					{
+						pix[pixelIndex] = color;
+					}
+					pixelIndex++;
+				}
+			}
+			else
+			{
+				for (int i = startX; i <= endX; i += gridSize)
+				{
+					if (i >= 0 && i < screen->width)
+					{
+						pix[pixelIndex] = color;
+					}
+					pixelIndex += gridSize;
+				}
+			}
+		}
+
+		lineCount++;
+	}
+}

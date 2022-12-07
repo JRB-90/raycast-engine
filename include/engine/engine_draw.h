@@ -159,3 +159,13 @@ extern void draw_line32(
 	int x2,
 	int y2
 );
+
+extern void draw_grid32(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int startX,
+	int startY,
+	int gridSize,
+	int cols,
+	int rows
+);
