@@ -1,6 +1,6 @@
 #include "engine_subsystems.h"
 #include "engine_screen.h"
-#include "engine_logic.h"
+#include "engine_rayengine.h"
 #include "SDL.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -139,7 +139,7 @@ int render_screen(screen_buffer* const screen)
         return -1;
     }
 
-    memcpy(texturePixels, screen->pixels, pitch * screen->height);
+    memcpy(texturePixels, screen->pixels, (size_t)pitch * (size_t)screen->height);
 
     SDL_UnlockTexture(display.texture);
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "engine_subsystems.h"
-#include "engine_logic.h"
+#include "engine_rayengine.h"
 #include "time_helper.h"
 
 int main(int argc, char** argv)
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	if (init_render_subsystem(&sformat, &screen))
 	{
 		fprintf(stderr, "Failed to init render subsystem, exiting...");
-		getchar();
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 #endif // _USE_SDL
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	if (init_input_subsystem())
 	{
 		fprintf(stderr, "Failed to init input subsystem, exiting...");
-		getchar();
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 #ifdef _USE_SDL
 			destroy_render_subsystem(&screen);
 #endif // _USE_SDL
-			getchar();
+			int c = getchar();
 			exit(EXIT_FAILURE);
 		}
 
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	if (destroy_input_subsystem())
 	{
 		fprintf(stderr, "Failed to destroy input subsystem, exiting...");
-		getchar();
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 
@@ -72,12 +72,12 @@ int main(int argc, char** argv)
 	if (destroy_render_subsystem(&screen))
 	{
 		fprintf(stderr, "Failed to destroy render subsystem, exiting...");
-		getchar();
+		int c = getchar();
 		exit(EXIT_FAILURE);
 	}
 #endif // _USE_SDL
 
 	printf("Input subsystem destroyed\n");
 	printf("Test complete\n");
-	getchar();
+	int c = getchar();
 }

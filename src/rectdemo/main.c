@@ -4,7 +4,7 @@
 #include <time.h>
 #include <inttypes.h>
 #include <stdbool.h>
-#include "engine_logic.h"
+#include "engine_rayengine.h"
 #include "engine_screen.h"
 #include "engine_draw.h"
 #include "engine_color.h"
@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
         cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     draw_clear_screen16(&engine->screen, 0x00);

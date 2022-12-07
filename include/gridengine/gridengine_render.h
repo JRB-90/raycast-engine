@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gridengine_scene.h"
-#include "engine_logic.h"
+#include "engine_rayengine.h"
 #include <stdbool.h>
 
 void render_grid_scene(

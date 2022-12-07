@@ -9,7 +9,7 @@ project(engine
 add_library(engine STATIC
     engine_screen.c
 	engine_color.c
-	engine_logic.c
+	"engine_rayengine.c"
     engine_draw.c
 	engine_math.c
 )
