@@ -100,6 +100,11 @@ static inline frame2d to_frame2d(float x, float y, float theta)
 	return frame;
 }
 
+extern vec2d calc_forwards(
+	const frame2d* const frame, 
+	const vec2d* const worldForward
+);
+
 static inline int get_sign(int value)
 {
 	if (value < 0)

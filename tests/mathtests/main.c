@@ -35,8 +35,13 @@ int main(int argc, char** argv)
 	v3 = norm_vec(&v2);
 	print_vec2d(&v3);
 
-	frame2d f1 = to_frame2d(0.3f, 0.4f, 0.5f);
+	frame2d f1 = to_frame2d(0.3f, 0.4f, to_rad(90.0f));
 	print_frame2d(&f1);
+
+	vec2d fwd = to_vec2d(0.0f, 1.0f);
+
+	vec2d vf1 = calc_forwards(&f1, &fwd);
+	print_vec2d(&vf1);
 
 	printf("\nTests complete\n");
 	int c = getchar();

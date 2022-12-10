@@ -17,6 +17,21 @@ vec2d norm_vec(const vec2d* const vec)
 	return normalisedVec;
 }
 
+vec2d calc_forwards(
+	const frame2d* const frame,
+	const vec2d* const worldForward)
+{
+	vec2d lookVector =
+	{
+		.x = (worldForward->x * cos(frame->theta)) - (worldForward->y * sin(frame->theta)),
+		.y = (worldForward->y * cos(frame->theta)) + (worldForward->x * sin(frame->theta))
+	};
+
+	lookVector = norm_vec(&lookVector);
+
+	return lookVector;
+}
+
 void print_vec2d(const vec2d* const vec)
 {
 	printf("vec2d [%.3f, %.3f]\n", vec->x, vec->y);
