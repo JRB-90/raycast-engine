@@ -1,6 +1,6 @@
-#include "gridengine_render.h"
+#include "gridengine/gridengine_render.h"
 
-#include "engine_draw.h"
+#include "engine/engine_draw.h"
 
 void render_tile(
     const rayengine* const engine,

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "engine_color.h"
+#include "engine/engine_color.h"
+#include "engine/engine_math.h"
 
 #define SCENE_WIDTH 64
 #define SCENE_HEIGHT 64

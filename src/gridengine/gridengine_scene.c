@@ -1,4 +1,4 @@
-#include "gridengine_scene.h"
+#include "gridengine/gridengine_scene.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

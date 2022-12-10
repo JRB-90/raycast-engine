@@ -43,6 +43,10 @@ int main(int argc, char** argv)
 	vec2d vf1 = calc_forwards(&f1, &fwd);
 	print_vec2d(&vf1);
 
+	f1.theta = to_rad(360.0f);
+	vf1 = calc_forwards(&f1, &fwd);
+	print_vec2d(&vf1);
+
 	printf("\nTests complete\n");
 	int c = getchar();
 	exit(EXIT_SUCCESS);
