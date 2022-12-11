@@ -13,9 +13,10 @@
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
-const int SSIZE = 15;
+const int SSIZE = 30;
 const int GRID_MIN_SIZE = 4;
-const int GRID_MAX_SIZE = 20;
+const int GRID_MAX_SIZE = 30;
+const float ROT_AMT = 0.001f;
 
 rayengine* engine;
 grid_scene* scene;
@@ -129,11 +130,23 @@ void move_map()
 {
     if (engine->input.rotLeft)
     {
-        mapPosition.x--;
+        scene->player.position.theta += ROT_AMT;
         shouldRender = true;
     }
 
     if (engine->input.rotRight)
+    {
+        scene->player.position.theta -= ROT_AMT;
+        shouldRender = true;
+    }
+
+    if (engine->input.left)
+    {
+        mapPosition.x--;
+        shouldRender = true;
+    }
+
+    if (engine->input.right)
     {
         mapPosition.x++;
         shouldRender = true;
@@ -193,10 +206,17 @@ void render_scene()
         drawGrid
     );
 
+    render_grid_rays(
+        engine,
+        scene,
+        &mapPosition,
+        &scene->player
+    );
+
     render_grid_player(
         engine,
-        &scene->player,
-        &mapPosition
+        &mapPosition,
+        &scene->player
     );
 
     render_engine(engine);

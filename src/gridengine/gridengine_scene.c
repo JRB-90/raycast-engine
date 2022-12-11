@@ -19,13 +19,15 @@ grid_scene* create_scene(const char *const name)
 	scene->colors.ceilingCol = to_col(255, 32, 32, 128);
 	scene->colors.wallCol = to_col(255, 32, 32, 56);
 	scene->colors.pSpawnCol = to_col(255, 32, 128, 32);
+	scene->colors.rayCol = to_col(255, 255, 0, 255);
+	scene->colors.intersectCol = to_col(255, 0, 255, 0);
 
 	scene->player.playerCol = to_col(255, 255, 0, 0);
 	scene->player.position = 
 		to_frame2d(
-			(SCENE_WIDTH / 2) + 0.5, 
-			(SCENE_HEIGHT / 2) + 0.5, 
-			0
+			(SCENE_WIDTH / 2) + 0.5f, 
+			(SCENE_HEIGHT / 2) + 0.5f, 
+			to_rad(180.0f)
 		);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)

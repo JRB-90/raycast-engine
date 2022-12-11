@@ -31,6 +31,8 @@ typedef struct {
 	color ceilingCol;
 	color wallCol;
 	color pSpawnCol;
+	color rayCol;
+	color intersectCol;
 } scene_cols;
 
 typedef struct {
@@ -48,3 +50,4 @@ typedef struct {
 
 grid_scene* create_scene(const char *const name);
 void destroy_scene(grid_scene* scene);
+// TODO - Project ray algo

@@ -13,6 +13,13 @@ void render_grid_scene(
 
 void render_grid_player(
     const rayengine* const engine,
-    const player_obj* const player,
-    const map_pos* const mapPosition
+    const map_pos* const mapPosition,
+    const player_obj* const player
+);
+
+void render_grid_rays(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const map_pos* const mapPosition,
+    const player_obj* const player
 );
