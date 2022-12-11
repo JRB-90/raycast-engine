@@ -2,6 +2,12 @@
 
 #include "engine/engine_draw.h"
 
+const static vec2d WORLD_FWD =
+{
+    .x = 0.0f,
+    .y = -1.0f
+};
+
 void render_tile(
     const rayengine* const engine,
     const map_pos* const mapPosition,
@@ -11,7 +17,7 @@ void render_tile(
 );
 
 void render_grid_scene(
-    rayengine* const engine,
+    const rayengine* const engine,
     const grid_scene *const scene,
     const map_pos* const mapPosition,
     bool drawGrid)
@@ -60,8 +66,6 @@ void render_grid_scene(
             SCENE_HEIGHT
         );
     }
-
-    render_engine(engine);
 }
 
 void render_tile(
@@ -93,5 +97,41 @@ void render_tile(
         posY,
         mapPosition->scale,
         mapPosition->scale
+    );
+}
+
+void render_grid_player(
+    const rayengine* const engine,
+    const player_obj* const player,
+    const map_pos* const mapPosition)
+{
+    int posX = mapPosition->x + (player->position.x * mapPosition->scale);
+    int posY = mapPosition->y + (player->position.y * mapPosition->scale);
+    int size = mapPosition->scale * 0.3;
+
+    vec2d forward =
+        calc_forwards(
+            &player->position,
+            &WORLD_FWD
+        );
+
+    vec2d arrow = mul_vec(&forward, 12);
+
+    draw_line32(
+        &engine->screen,
+        to_argb(&player->playerCol),
+        posX,
+        posY,
+        posX + arrow.x,
+        posY + arrow.y
+    );
+
+    draw_filled_rect32(
+        &engine->screen,
+        to_argb(&player->playerCol),
+        posX - size + 1,
+        posY - size + 1,
+        size * 2,
+        size * 2
     );
 }

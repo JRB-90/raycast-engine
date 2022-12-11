@@ -13,6 +13,11 @@ typedef enum {
 } grid_object_type;
 
 typedef struct {
+	frame2d position;
+	color playerCol;
+} player_obj;
+
+typedef struct {
 	grid_object_type type;
 	int textureID;
 } grid_object;
@@ -31,6 +36,7 @@ typedef struct {
 typedef struct {
 	char name[64];
 	world_grid world;
+	player_obj player;
 	scene_cols colors;
 } grid_scene;
 

@@ -192,4 +192,6 @@ void render_scene()
         &mapPosition,
         drawGrid
     );
+
+    render_engine(engine);
 }

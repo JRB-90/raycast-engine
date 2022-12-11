@@ -13,7 +13,7 @@
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
-const int SSIZE = 5;
+const int SSIZE = 15;
 const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 20;
 
@@ -193,9 +193,11 @@ void render_scene()
         drawGrid
     );
 
-    // TODO
-    /*render_player(
+    render_grid_player(
         engine,
-        scene,
-    );*/
+        &scene->player,
+        &mapPosition
+    );
+
+    render_engine(engine);
 }
