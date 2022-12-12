@@ -159,8 +159,8 @@ void render_grid_rays(
     int side;
 
     vec2d ray = calc_forwards(&player->position, &WORLD_FWD);
-    float deltaDistX = abs(1.0 / ray.x);
-    float deltaDistY = abs(1.0 / ray.y);
+    float deltaDistX = fabs(1.0 / ray.x);
+    float deltaDistY = fabs(1.0 / ray.y);
 
     if (ray.x < 0)
     {
@@ -241,8 +241,6 @@ void render_grid_rays(
             3,
             3
         );
-
-        printf("Wall distance: %.3f\n", wallDistance);
     }
 
     int test = 0;
