@@ -13,9 +13,10 @@
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
-const int SSIZE = 5;
+const int SSIZE = 30;
 const int GRID_MIN_SIZE = 4;
-const int GRID_MAX_SIZE = 20;
+const int GRID_MAX_SIZE = 30;
+const float ROT_AMT = 0.005f;
 
 rayengine* engine;
 grid_scene* scene;
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Test Grid Scene");
+    scene = create_scene("Map drawing test scene");
     build_test_scene();
 
     engine_config config =
@@ -68,25 +69,42 @@ int main(int argc, char** argv)
 
     render_scene();
 
+    clktimer timer;
+    deltatime totalTime = (deltatime)0.0;
+    int renderCount = 0;
+
     while (!engine->input.quit)
     {
         update_engine(engine);
         move_map();
-        
+
         if (shouldRender)
         {
-            clktimer timer;
             start_timer(&timer);
+
             render_scene();
+
             deltatime delta = elapsed_millis(&timer);
             printf("Map render took %.3fms\n", delta);
+            totalTime += delta;
+            renderCount++;
+
+            render_engine(engine);
         }
 
         shouldRender = false;
         sleep_millis(1);
     }
 
-    cleanup(EXIT_SUCCESS);
+    destroy_engine(engine);
+    destroy_scene(scene);
+
+    sleep_millis(500);
+    float aveRenderTime = totalTime / (deltatime)renderCount;
+    printf("\nAverage render time: %.3f\n", aveRenderTime);
+    int c = getchar();
+
+    exit(EXIT_SUCCESS);
 }
 
 void sig_handler(int signum)
@@ -123,31 +141,55 @@ void build_test_scene()
     scene->world.grid[32][28].type = GRID_WALL;
     scene->world.grid[33][28].type = GRID_WALL;
     scene->world.grid[34][28].type = GRID_WALL;
+
+    scene->world.grid[35][25].type = GRID_WALL;
+    scene->world.grid[36][25].type = GRID_WALL;
+    scene->world.grid[37][25].type = GRID_WALL;
+
+    scene->world.grid[36][28].type = GRID_WALL;
+    scene->world.grid[36][29].type = GRID_WALL;
+    scene->world.grid[36][31].type = GRID_WALL;
 }
 
 void move_map()
 {
     if (engine->input.rotLeft)
     {
-        mapPosition.x--;
+        scene->player.position.theta -= ROT_AMT;
         shouldRender = true;
     }
 
     if (engine->input.rotRight)
     {
+        scene->player.position.theta += ROT_AMT;
+        shouldRender = true;
+    }
+
+    if (engine->input.left)
+    {
         mapPosition.x++;
+        scene->player.position.x -= 1.0f / mapPosition.scale;
+        shouldRender = true;
+    }
+
+    if (engine->input.right)
+    {
+        mapPosition.x--;
+        scene->player.position.x += 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
     if (engine->input.forwards)
     {
-        mapPosition.y--;
+        mapPosition.y++;
+        scene->player.position.y -= 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
     if (engine->input.backwards)
     {
-        mapPosition.y++;
+        mapPosition.y--;
+        scene->player.position.y += 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
@@ -155,7 +197,7 @@ void move_map()
     {
         shouldRender = true;
         mapPosition.scale--;
-        
+
         if (mapPosition.scale < GRID_MIN_SIZE)
         {
             mapPosition.scale = GRID_MIN_SIZE;
@@ -171,7 +213,7 @@ void move_map()
     {
         shouldRender = true;
         mapPosition.scale++;
-        
+
         if (mapPosition.scale > GRID_MAX_SIZE)
         {
             mapPosition.scale = GRID_MAX_SIZE;
@@ -191,6 +233,19 @@ void render_scene()
         scene,
         &mapPosition,
         drawGrid
+    );
+
+    render_grid_rays(
+        engine,
+        scene,
+        &mapPosition,
+        &scene->player
+    );
+
+    render_grid_player(
+        engine,
+        &mapPosition,
+        &scene->player
     );
 
     render_engine(engine);

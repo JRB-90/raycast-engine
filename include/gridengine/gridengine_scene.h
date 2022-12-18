@@ -1,6 +1,7 @@
 #pragma once
 
-#include "engine_color.h"
+#include "engine/engine_color.h"
+#include "engine/engine_math.h"
 
 #define SCENE_WIDTH 64
 #define SCENE_HEIGHT 64
@@ -10,6 +11,12 @@ typedef enum {
 	GRID_WALL,
 	GRID_PSPAWN
 } grid_object_type;
+
+typedef struct {
+	frame2d position;
+	float fov;
+	color playerCol;
+} player_obj;
 
 typedef struct {
 	grid_object_type type;
@@ -25,11 +32,14 @@ typedef struct {
 	color ceilingCol;
 	color wallCol;
 	color pSpawnCol;
+	color rayCol;
+	color intersectCol;
 } scene_cols;
 
 typedef struct {
 	char name[64];
 	world_grid world;
+	player_obj player;
 	scene_cols colors;
 } grid_scene;
 
@@ -41,3 +51,10 @@ typedef struct {
 
 grid_scene* create_scene(const char *const name);
 void destroy_scene(grid_scene* scene);
+grid_object* project_grid_ray(
+	const grid_scene* const scene,
+	const frame2d* const playerPos,
+	const vec2d* const worldForward,
+	vec2d* const intersectPoint,
+	float* const wallDistance
+);

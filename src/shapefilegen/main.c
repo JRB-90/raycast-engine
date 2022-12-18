@@ -27,10 +27,9 @@ int main(int argc, char** argv)
 {
 	printf("Generating new line positions...\n");
 
-	FILE* lineFile = NULL;
-	int err = fopen_s(&lineFile, LINE_FILE, "r");
+	FILE* lineFile = fopen(LINE_FILE, "r");
 
-	if (err != 0)
+	if (lineFile == NULL)
 	{
 		fprintf(stderr, "Failed to create/open lines file, now exiting...\n");
 		int c = getchar();
@@ -55,10 +54,9 @@ int main(int argc, char** argv)
 
 	printf("Generating new rect positions...\n");
 
-	FILE* rectFile = NULL;
-	err = fopen_s(&rectFile, RECT_FILE, "r");
+	FILE* rectFile = fopen(RECT_FILE, "r");
 
-	if (err != 0)
+	if (rectFile == NULL)
 	{
 		fprintf(stderr, "Failed to create/open rect file, now exiting...\n");
 		int c = getchar();

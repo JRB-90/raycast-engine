@@ -13,8 +13,8 @@ void draw_line16(
 
 	int dx = x2 - x1;
 	int dy = y2 - y1;
-	int incX = Sign(dx);
-	int incY = Sign(dy);
+	int incX = get_sign(dx);
+	int incY = get_sign(dy);
 	dx = abs(dx);
 	dy = abs(dy);
 
@@ -101,8 +101,8 @@ void draw_line32(
 
 	int dx = x2 - x1;
 	int dy = y2 - y1;
-	int incX = Sign(dx);
-	int incY = Sign(dy);
+	int incX = get_sign(dx);
+	int incY = get_sign(dy);
 	dx = abs(dx);
 	dy = abs(dy);
 
