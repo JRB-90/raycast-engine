@@ -496,6 +496,222 @@ void draw_line32(
 	}
 }
 
+void draw_line16_safe(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x1,
+	int y1,
+	int x2,
+	int y2)
+{
+	uint16_t* pix = (uint16_t*)screen->pixels;
+	int pixelIndex = (screen->width * y1) + x1;
+
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int incX = get_sign(dx);
+	int incY = get_sign(dy);
+	dx = abs(dx);
+	dy = abs(dy);
+
+	if (dy == 0)
+	{
+		// Horizontal line
+		for (int x = x1; x != x2 + incX; x += incX)
+		{
+			if (x >= 0 &&
+				x < screen->width)
+			{
+				pix[pixelIndex] = color;
+			}
+			pixelIndex += incX;
+		}
+	}
+	else if (dx == 0)
+	{
+		// Vertical line
+		for (int y = y1; y != y2 + incY; y += incY)
+		{
+			if (y >= 0 &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+			pixelIndex += screen->width * incY;
+		}
+	}
+	else if (dx >= dy)
+	{
+		// Horizontal bias line
+		int slope = 2 * dy;
+		int error = -dx;
+		int errorInc = -2 * dx;
+		int y = y1;
+
+		for (int x = x1; x != x2 + incX; x += incX)
+		{
+			if (x >= 0 &&
+				y >= 0 &&
+				x < screen->width &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+
+			error += slope;
+			if (error >= 0)
+			{
+				y += incY;
+				error += errorInc;
+				pixelIndex += (screen->width * incY) + incX;
+			}
+			else
+			{
+				pixelIndex += incX;
+			}
+		}
+	}
+	else
+	{
+		// Vertical bias line
+		int slope = 2 * dx;
+		int error = -dy;
+		int errorInc = -2 * dy;
+		int x = x1;
+
+		for (int y = y1; y != y2 + incY; y += incY)
+		{
+			if (x >= 0 &&
+				y >= 0 &&
+				x < screen->width &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+
+			error += slope;
+			if (error >= 0)
+			{
+				x += incX;
+				error += errorInc;
+				pixelIndex += (screen->width * incY) + incX;
+			}
+			else
+			{
+				pixelIndex += screen->width * incY;
+			}
+		}
+	}
+}
+
+void draw_line32_safe(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x1,
+	int y1,
+	int x2,
+	int y2)
+{
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	int pixelIndex = (screen->width * y1) + x1;
+
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int incX = get_sign(dx);
+	int incY = get_sign(dy);
+	dx = abs(dx);
+	dy = abs(dy);
+
+	if (dy == 0)
+	{
+		// Horizontal line
+		for (int x = x1; x != x2 + incX; x += incX)
+		{
+			if (x >= 0 &&
+				x < screen->width)
+			{
+				pix[pixelIndex] = color;
+			}
+			pixelIndex += incX;
+		}
+	}
+	else if (dx == 0)
+	{
+		// Vertical line
+		for (int y = y1; y != y2 + incY; y += incY)
+		{
+			if (y >= 0 &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+			pixelIndex += screen->width * incY;
+		}
+	}
+	else if (dx >= dy)
+	{
+		// Horizontal bias line
+		int slope = 2 * dy;
+		int error = -dx;
+		int errorInc = -2 * dx;
+		int y = y1;
+
+		for (int x = x1; x != x2 + incX; x += incX)
+		{
+			if (x >= 0 &&
+				y >= 0 &&
+				x < screen->width &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+
+			error += slope;
+			if (error >= 0)
+			{
+				y += incY;
+				error += errorInc;
+				pixelIndex += (screen->width * incY) + incX;
+			}
+			else
+			{
+				pixelIndex += incX;
+			}
+		}
+	}
+	else
+	{
+		// Vertical bias line
+		int slope = 2 * dx;
+		int error = -dy;
+		int errorInc = -2 * dy;
+		int x = x1;
+
+		for (int y = y1; y != y2 + incY; y += incY)
+		{
+			if (x >= 0 &&
+				y >= 0 &&
+				x < screen->width &&
+				y < screen->height)
+			{
+				pix[pixelIndex] = color;
+			}
+
+			error += slope;
+			if (error >= 0)
+			{
+				x += incX;
+				error += errorInc;
+				pixelIndex += (screen->width * incY) + incX;
+			}
+			else
+			{
+				pixelIndex += screen->width * incY;
+			}
+		}
+	}
+}
+
 void draw_grid32(
 	const screen_buffer* const screen,
 	const uint32_t color,

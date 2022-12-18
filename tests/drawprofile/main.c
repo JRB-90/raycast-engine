@@ -69,7 +69,7 @@ int main(int argc, char** argv)
         }
     };
 
-    /*printf("\nStarting 16 bpp basic tests\n");
+    printf("\nStarting 16 bpp basic tests\n");
     run_basic_tests(config16);
 
     printf("\nStarting 32 bpp basic tests\n");
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     run_basic_line_tests(config16);
 
     printf("\nStarting 32 bpp line basic tests\n");
-    run_basic_line_tests(config32);*/
+    run_basic_line_tests(config32);
 
     printf("\nStarting 16 bpp rect basic tests\n");
     run_basic_rect_tests(config16);
@@ -87,11 +87,11 @@ int main(int argc, char** argv)
     printf("\nStarting 32 bpp rect basic tests\n");
     run_basic_rect_tests(config32);
 
-    /*printf("\nStarting 16 bpp line file tests\n");
+    printf("\nStarting 16 bpp line file tests\n");
     run_file_line_tests(config16);
 
     printf("\nStarting 32 bpp line file tests\n");
-    run_file_line_tests(config32);*/
+    run_file_line_tests(config32);
 
     printf("\nStarting 16 bpp line file tests\n");
     run_file_rect_tests(config16);
@@ -219,7 +219,7 @@ void run_basic_line_tests(engine_config config)
         {
             start_timer(&timer);
 
-            draw_line16(
+            draw_line16_safe(
                 &engine->screen,
                 0b1111100000000000,
                 200, 200,
@@ -239,7 +239,7 @@ void run_basic_line_tests(engine_config config)
         {
             start_timer(&timer);
 
-            draw_line32(
+            draw_line32_safe(
                 &engine->screen,
                 0b1111100000000000,
                 200, 200,
