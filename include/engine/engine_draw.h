@@ -44,103 +44,47 @@ inline void draw_clear_screen64(
 	}
 }
 
-inline void draw_filled_rect16(
-	const screen_buffer* const screen,
-	const uint16_t color,
-	int x, int y, 
-	int w, int h)
-{
-	uint16_t* pix = (uint16_t*)screen->pixels;
-	int pixelIndex = (screen->width * y) + x;
-	int offset = screen->width - w;
-
-	for (int j = 0; j < h; j++)
-	{
-		for (int i = 0; i < w; i++)
-		{
-			pix[pixelIndex] = color;
-			pixelIndex++;
-		}
-
-		pixelIndex += offset;
-	}
-}
-
-inline void draw_filled_rect32(
-	const screen_buffer* const screen,
-	const uint32_t color,
-	int x, int y,
-	int w, int h)
-{
-	uint32_t* pix = (uint32_t*)screen->pixels;
-	int pixelIndex = (screen->width * y) + x;
-	int offset = screen->width - w;
-
-	for (int j = 0; j < h; j++)
-	{
-		for (int i = 0; i < w; i++)
-		{
-			pix[pixelIndex] = color;
-			pixelIndex++;
-		}
-
-		pixelIndex += offset;
-	}
-}
-
-inline void draw_unfilled_rect16(
+extern void draw_filled_rect16(
 	const screen_buffer* const screen,
 	const uint16_t color,
 	int x, int y,
-	int w, int h)
-{
-	uint16_t* pix = (uint16_t*)screen->pixels;
-	int pixelIndex = (screen->width * y) + x;
-	int offset = h * screen->width;
+	int w, int h
+);
 
-	for (int i = x; i < x + w; i++)
-	{
-		pix[pixelIndex] = color;
-		pix[pixelIndex + offset] = color;
-		pixelIndex++;
-	}
-
-	pixelIndex = (screen->width * y) + x;
-
-	for (int i = y; i < y + h; i++)
-	{
-		pix[pixelIndex] = color;
-		pix[pixelIndex + w] = color;
-		pixelIndex += screen->width;
-	}
-}
-
-inline void draw_unfilled_rect32(
+extern void draw_filled_rect32(
 	const screen_buffer* const screen,
 	const uint32_t color,
 	int x, int y,
-	int w, int h)
-{
-	uint32_t* pix = (uint32_t*)screen->pixels;
-	int pixelIndex = (screen->width * y) + x;
-	int offset = h * screen->width;
+	int w, int h
+);
 
-	for (int i = x; i < x + w; i++)
-	{
-		pix[pixelIndex] = color;
-		pix[pixelIndex + offset] = color;
-		pixelIndex++;
-	}
+extern void draw_filled_rect16_safe(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x, int y,
+	int w, int h
+);
 
-	pixelIndex = (screen->width * y) + x;
+extern void draw_filled_rect32_safe(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x, int y,
+	int w, int h
+);
 
-	for (int i = y; i < y + h; i++)
-	{
-		pix[pixelIndex] = color;
-		pix[pixelIndex + w] = color;
-		pixelIndex += screen->width;
-	}
-}
+extern void draw_unfilled_rect16(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x, int y,
+	int w, int h
+);
+
+extern void draw_unfilled_rect32(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x, int y,
+	int w, int h
+);
 
 extern void draw_line16(
 	const screen_buffer* const screen,

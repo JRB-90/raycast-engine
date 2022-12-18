@@ -69,7 +69,7 @@ int main(int argc, char** argv)
         }
     };
 
-    printf("\nStarting 16 bpp basic tests\n");
+    /*printf("\nStarting 16 bpp basic tests\n");
     run_basic_tests(config16);
 
     printf("\nStarting 32 bpp basic tests\n");
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     run_basic_line_tests(config16);
 
     printf("\nStarting 32 bpp line basic tests\n");
-    run_basic_line_tests(config32);
+    run_basic_line_tests(config32);*/
 
     printf("\nStarting 16 bpp rect basic tests\n");
     run_basic_rect_tests(config16);
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     printf("\nStarting 32 bpp rect basic tests\n");
     run_basic_rect_tests(config32);
 
-    printf("\nStarting 16 bpp line file tests\n");
+   /* printf("\nStarting 16 bpp line file tests\n");
     run_file_line_tests(config16);
 
     printf("\nStarting 32 bpp line file tests\n");
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     run_file_rect_tests(config16);
 
     printf("\nStarting 32 bpp line file tests\n");
-    run_file_rect_tests(config32);
+    run_file_rect_tests(config32);*/
 
     printf("\n====== Tests complete ======\n");
     int c = getchar();
@@ -285,12 +285,21 @@ void run_basic_rect_tests(engine_config config)
     {
         draw_clear_screen16(&engine->screen, 0xFFFF);
         render_engine(engine);
+
+        /*draw_filled_rect16_safe(
+            &engine->screen,
+            0b1111100000000000,
+            -50, -50,
+            150, 150
+        );
+        render_engine(engine);
+        getchar();*/
         
         for (int i = 0; i < RECT_ITR; i++)
         {
             start_timer(&timer);
 
-            draw_filled_rect16(
+            draw_filled_rect16_safe(
                 &engine->screen,
                 0b1111100000000000,
                 50, 50,
@@ -328,7 +337,7 @@ void run_basic_rect_tests(engine_config config)
         {
             start_timer(&timer);
 
-            draw_filled_rect32(
+            draw_filled_rect32_safe(
                 &engine->screen,
                 0xFF00FF00,
                 50, 50,
