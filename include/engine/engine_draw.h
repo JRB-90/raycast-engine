@@ -86,6 +86,20 @@ extern void draw_unfilled_rect32(
 	int w, int h
 );
 
+extern void draw_unfilled_rect16_safe(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x, int y,
+	int w, int h
+);
+
+extern void draw_unfilled_rect32_safe(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x, int y,
+	int w, int h
+);
+
 extern void draw_line16(
 	const screen_buffer* const screen,
 	const uint16_t color,

@@ -156,6 +156,170 @@ void draw_unfilled_rect32(
 	}
 }
 
+void draw_unfilled_rect16_safe(
+	const screen_buffer* const screen,
+	const uint16_t color,
+	int x, int y,
+	int w, int h)
+{
+	uint16_t* pix = (uint16_t*)screen->pixels;
+	int startX = x >= 0 ? x : 0;
+	int endX = (x + w) < screen->width ? (x + w) : screen->width;
+	int newW = endX - startX;
+	int startY = y >= 0 ? y : 0;
+	int endY = (y + h) < screen->height ? (y + h) : screen->height;
+	int newH = endY - startY;
+	int pixelIndex = (screen->width * startY) + startX;
+	int offset = newH * screen->width;
+
+	if (startY != y &&
+		endX != y + h)
+	{
+		// Skip drawing horizontals in this case
+	}
+	else if (startY != y)
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex + offset] = color;
+			pixelIndex++;
+		}
+	}
+	else if (endY != y + h)
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex] = color;
+			pixelIndex++;
+		}
+	}
+	else
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex] = color;
+			pix[pixelIndex + offset] = color;
+			pixelIndex++;
+		}
+	}
+
+	pixelIndex = (screen->width * startY) + startX;
+
+	if (startX != x &&
+		endX != x + w)
+	{
+		// Skip drawing verticals in this case
+		return;
+	}
+	else if (startX != x)
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex + newW] = color;
+			pixelIndex += screen->width;
+		}
+	}
+	else if (endX != x + w)
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex] = color;
+			pixelIndex += screen->width;
+		}
+	}
+	else
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex] = color;
+			pix[pixelIndex + newW] = color;
+			pixelIndex += screen->width;
+		}
+	}
+}
+
+void draw_unfilled_rect32_safe(
+	const screen_buffer* const screen,
+	const uint32_t color,
+	int x, int y,
+	int w, int h)
+{
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	int startX = x >= 0 ? x : 0;
+	int endX = (x + w) < screen->width ? (x + w) : screen->width;
+	int newW = endX - startX;
+	int startY = y >= 0 ? y : 0;
+	int endY = (y + h) < screen->height ? (y + h) : screen->height;
+	int newH = endY - startY;
+	int pixelIndex = (screen->width * startY) + startX;
+	int offset = newH * screen->width;
+
+	if (startY != y &&
+		endX != y + h)
+	{
+		// Skip drawing horizontals in this case
+	}
+	else if (startY != y)
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex + offset] = color;
+			pixelIndex++;
+		}
+	}
+	else if (endY != y + h)
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex] = color;
+			pixelIndex++;
+		}
+	}
+	else
+	{
+		for (int i = startX; i < endX; i++)
+		{
+			pix[pixelIndex] = color;
+			pix[pixelIndex + offset] = color;
+			pixelIndex++;
+		}
+	}
+
+	pixelIndex = (screen->width * startY) + startX;
+
+	if (startX != x &&
+		endX != x + w)
+	{
+		// Skip drawing verticals in this case
+		return;
+	}
+	else if (startX != x)
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex + newW] = color;
+			pixelIndex += screen->width;
+		}
+	}
+	else if (endX != x + w)
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex] = color;
+			pixelIndex += screen->width;
+		}
+	}
+	else
+	{
+		for (int i = startY; i < endY; i++)
+		{
+			pix[pixelIndex] = color;
+			pix[pixelIndex + newW] = color;
+			pixelIndex += screen->width;
+		}
+	}
+}
+
 void draw_line16(
 	const screen_buffer* const screen,
 	const uint16_t color,
