@@ -82,7 +82,7 @@ static inline float cross_vec(const vec2d* const v1, const vec2d* const v2)
 
 static inline float len_vec(const vec2d* const vec)
 {
-	return sqrt((vec->x * vec->x) + (vec->y * vec->y));
+	return (float)sqrt((vec->x * vec->x) + (vec->y * vec->y));
 }
 
 extern vec2d norm_vec(const vec2d* const vec);

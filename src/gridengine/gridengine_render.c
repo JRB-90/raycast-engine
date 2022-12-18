@@ -145,94 +145,20 @@ void render_grid_rays(
     const map_pos* const mapPosition,
     const player_obj* const player)
 {
-    grid_object* intersectObject = NULL;
     float wallDistance = -1.0f;
-    float posX = player->position.x;
-    float posY = player->position.y;
-    int gridX = (int)posX;
-    int gridY = (int)posY;
+    vec2d intersectPoint = { 0.0f, 0.0f };
 
-    float sideDistX;
-    float sideDistY;
-    int xDir;
-    int yDir;
-    int side;
+    grid_object* intersectObject =
+        project_grid_ray(
+            scene,
+            player,
+            &WORLD_FWD,
+            &intersectPoint,
+            &wallDistance
+        );
 
-    vec2d ray = calc_forwards(&player->position, &WORLD_FWD);
-    float deltaDistX = fabs(1.0 / ray.x);
-    float deltaDistY = fabs(1.0 / ray.y);
-
-    if (ray.x < 0)
+    if (intersectObject != NULL)
     {
-        xDir = -1;
-        sideDistX = (posX - (float)gridX) * deltaDistX;
-    }
-    else
-    {
-        xDir = 1;
-        sideDistX = ((float)gridX + 1.0 - posX) * deltaDistX;
-    }
-
-    if (ray.y < 0)
-    {
-        yDir = -1;
-        sideDistY = (posY - (float)gridY) * deltaDistY;
-    }
-    else
-    {
-        yDir = 1;
-        sideDistY = ((float)gridY + 1.0 - posY) * deltaDistY;
-    }
-
-    while (true)
-    {
-        if (sideDistX < sideDistY)
-        {
-            sideDistX += deltaDistX;
-            gridX += xDir;
-            side = 0;
-        }
-        else
-        {
-            sideDistY += deltaDistY;
-            gridY += yDir;
-            side = 1;
-        }
-
-        if (gridX < 0 || gridX > SCENE_WIDTH)
-        {
-            break;
-        }
-
-        if (gridY < 0 || gridY > SCENE_HEIGHT)
-        {
-            break;
-        }
-
-        intersectObject = &scene->world.grid[gridX][gridY];
-
-        if (intersectObject->type == GRID_WALL)
-        {
-            if (side == 0)
-            {
-                wallDistance = sideDistX - deltaDistX;
-            }
-            else
-            {
-                wallDistance = sideDistY - deltaDistY;
-            }
-
-            break;
-        }
-    }
-
-    if (wallDistance > 0)
-    {
-        vec2d playerPos = to_vec2d(player->position.x, player->position.y);
-        vec2d intersectPoint = mul_vec(&ray, wallDistance);
-        intersectPoint = add_vec(&playerPos, &intersectPoint);
-        mapPosition->x + (player->position.x * mapPosition->scale);
-
         draw_filled_rect32(
             &engine->screen,
             to_argb(&scene->colors.intersectCol),

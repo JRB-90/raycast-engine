@@ -50,4 +50,10 @@ typedef struct {
 
 grid_scene* create_scene(const char *const name);
 void destroy_scene(grid_scene* scene);
-// TODO - Project ray algo
+grid_object* project_grid_ray(
+	const grid_scene* const scene,
+	const player_obj* const player,
+	const vec2d* const worldForward,
+	vec2d* const intersectPoint,
+	float* const wallDistance
+);

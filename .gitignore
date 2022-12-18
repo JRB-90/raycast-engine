@@ -54,3 +54,4 @@ dkms.conf
 # Build excludes
 .vs/
 build/
+out/

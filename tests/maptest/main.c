@@ -16,7 +16,7 @@ const int SHEIGHT = 480;
 const int SSIZE = 30;
 const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 30;
-const float ROT_AMT = 0.001f;
+const float ROT_AMT = 0.005f;
 
 rayengine* engine;
 grid_scene* scene;
@@ -69,6 +69,10 @@ int main(int argc, char** argv)
 
     render_scene();
 
+    clktimer timer;
+    deltatime totalTime = (deltatime)0.0;
+    int renderCount = 0;
+
     while (!engine->input.quit)
     {
         update_engine(engine);
@@ -76,18 +80,31 @@ int main(int argc, char** argv)
 
         if (shouldRender)
         {
-            clktimer timer;
             start_timer(&timer);
+
             render_scene();
+
             deltatime delta = elapsed_millis(&timer);
             printf("Map render took %.3fms\n", delta);
+            totalTime += delta;
+            renderCount++;
+
+            render_engine(engine);
         }
 
         shouldRender = false;
         sleep_millis(1);
     }
 
-    cleanup(EXIT_SUCCESS);
+    destroy_engine(engine);
+    destroy_scene(scene);
+
+    sleep_millis(500);
+    float aveRenderTime = totalTime / (deltatime)renderCount;
+    printf("\nAverage render time: %.3f\n", aveRenderTime);
+    int c = getchar();
+
+    exit(EXIT_SUCCESS);
 }
 
 void sig_handler(int signum)
@@ -124,6 +141,10 @@ void build_test_scene()
     scene->world.grid[32][28].type = GRID_WALL;
     scene->world.grid[33][28].type = GRID_WALL;
     scene->world.grid[34][28].type = GRID_WALL;
+
+    scene->world.grid[36][28].type = GRID_WALL;
+    scene->world.grid[36][29].type = GRID_WALL;
+    scene->world.grid[36][31].type = GRID_WALL;
 }
 
 void move_map()

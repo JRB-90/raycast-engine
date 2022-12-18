@@ -381,10 +381,9 @@ void run_file_line_tests(engine_config config)
 {
     printf("Reading line file...\n");
 
-    FILE* file = NULL;
-    int err = fopen_s(&file, LINE_FILE, "r");
+    FILE* file = fopen(LINE_FILE, "r");
 
-    if (err != 0)
+    if (file == NULL)
     {
         fprintf(stderr, "Failed to open line file, shutting down...\n");
         cleanup(EXIT_FAILURE);
@@ -499,10 +498,9 @@ void run_file_rect_tests(engine_config config)
 {
     printf("Reading rect file...\n");
 
-    FILE* file = NULL;
-    int err = fopen_s(&file, RECT_FILE, "r");
+    FILE* file = fopen(RECT_FILE, "r");
 
-    if (err != 0)
+    if (file == NULL)
     {
         fprintf(stderr, "Failed to open rect file, shutting down...\n");
         cleanup(EXIT_FAILURE);
