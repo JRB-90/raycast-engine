@@ -23,13 +23,15 @@ grid_scene* create_scene(const char *const name)
 	scene->colors.rayCol = to_col(255, 255, 0, 255);
 	scene->colors.intersectCol = to_col(255, 0, 255, 0);
 
-	scene->player.playerCol = to_col(255, 255, 0, 0);
 	scene->player.position = 
 		to_frame2d(
 			(SCENE_WIDTH / 2) + 0.5f, 
 			(SCENE_HEIGHT / 2) + 0.5f, 
 			to_rad(180.0f)
 		);
+
+    scene->player.fov = 45.0f;
+    scene->player.playerCol = to_col(255, 255, 0, 0);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)
 	{
@@ -50,7 +52,7 @@ void destroy_scene(grid_scene* scene)
 
 grid_object* project_grid_ray(
     const grid_scene* const scene,
-    const player_obj* const player,
+    const frame2d* const playerPos,
     const vec2d* const worldForward,
     vec2d* const intersectPoint,
     float* const wallDistance)
@@ -59,8 +61,8 @@ grid_object* project_grid_ray(
     *intersectPoint = (vec2d){ 0.0f, 0.0f };
 	*wallDistance = -1.0f;
     
-	float posX = player->position.x;
-	float posY = player->position.y;
+	float posX = playerPos->x;
+	float posY = playerPos->y;
 	int gridX = (int)posX;
 	int gridY = (int)posY;
 
@@ -70,7 +72,7 @@ grid_object* project_grid_ray(
 	int yDir;
 	int side;
 
-	vec2d ray = calc_forwards(&player->position, worldForward);
+	vec2d ray = calc_forwards(playerPos, worldForward);
 	float deltaDistX = fabs(1.0 / ray.x);
 	float deltaDistY = fabs(1.0 / ray.y);
 
@@ -140,9 +142,9 @@ grid_object* project_grid_ray(
 
     if (*wallDistance > 0.0f)
     {
-        vec2d playerPos = to_vec2d(player->position.x, player->position.y);
+        vec2d playerOrigin = to_vec2d(playerPos->x, playerPos->y);
         *intersectPoint = mul_vec(&ray, *wallDistance);
-        *intersectPoint = add_vec(&playerPos, intersectPoint);
+        *intersectPoint = add_vec(&playerOrigin, intersectPoint);
     }
     else
     {

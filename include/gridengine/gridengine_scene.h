@@ -14,6 +14,7 @@ typedef enum {
 
 typedef struct {
 	frame2d position;
+	float fov;
 	color playerCol;
 } player_obj;
 
@@ -52,7 +53,7 @@ grid_scene* create_scene(const char *const name);
 void destroy_scene(grid_scene* scene);
 grid_object* project_grid_ray(
 	const grid_scene* const scene,
-	const player_obj* const player,
+	const frame2d* const playerPos,
 	const vec2d* const worldForward,
 	vec2d* const intersectPoint,
 	float* const wallDistance

@@ -142,6 +142,10 @@ void build_test_scene()
     scene->world.grid[33][28].type = GRID_WALL;
     scene->world.grid[34][28].type = GRID_WALL;
 
+    scene->world.grid[35][25].type = GRID_WALL;
+    scene->world.grid[36][25].type = GRID_WALL;
+    scene->world.grid[37][25].type = GRID_WALL;
+
     scene->world.grid[36][28].type = GRID_WALL;
     scene->world.grid[36][29].type = GRID_WALL;
     scene->world.grid[36][31].type = GRID_WALL;
@@ -151,37 +155,41 @@ void move_map()
 {
     if (engine->input.rotLeft)
     {
-        scene->player.position.theta += ROT_AMT;
+        scene->player.position.theta -= ROT_AMT;
         shouldRender = true;
     }
 
     if (engine->input.rotRight)
     {
-        scene->player.position.theta -= ROT_AMT;
+        scene->player.position.theta += ROT_AMT;
         shouldRender = true;
     }
 
     if (engine->input.left)
     {
-        mapPosition.x--;
+        mapPosition.x++;
+        scene->player.position.x -= 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
     if (engine->input.right)
     {
-        mapPosition.x++;
+        mapPosition.x--;
+        scene->player.position.x += 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
     if (engine->input.forwards)
     {
-        mapPosition.y--;
+        mapPosition.y++;
+        scene->player.position.y -= 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 
     if (engine->input.backwards)
     {
-        mapPosition.y++;
+        mapPosition.y--;
+        scene->player.position.y += 1.0f / mapPosition.scale;
         shouldRender = true;
     }
 

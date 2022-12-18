@@ -132,10 +132,10 @@ void render_grid_player(
     draw_filled_rect32(
         &engine->screen,
         to_argb(&player->playerCol),
-        posX - size + 1,
-        posY - size + 1,
-        (size * 2) - 2,
-        (size * 2) - 2
+        posX - size + 2,
+        posY - size + 2,
+        (size * 2) - 3,
+        (size * 2) - 3
     );
 }
 
@@ -145,29 +145,60 @@ void render_grid_rays(
     const map_pos* const mapPosition,
     const player_obj* const player)
 {
-    float wallDistance = -1.0f;
-    vec2d intersectPoint = { 0.0f, 0.0f };
+    int steps = engine->screen.width;
+    //int steps = 9;
 
-    grid_object* intersectObject =
-        project_grid_ray(
-            scene,
-            player,
-            &WORLD_FWD,
-            &intersectPoint,
-            &wallDistance
-        );
+    float fovRad = to_rad(player->fov);
+    float step = fovRad / (float)steps;
 
-    if (intersectObject != NULL)
+    frame2d playerPos =
     {
-        draw_filled_rect32(
-            &engine->screen,
-            to_argb(&scene->colors.intersectCol),
-            (mapPosition->x + (intersectPoint.x * mapPosition->scale)) - 1,
-            (mapPosition->y + (intersectPoint.y * mapPosition->scale)) - 1,
-            3,
-            3
-        );
-    }
+        .x = player->position.x,
+        .y = player->position.y,
+        .theta = player->position.theta - (fovRad / 2.0f)
+    };
+    
+    for (int i = 0; i < steps; i++)
+    {
+        float wallDistance = -1.0f;
+        vec2d intersectPoint = { 0.0f, 0.0f };
 
-    int test = 0;
+        grid_object* intersectObject =
+            project_grid_ray(
+                scene,
+                &playerPos,
+                &WORLD_FWD,
+                &intersectPoint,
+                &wallDistance
+            );
+
+        if (intersectObject != NULL)
+        {
+            float startX = (mapPosition->x + (intersectPoint.x * mapPosition->scale));
+            float startY = (mapPosition->y + (intersectPoint.y * mapPosition->scale));
+
+            if (startX <= 0 ||
+                startX >= engine->screen.width)
+            {
+                continue;
+            }
+
+            if (startY <= 0 ||
+                startY >= engine->screen.height)
+            {
+                continue;
+            }
+
+            draw_filled_rect32(
+                &engine->screen,
+                to_argb(&scene->colors.intersectCol),
+                startX,
+                startY,
+                1,
+                1
+            );
+        }
+
+        playerPos.theta += step;
+    }
 }
