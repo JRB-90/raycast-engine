@@ -162,26 +162,11 @@ void render_grid_rays(
 
         if (intersectObject != NULL)
         {
-            float startX = (mapPosition->x + (intersectPoint.x * mapPosition->scale));
-            float startY = (mapPosition->y + (intersectPoint.y * mapPosition->scale));
-
-            if (startX <= 0 ||
-                startX >= engine->screen.width)
-            {
-                continue;
-            }
-
-            if (startY <= 0 ||
-                startY >= engine->screen.height)
-            {
-                continue;
-            }
-
             draw_filled_rect32_safe(
                 &engine->screen,
                 to_argb(&scene->colors.intersectCol),
-                startX,
-                startY,
+                (mapPosition->x + (intersectPoint.x * mapPosition->scale)),
+                (mapPosition->y + (intersectPoint.y * mapPosition->scale)),
                 1,
                 1
             );
