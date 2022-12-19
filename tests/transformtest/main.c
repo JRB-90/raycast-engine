@@ -20,7 +20,20 @@ void render();
 
 int main(int argc, char** argv)
 {
-    engine = NULL;
+    vec2d p1 = { 1.0f, 0.0f };
+
+    frame2d f1 = { 0.0f, 1.0f, to_rad(90.0f) };
+
+    vec2d res = transform_vec2(&p1, &f1);
+
+    print_vec2d(&res);
+    getchar();
+
+
+
+
+
+    /*engine = NULL;
 
     signal(SIGINT, sig_handler);
 
@@ -51,7 +64,7 @@ int main(int argc, char** argv)
         sleep_millis(1);
     }
 
-    cleanup(EXIT_SUCCESS);
+    cleanup(EXIT_SUCCESS);*/
 }
 
 void sig_handler(int signum)

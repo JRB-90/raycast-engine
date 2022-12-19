@@ -87,7 +87,6 @@ static inline float len_vec(const vec2d* const vec)
 
 extern vec2d norm_vec(const vec2d* const vec);
 
-
 static inline frame2d to_frame2d(float x, float y, float theta)
 {
 	frame2d frame =
@@ -99,6 +98,13 @@ static inline frame2d to_frame2d(float x, float y, float theta)
 
 	return frame;
 }
+
+extern vec2d transform_vec2(
+	const vec2d* const point,
+	const frame2d* const frame
+);
+
+extern frame2d inverse_frame2d(const frame2d* const frame);
 
 extern vec2d calc_forwards(
 	const frame2d* const frame, 
