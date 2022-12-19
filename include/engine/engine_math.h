@@ -131,5 +131,39 @@ static inline float to_deg(float rad)
 	return (rad * 180.0f) / (float)M_PI;
 }
 
+static inline int clampi(int value, int lower, int upper)
+{
+	if (value >= lower &&
+		value <= upper)
+	{
+		return value;
+	}
+	else if (value < lower)
+	{
+		return lower;
+	}
+	else
+	{
+		return upper;
+	}
+}
+
+static inline float clampf(float value, float lower, float upper)
+{
+	if (value >= lower &&
+		value <= upper)
+	{
+		return value;
+	}
+	else if (value < lower)
+	{
+		return lower;
+	}
+	else
+	{
+		return upper;
+	}
+}
+
 void print_vec2d(const vec2d* const vec);
 void print_frame2d(const frame2d* const frame);

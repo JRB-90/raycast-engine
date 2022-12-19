@@ -81,19 +81,7 @@ void render_tile(
     int posX = mapPosition->x + (col * mapPosition->scale);
     int posY = mapPosition->y + (row * mapPosition->scale);
 
-    if (posX < 0 ||
-        posX >= engine->screen.width - mapPosition->scale)
-    {
-        return;
-    }
-
-    if (posY < 0 ||
-        posY >= engine->screen.height - mapPosition->scale)
-    {
-        return;
-    }
-
-    draw_filled_rect32(
+    draw_filled_rect32_safe(
         &engine->screen,
         to_argb(color),
         posX,
@@ -120,7 +108,7 @@ void render_grid_player(
 
     vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7);
 
-    draw_line32(
+    draw_line32_safe(
         &engine->screen,
         to_argb(&player->playerCol),
         posX,
@@ -129,7 +117,7 @@ void render_grid_player(
         posY + arrow.y
     );
 
-    draw_filled_rect32(
+    draw_filled_rect32_safe(
         &engine->screen,
         to_argb(&player->playerCol),
         posX - size + 2,
@@ -174,26 +162,11 @@ void render_grid_rays(
 
         if (intersectObject != NULL)
         {
-            float startX = (mapPosition->x + (intersectPoint.x * mapPosition->scale));
-            float startY = (mapPosition->y + (intersectPoint.y * mapPosition->scale));
-
-            if (startX <= 0 ||
-                startX >= engine->screen.width)
-            {
-                continue;
-            }
-
-            if (startY <= 0 ||
-                startY >= engine->screen.height)
-            {
-                continue;
-            }
-
-            draw_filled_rect32(
+            draw_filled_rect32_safe(
                 &engine->screen,
                 to_argb(&scene->colors.intersectCol),
-                startX,
-                startY,
+                (mapPosition->x + (intersectPoint.x * mapPosition->scale)),
+                (mapPosition->y + (intersectPoint.y * mapPosition->scale)),
                 1,
                 1
             );
