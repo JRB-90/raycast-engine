@@ -628,7 +628,9 @@ void draw_line32_safe(
 		for (int x = x1; x != x2 + incX; x += incX)
 		{
 			if (x >= 0 &&
-				x < screen->width)
+				y1 >= 0 &&
+				x < screen->width &&
+				y1 < screen->height)
 			{
 				pix[pixelIndex] = color;
 			}
@@ -640,7 +642,9 @@ void draw_line32_safe(
 		// Vertical line
 		for (int y = y1; y != y2 + incY; y += incY)
 		{
-			if (y >= 0 &&
+			if (x1 >= 0 && 
+				y >= 0 &&
+				x1 < screen->width &&
 				y < screen->height)
 			{
 				pix[pixelIndex] = color;

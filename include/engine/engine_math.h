@@ -15,6 +15,12 @@ typedef struct {
 	float theta;
 } frame2d;
 
+typedef struct {
+	vec2d trans;
+	vec2d scale;
+	float rot;
+} transform2d;
+
 static inline vec2d to_vec2d(float x, float y)
 {
 	vec2d vec =
@@ -169,6 +175,31 @@ static inline float clampf(float value, float lower, float upper)
 	{
 		return upper;
 	}
+}
+
+static inline transform2d to_transform(
+	float px, 
+	float py, 
+	float sx, 
+	float sy, 
+	float rot)
+{
+	transform2d transform =
+	{
+		.trans = (vec2d)
+		{
+			.x = px,
+			.y = py
+		},
+		.scale = (vec2d)
+		{
+			.x = sx,
+			.y = sy
+		},
+		.rot = rot
+	};
+
+	return transform;
 }
 
 void print_vec2d(const vec2d* const vec);
