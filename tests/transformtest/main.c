@@ -19,7 +19,8 @@ const float ROT_AMT = 0.01f;
 bool shouldRender;
 
 rayengine* engine;
-frame2d trans;
+frame2d viewPort;
+frame2d shapeTrans;
 vec2d sq1;
 vec2d sq2;
 vec2d sq3;
@@ -36,19 +37,26 @@ int main(int argc, char** argv)
 
     shouldRender = false;
     engine = NULL;
-    float halfSize = SIZE / 2.0f;
+    
+    viewPort = (frame2d)
+    {
+        (SWIDTH / 2),
+        (SHEIGHT / 2),
+        0.0f
+    };
 
+    shapeTrans = (frame2d)
+    { 
+        0.0f, 
+        0.0f, 
+        to_rad(0.0f) 
+    };
+
+    float halfSize = SIZE / 2.0f;
     sq1 = (vec2d){ -halfSize, -halfSize };
     sq2 = (vec2d){ halfSize, -halfSize };
     sq3 = (vec2d){ halfSize,  halfSize };
     sq4 = (vec2d){ -halfSize,  halfSize };
-
-    trans = (frame2d)
-    { 
-        (SWIDTH / 2), 
-        (SHEIGHT / 2), 
-        to_rad(0.0f) 
-    };
 
     engine_config config =
     {
@@ -111,37 +119,37 @@ void move_shape()
 {
     if (engine->input.forwards)
     {
-        trans.y -= TRANS_AMT;
+        shapeTrans.y -= TRANS_AMT;
         shouldRender = true;
     }
 
     if (engine->input.backwards)
     {
-        trans.y += TRANS_AMT;
+        shapeTrans.y += TRANS_AMT;
         shouldRender = true;
     }
 
     if (engine->input.left)
     {
-        trans.x -= TRANS_AMT;
+        shapeTrans.x -= TRANS_AMT;
         shouldRender = true;
     }
 
     if (engine->input.right)
     {
-        trans.x += TRANS_AMT;
+        shapeTrans.x += TRANS_AMT;
         shouldRender = true;
     }
 
     if (engine->input.rotLeft)
     {
-        trans.theta -= ROT_AMT;
+        shapeTrans.theta -= ROT_AMT;
         shouldRender = true;
     }
 
     if (engine->input.rotRight)
     {
-        trans.theta += ROT_AMT;
+        shapeTrans.theta += ROT_AMT;
         shouldRender = true;
     }
 }
@@ -153,10 +161,15 @@ void render_shape()
     clktimer timer;
     start_timer(&timer);
 
-    vec2d p1 = transform_vec2(&sq1, &trans);
-    vec2d p2 = transform_vec2(&sq2, &trans);
-    vec2d p3 = transform_vec2(&sq3, &trans);
-    vec2d p4 = transform_vec2(&sq4, &trans);
+    vec2d p1 = transform_vec2(&sq1, &shapeTrans);
+    vec2d p2 = transform_vec2(&sq2, &shapeTrans);
+    vec2d p3 = transform_vec2(&sq3, &shapeTrans);
+    vec2d p4 = transform_vec2(&sq4, &shapeTrans);
+
+    p1 = transform_vec2(&p1, &viewPort);
+    p2 = transform_vec2(&p2, &viewPort);
+    p3 = transform_vec2(&p3, &viewPort);
+    p4 = transform_vec2(&p4, &viewPort);
 
     deltatime delta = elapsed_millis(&timer);
 
@@ -170,5 +183,5 @@ void render_shape()
     render_engine(engine);
 
     printf("Transform time: %.3fms\n", delta);
-    print_frame2d(&trans);
+    print_frame2d(&shapeTrans);
 }
