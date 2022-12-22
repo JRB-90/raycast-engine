@@ -205,25 +205,23 @@ void render_grid_verts(
                 &wallDistance
             );
 
-        playerPos.theta += step;
-
-        if (intersectObject == NULL ||
-            wallDistance <= 0)
+        if (intersectObject != NULL &&
+            wallDistance > 0)
         {
-            return;
+            float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+            int wallHeightPixels = scene->world.wallHeight / h;
+            int startY = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
+
+            draw_filled_rect32_safe(
+                &engine->screen,
+                to_argb(&scene->colors.wallCol),
+                i,
+                startY,
+                1,
+                wallHeightPixels
+            );
         }
 
-        float h = tanf(to_rad(scene->player.fov)) * wallDistance;
-        int wallHeightPixels = scene->world.wallHeight / h;
-        int startY = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
-
-        draw_filled_rect32_safe(
-            &engine->screen,
-            to_argb(&scene->colors.wallCol),
-            i,
-            startY,
-            1,
-            wallHeightPixels
-        );
+        playerPos.theta += step;
     }
 }

@@ -16,7 +16,7 @@ const int SHEIGHT = 480;
 const int SSIZE = 30;
 const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 30;
-const float TRANS_AMT = 0.01f;
+const float TRANS_AMT = 0.025f;
 const float ROT_AMT = 0.005f;
 
 const vec2d WORLD_FWD =
