@@ -23,3 +23,8 @@ void render_grid_rays(
     const map_pos* const mapPosition,
     const player_obj* const player
 );
+
+void render_grid_verts(
+    const rayengine* const engine,
+    const grid_scene* const scene
+);

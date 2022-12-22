@@ -25,6 +25,7 @@ typedef struct {
 
 typedef struct {
 	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
+	float wallHeight;
 } world_grid;
 
 typedef struct {
@@ -55,6 +56,8 @@ grid_object* project_grid_ray(
 	const grid_scene* const scene,
 	const frame2d* const playerPos,
 	const vec2d* const worldForward,
+	float alpha,
 	vec2d* const intersectPoint,
-	float* const wallDistance
+	float* const wallDistance,
+	int* const side
 );

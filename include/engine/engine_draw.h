@@ -44,6 +44,44 @@ inline void draw_clear_screen64(
 	}
 }
 
+inline void draw_ceiling_floor16(
+	const screen_buffer* const screen,
+	const uint16_t ceilingColor,
+	const uint16_t floorColor)
+{
+	uint16_t* pix = (uint16_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 1;
+	const int halfPixCount = pixCount >> 1;
+
+	for (int i = 0; i < halfPixCount; i++)
+	{
+		pix[i] = ceilingColor;
+	}
+	for (int i = halfPixCount; i < pixCount; i++)
+	{
+		pix[i] = floorColor;
+	}
+}
+
+inline void draw_ceiling_floor32(
+	const screen_buffer* const screen,
+	const uint32_t ceilingColor,
+	const uint32_t floorColor)
+{
+	uint32_t* pix = (uint32_t*)screen->pixels;
+	const int pixCount = screen->sizeInBytes >> 2;
+	const int halfPixCount = pixCount >> 1;
+
+	for (int i = 0; i < halfPixCount; i++)
+	{
+		pix[i] = ceilingColor;
+	}
+	for (int i = halfPixCount; i < pixCount; i++)
+	{
+		pix[i] = floorColor;
+	}
+}
+
 extern void draw_filled_rect16(
 	const screen_buffer* const screen,
 	const uint16_t color,

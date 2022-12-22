@@ -4,6 +4,9 @@
 #include "engine/engine_math.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdint.h>
+
+const float WALL_SHADOW = 0.5f;
 
 const static vec2d WORLD_FWD =
 {
@@ -134,7 +137,6 @@ void render_grid_rays(
     const player_obj* const player)
 {
     int steps = engine->screen.width;
-    //int steps = 9;
 
     float fovRad = to_rad(player->fov);
     float step = fovRad / (float)steps;
@@ -148,16 +150,20 @@ void render_grid_rays(
     
     for (int i = 0; i < steps; i++)
     {
+        float angle = scene->player.position.theta - playerPos.theta;
         float wallDistance = -1.0f;
         vec2d intersectPoint = { 0.0f, 0.0f };
+        int side = 0;
 
         grid_object* intersectObject =
             project_grid_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
+                angle,
                 &intersectPoint,
-                &wallDistance
+                &wallDistance,
+                &side
             );
 
         if (intersectObject != NULL)
@@ -169,6 +175,72 @@ void render_grid_rays(
                 (mapPosition->y + (intersectPoint.y * mapPosition->scale)),
                 1,
                 1
+            );
+        }
+
+        playerPos.theta += step;
+    }
+}
+
+void render_grid_verts(
+    const rayengine* const engine,
+    const grid_scene* const scene)
+{
+    int steps = engine->screen.width;
+    float fovRad = to_rad(scene->player.fov);
+    float step = fovRad / (float)steps;
+
+    frame2d playerPos =
+    {
+        .x = scene->player.position.x,
+        .y = scene->player.position.y,
+        .theta = scene->player.position.theta - (fovRad / 2.0f)
+    };
+
+    for (int i = 0; i < steps; i++)
+    {
+        float alpha = scene->player.position.theta - playerPos.theta;
+        float wallDistance = -1.0f;
+        vec2d intersectPoint = { 0.0f, 0.0f };
+        int side = 0;
+
+        grid_object* intersectObject =
+            project_grid_ray(
+                scene,
+                &playerPos,
+                &WORLD_FWD,
+                alpha,
+                &intersectPoint,
+                &wallDistance,
+                &side
+            );
+
+        if (intersectObject != NULL &&
+            wallDistance > 0)
+        {
+            float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+            int wallHeightPixels = scene->world.wallHeight / h;
+            int startY = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
+            color wallColor = scene->colors.wallCol;
+
+            if (side > 0)
+            {
+                wallColor = (color)
+                {
+                    .a = scene->colors.wallCol.a,
+                    .r = scene->colors.wallCol.r * WALL_SHADOW,
+                    .g = scene->colors.wallCol.g * WALL_SHADOW,
+                    .b = scene->colors.wallCol.b * WALL_SHADOW,
+                };
+            }
+
+            draw_filled_rect32_safe(
+                &engine->screen,
+                to_argb(&wallColor),
+                i,
+                startY,
+                1,
+                wallHeightPixels
             );
         }
 

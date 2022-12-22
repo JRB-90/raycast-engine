@@ -16,8 +16,10 @@ grid_scene* create_scene(const char *const name)
 
 	memcpy(scene->name, name, sizeof(scene->name));
 
-	scene->colors.floorCol = to_col(255, 56, 56, 56);
-	scene->colors.ceilingCol = to_col(255, 32, 32, 128);
+    scene->world.wallHeight = 1000.0f;
+
+	scene->colors.floorCol = to_col(255, 32, 32, 32);
+	scene->colors.ceilingCol = to_col(255, 52, 128, 128);
 	scene->colors.wallCol = to_col(255, 32, 32, 56);
 	scene->colors.pSpawnCol = to_col(255, 32, 128, 32);
 	scene->colors.rayCol = to_col(255, 255, 0, 255);
@@ -54,8 +56,10 @@ grid_object* project_grid_ray(
     const grid_scene* const scene,
     const frame2d* const playerPos,
     const vec2d* const worldForward,
+    float alpha,
     vec2d* const intersectPoint,
-    float* const wallDistance)
+    float* const wallDistance,
+    int* const side)
 {
 	grid_object* intersectObject = NULL;
     *intersectPoint = (vec2d){ 0.0f, 0.0f };
@@ -70,7 +74,6 @@ grid_object* project_grid_ray(
 	float sideDistY;
 	int xDir;
 	int yDir;
-	int side;
 
 	vec2d ray = calc_forwards(playerPos, worldForward);
 	float deltaDistX = fabs(1.0 / ray.x);
@@ -104,13 +107,13 @@ grid_object* project_grid_ray(
         {
             sideDistX += deltaDistX;
             gridX += xDir;
-            side = 0;
+            *side = 0;
         }
         else
         {
             sideDistY += deltaDistY;
             gridY += yDir;
-            side = 1;
+            *side = 1;
         }
 
         if (gridX < 0 || gridX > SCENE_WIDTH)
@@ -127,7 +130,7 @@ grid_object* project_grid_ray(
 
         if (intersectObject->type == GRID_WALL)
         {
-            if (side == 0)
+            if (*side == 0)
             {
                 *wallDistance = sideDistX - deltaDistX;
             }
@@ -145,6 +148,10 @@ grid_object* project_grid_ray(
         vec2d playerOrigin = to_vec2d(playerPos->x, playerPos->y);
         *intersectPoint = mul_vec(&ray, *wallDistance);
         *intersectPoint = add_vec(&playerOrigin, intersectPoint);
+
+        // Correct for perspective
+        float res = (*wallDistance) * cosf(alpha);
+        *wallDistance = res;
     }
     else
     {
