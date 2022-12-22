@@ -4,6 +4,9 @@
 #include "engine/engine_math.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdint.h>
+
+const float WALL_SHADOW = 0.5f;
 
 const static vec2d WORLD_FWD =
 {
@@ -134,7 +137,6 @@ void render_grid_rays(
     const player_obj* const player)
 {
     int steps = engine->screen.width;
-    //int steps = 9;
 
     float fovRad = to_rad(player->fov);
     float step = fovRad / (float)steps;
@@ -148,16 +150,20 @@ void render_grid_rays(
     
     for (int i = 0; i < steps; i++)
     {
+        float angle = scene->player.position.theta - playerPos.theta;
         float wallDistance = -1.0f;
         vec2d intersectPoint = { 0.0f, 0.0f };
+        int side = 0;
 
         grid_object* intersectObject =
             project_grid_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
+                angle,
                 &intersectPoint,
-                &wallDistance
+                &wallDistance,
+                &side
             );
 
         if (intersectObject != NULL)
@@ -193,16 +199,20 @@ void render_grid_verts(
 
     for (int i = 0; i < steps; i++)
     {
+        float alpha = scene->player.position.theta - playerPos.theta;
         float wallDistance = -1.0f;
         vec2d intersectPoint = { 0.0f, 0.0f };
+        int side = 0;
 
         grid_object* intersectObject =
             project_grid_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
+                alpha,
                 &intersectPoint,
-                &wallDistance
+                &wallDistance,
+                &side
             );
 
         if (intersectObject != NULL &&
@@ -211,10 +221,22 @@ void render_grid_verts(
             float h = tanf(to_rad(scene->player.fov)) * wallDistance;
             int wallHeightPixels = scene->world.wallHeight / h;
             int startY = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
+            color wallColor = scene->colors.wallCol;
+
+            if (side > 0)
+            {
+                wallColor = (color)
+                {
+                    .a = scene->colors.wallCol.a,
+                    .r = scene->colors.wallCol.r * WALL_SHADOW,
+                    .g = scene->colors.wallCol.g * WALL_SHADOW,
+                    .b = scene->colors.wallCol.b * WALL_SHADOW,
+                };
+            }
 
             draw_filled_rect32_safe(
                 &engine->screen,
-                to_argb(&scene->colors.wallCol),
+                to_argb(&wallColor),
                 i,
                 startY,
                 1,
