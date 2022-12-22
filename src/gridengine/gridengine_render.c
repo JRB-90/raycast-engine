@@ -175,3 +175,55 @@ void render_grid_rays(
         playerPos.theta += step;
     }
 }
+
+void render_grid_verts(
+    const rayengine* const engine,
+    const grid_scene* const scene)
+{
+    int steps = engine->screen.width;
+    float fovRad = to_rad(scene->player.fov);
+    float step = fovRad / (float)steps;
+
+    frame2d playerPos =
+    {
+        .x = scene->player.position.x,
+        .y = scene->player.position.y,
+        .theta = scene->player.position.theta - (fovRad / 2.0f)
+    };
+
+    for (int i = 0; i < steps; i++)
+    {
+        float wallDistance = -1.0f;
+        vec2d intersectPoint = { 0.0f, 0.0f };
+
+        grid_object* intersectObject =
+            project_grid_ray(
+                scene,
+                &playerPos,
+                &WORLD_FWD,
+                &intersectPoint,
+                &wallDistance
+            );
+
+        playerPos.theta += step;
+
+        if (intersectObject == NULL ||
+            wallDistance <= 0)
+        {
+            return;
+        }
+
+        float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+        int wallHeightPixels = scene->world.wallHeight / h;
+        int startY = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
+
+        draw_filled_rect32_safe(
+            &engine->screen,
+            to_argb(&scene->colors.wallCol),
+            i,
+            startY,
+            1,
+            wallHeightPixels
+        );
+    }
+}

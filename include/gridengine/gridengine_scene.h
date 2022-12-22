@@ -25,6 +25,7 @@ typedef struct {
 
 typedef struct {
 	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
+	float wallHeight;
 } world_grid;
 
 typedef struct {

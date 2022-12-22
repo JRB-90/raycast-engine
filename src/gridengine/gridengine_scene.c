@@ -16,8 +16,10 @@ grid_scene* create_scene(const char *const name)
 
 	memcpy(scene->name, name, sizeof(scene->name));
 
-	scene->colors.floorCol = to_col(255, 56, 56, 56);
-	scene->colors.ceilingCol = to_col(255, 32, 32, 128);
+    scene->world.wallHeight = 1000.0f;
+
+	scene->colors.floorCol = to_col(255, 32, 32, 32);
+	scene->colors.ceilingCol = to_col(255, 52, 128, 128);
 	scene->colors.wallCol = to_col(255, 32, 32, 56);
 	scene->colors.pSpawnCol = to_col(255, 32, 128, 32);
 	scene->colors.rayCol = to_col(255, 255, 0, 255);
