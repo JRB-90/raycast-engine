@@ -15,6 +15,12 @@ typedef struct {
 	float theta;
 } frame2d;
 
+typedef struct {
+	vec2d trans;
+	vec2d scale;
+	float rot;
+} transform2d;
+
 static inline vec2d to_vec2d(float x, float y)
 {
 	vec2d vec =
@@ -87,7 +93,6 @@ static inline float len_vec(const vec2d* const vec)
 
 extern vec2d norm_vec(const vec2d* const vec);
 
-
 static inline frame2d to_frame2d(float x, float y, float theta)
 {
 	frame2d frame =
@@ -99,6 +104,16 @@ static inline frame2d to_frame2d(float x, float y, float theta)
 
 	return frame;
 }
+
+extern vec2d transform_vec2_by_frame2d(
+	const vec2d* const point,
+	const frame2d* const frame
+);
+
+extern vec2d transform_vec2_by_frame2d_inv(
+	const vec2d* const point,
+	const frame2d* const frame
+);
 
 extern vec2d calc_forwards(
 	const frame2d* const frame, 
@@ -164,6 +179,46 @@ static inline float clampf(float value, float lower, float upper)
 		return upper;
 	}
 }
+
+static inline transform2d to_transform(
+	float px, 
+	float py, 
+	float sx, 
+	float sy, 
+	float rot)
+{
+	transform2d transform =
+	{
+		.trans = (vec2d)
+		{
+			.x = px,
+			.y = py
+		},
+		.scale = (vec2d)
+		{
+			.x = sx,
+			.y = sy
+		},
+		.rot = rot
+	};
+
+	return transform;
+}
+
+extern vec2d calc_forwards_trans(
+	const transform2d* const frame,
+	const vec2d* const worldForward
+);
+
+extern vec2d transform_vec2(
+	const vec2d* const point,
+	const transform2d* const transform
+);
+
+extern vec2d transform_vec2_inv(
+	const vec2d* const point,
+	const transform2d* const transform
+);
 
 void print_vec2d(const vec2d* const vec);
 void print_frame2d(const frame2d* const frame);
