@@ -105,12 +105,15 @@ static inline frame2d to_frame2d(float x, float y, float theta)
 	return frame;
 }
 
-extern vec2d transform_vec2(
+extern vec2d transform_vec2_by_frame2d(
 	const vec2d* const point,
 	const frame2d* const frame
 );
 
-extern frame2d inverse_frame2d(const frame2d* const frame);
+extern vec2d transform_vec2_by_frame2d_inv(
+	const vec2d* const point,
+	const frame2d* const frame
+);
 
 extern vec2d calc_forwards(
 	const frame2d* const frame, 
@@ -201,6 +204,21 @@ static inline transform2d to_transform(
 
 	return transform;
 }
+
+extern vec2d calc_forwards_trans(
+	const transform2d* const frame,
+	const vec2d* const worldForward
+);
+
+extern vec2d transform_vec2(
+	const vec2d* const point,
+	const transform2d* const transform
+);
+
+extern vec2d transform_vec2_inv(
+	const vec2d* const point,
+	const transform2d* const transform
+);
 
 void print_vec2d(const vec2d* const vec);
 void print_frame2d(const frame2d* const frame);
