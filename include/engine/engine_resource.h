@@ -22,9 +22,11 @@ typedef struct {
 
 typedef struct {
 	uint8_t format;
-	uint64_t size;
+	uint64_t sizeInPixels;
+	uint64_t sizeInBytes;
 	uint64_t width;
 	uint64_t height;
+	void* pixels;
 } texture_data;
 
 typedef struct {
