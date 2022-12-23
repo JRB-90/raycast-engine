@@ -109,10 +109,16 @@ int main(int argc, char** argv)
 
 	printf("Conversion successful, saving to disk...\n");
 
-	// TODO - Write all bytes to disk
-
+	if (save_texture("../../../../data/textures/brick/brick_64.rtx", &textureRes))
+	{
+		SDL_FreeSurface(img);
+		SDL_Quit();
+		fprintf(stderr, "Failed to save texture to disk\n");
+		getchar();
+		exit(EXIT_FAILURE);
+	}
+	
 	printf("Processing complete, now exiting...\n");
-
 	free(texture.pixels);
 	SDL_FreeSurface(img);
 	SDL_Quit();
