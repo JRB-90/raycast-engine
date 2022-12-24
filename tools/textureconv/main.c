@@ -6,18 +6,42 @@
 #include "SDL_image.h"
 #include "engine_resource.h"
 
+void convert_and_save(const char* input, const char* output);
 bool is_supported_format(const SDL_PixelFormat* const format);
 
 int main(int argc, char** argv)
 {
-	printf("Loading file...\n");
+	convert_and_save(
+		"../../../../data/textures/brick/brick_64.bmp",
+		"../../../../data/textures/brick/brick_64.rtx"
+	);
 
+	convert_and_save(
+		"../../../../data/textures/brick/brick_128.bmp",
+		"../../../../data/textures/brick/brick_128.rtx"
+	);
+
+	convert_and_save(
+		"../../../../data/textures/brick/brick_256.bmp",
+		"../../../../data/textures/brick/brick_256.rtx"
+	);
+
+	getchar();
+	exit(EXIT_SUCCESS);
+}
+
+void convert_and_save(
+	const char* input, 
+	const char* output)
+{
 	if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
 		fprintf(stderr, "Failed to init SDL\n");
 		getchar();
 		exit(EXIT_FAILURE);
 	}
+
+	printf("Loading file %s...\n", input);
 
 	SDL_Surface* tempSurface =
 		SDL_CreateRGBSurfaceWithFormat(
@@ -35,11 +59,11 @@ int main(int argc, char** argv)
 		getchar();
 		exit(EXIT_FAILURE);
 	}
-	
+
 	SDL_PixelFormat outputFormat = *tempSurface->format;
 	SDL_FreeSurface(tempSurface);
 
-	SDL_Surface* img = IMG_Load("../../../../data/textures/brick/brick_64.bmp");
+	SDL_Surface* img = IMG_Load(input);
 
 	if (img == NULL)
 	{
@@ -109,7 +133,7 @@ int main(int argc, char** argv)
 
 	printf("Conversion successful, saving to disk...\n");
 
-	if (save_texture("../../../../data/textures/brick/brick_64.rtx", &textureRes))
+	if (save_texture(output, &textureRes))
 	{
 		SDL_FreeSurface(img);
 		SDL_Quit();
@@ -117,14 +141,27 @@ int main(int argc, char** argv)
 		getchar();
 		exit(EXIT_FAILURE);
 	}
-	
+
+	printf("Texture saved to disk\n");
+	printf("Loading texture from disk...\n");
+
+	texture_resource loadedTexture;
+	if (load_texture("../../../../data/textures/brick/brick_64.rtx", &loadedTexture))
+	{
+		SDL_FreeSurface(img);
+		SDL_Quit();
+		fprintf(stderr, "Failed to load texture from disk\n");
+		getchar();
+		exit(EXIT_FAILURE);
+	}
+
+	printf("Texture loaded successfully\n");
+
 	printf("Processing complete, now exiting...\n");
+	destroy_texture(&loadedTexture);
 	free(texture.pixels);
 	SDL_FreeSurface(img);
 	SDL_Quit();
-
-	getchar();
-	exit(EXIT_SUCCESS);
 }
 
 bool is_supported_format(const SDL_PixelFormat* const format)

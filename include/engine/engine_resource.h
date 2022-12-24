@@ -43,6 +43,23 @@ int save_texture(
 	const texture_resource* const texture
 );
 
+int load_texture(
+	const char* const path,
+	texture_resource* const texture
+);
+
+void destroy_texture(texture_resource* texture);
+
+int write_resource_header(
+	FILE* const file,
+	const resource_header* const header
+);
+
+int read_resource_header(
+	FILE* const file,
+	resource_header* const header
+);
+
 int write_uint8(FILE* const file, uint8_t value);
 int read_uint8(FILE* const file, uint8_t* const value);
 int write_uint16(FILE* const file, uint16_t value);
