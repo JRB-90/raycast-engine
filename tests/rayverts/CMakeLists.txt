@@ -33,3 +33,11 @@ else()
 		"No subsystem implementation configured, cannot configure"
 	)
 endif()
+
+add_custom_command(
+	TARGET rayverts POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/textures
+        ${CMAKE_CURRENT_BINARY_DIR}/textures
+)

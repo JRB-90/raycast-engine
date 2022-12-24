@@ -7,6 +7,8 @@
 #define RES_HEADER_SIZE		24
 #define TEXTURE_DATA_SIZE	36
 
+#define MAX_TEXTURES		32
+
 typedef enum {
 	RES_BLOB = 1,
 	RES_TEXTURE = 2
@@ -37,6 +39,10 @@ typedef struct {
 	resource_header header;
 	texture_data texture;
 } texture_resource;
+
+typedef struct {
+	texture_resource* textures[MAX_TEXTURES];
+} scene_resources;
 
 int save_texture(
 	const char* const path,
