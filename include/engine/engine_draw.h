@@ -3,6 +3,7 @@
 #include "engine_screen.h"
 #include "engine_color.h"
 #include "engine_math.h"
+#include "engine_resource.h"
 #include <inttypes.h>
 
 inline void draw_clear_screen16(
@@ -182,4 +183,10 @@ extern void draw_grid32(
 	int gridSize,
 	int cols,
 	int rows
+);
+
+extern uint32_t uv_to_color32(
+	float u,
+	float v,
+	const texture_resource* const texture
 );

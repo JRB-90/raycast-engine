@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include "SDL.h"
 #include "SDL_image.h"
 #include "engine_resource.h"
@@ -43,29 +44,9 @@ void convert_and_save(
 
 	printf("Loading file %s...\n", input);
 
-	SDL_Surface* tempSurface =
-		SDL_CreateRGBSurfaceWithFormat(
-			0,
-			0,
-			0,
-			32,
-			SDL_PIXELFORMAT_ARGB32
-		);
+	SDL_Surface* origImg = IMG_Load(input);
 
-	if (tempSurface == NULL)
-	{
-		SDL_Quit();
-		fprintf(stderr, "Failed to create temp surface\n");
-		getchar();
-		exit(EXIT_FAILURE);
-	}
-
-	SDL_PixelFormat outputFormat = *tempSurface->format;
-	SDL_FreeSurface(tempSurface);
-
-	SDL_Surface* img = IMG_Load(input);
-
-	if (img == NULL)
+	if (origImg == NULL)
 	{
 		fprintf(stderr, "Failed to load image\n");
 		getchar();
@@ -75,9 +56,9 @@ void convert_and_save(
 	printf("File loaded successfully\n");
 	printf("Processing image...\n");
 
-	if (!is_supported_format(img->format))
+	if (!is_supported_format(origImg->format))
 	{
-		SDL_FreeSurface(img);
+		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "File color format not supported\n");
 		getchar();
@@ -87,35 +68,53 @@ void convert_and_save(
 	texture_data texture =
 	{
 		.format = CF_ARGB,
-		.width = img->w,
-		.height = img->h,
-		.sizeInPixels = img->w * img->h,
-		.sizeInBytes = img->w * img->h * 4,
-		.pixels = malloc(img->w * img->h * 4)
+		.width = origImg->w,
+		.height = origImg->h,
+		.sizeInPixels = origImg->w * origImg->h,
+		.sizeInBytes = origImg->w * origImg->h * 4,
+		.pixels = malloc(origImg->w * origImg->h * 4)
 	};
 
 	if (texture.pixels == NULL)
 	{
-		SDL_FreeSurface(img);
+		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to malloc texture pixels\n");
 		getchar();
 		exit(EXIT_FAILURE);
 	}
 
-	uint32_t* imgPixels = (uint32_t*)img->pixels;
-	uint32_t* texPixels = (uint32_t*)texture.pixels;
+	SDL_Surface* convImg =
+		SDL_ConvertSurfaceFormat(
+			origImg,
+			SDL_PIXELFORMAT_ARGB32,
+			0
+		);
 
-	for (int i = 0; i < texture.sizeInPixels; i++)
+	if (convImg == NULL)
 	{
-		uint8_t a;
-		uint8_t r;
-		uint8_t g;
-		uint8_t b;
-
-		SDL_GetRGBA(imgPixels[i], img->format, &r, &g, &b, &a);
-		texPixels[i] = SDL_MapRGBA(&outputFormat, r, g, b, a);
+		SDL_FreeSurface(origImg);
+		SDL_Quit();
+		fprintf(stderr, "Failed to malloc texture pixels\n");
+		getchar();
+		exit(EXIT_FAILURE);
 	}
+
+	memcpy(texture.pixels, convImg->pixels, texture.sizeInBytes);
+
+	uint8_t* imgPixels = (uint8_t*)convImg->pixels;
+	uint8_t* texPixels = (uint8_t*)texture.pixels;
+
+	for (int i = 0; i < texture.sizeInBytes; i += 4)
+	{
+		texPixels[i + 0] = imgPixels[i + 3];
+		texPixels[i + 1] = imgPixels[i + 2];
+		texPixels[i + 2] = imgPixels[i + 1];
+		texPixels[i + 3] = imgPixels[i + 0];
+	}
+
+	SDL_FreeSurface(convImg);
+	SDL_FreeSurface(origImg);
 
 	size_t sizeOfTextureBlob = sizeof(texture_data) - sizeof(void*);
 
@@ -135,7 +134,6 @@ void convert_and_save(
 
 	if (save_texture(output, &textureRes))
 	{
-		SDL_FreeSurface(img);
 		SDL_Quit();
 		fprintf(stderr, "Failed to save texture to disk\n");
 		getchar();
@@ -148,7 +146,6 @@ void convert_and_save(
 	texture_resource loadedTexture;
 	if (load_texture("../../../../data/textures/brick/brick_64.rtx", &loadedTexture))
 	{
-		SDL_FreeSurface(img);
 		SDL_Quit();
 		fprintf(stderr, "Failed to load texture from disk\n");
 		getchar();
@@ -158,9 +155,7 @@ void convert_and_save(
 	printf("Texture loaded successfully\n");
 
 	printf("Processing complete, now exiting...\n");
-	destroy_texture(&loadedTexture);
 	free(texture.pixels);
-	SDL_FreeSurface(img);
 	SDL_Quit();
 }
 
