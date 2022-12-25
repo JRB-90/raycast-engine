@@ -184,9 +184,3 @@ extern void draw_grid32(
 	int cols,
 	int rows
 );
-
-extern uint32_t uv_to_color32(
-	float u,
-	float v,
-	const texture_resource* const texture
-);

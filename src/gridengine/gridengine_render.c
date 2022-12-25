@@ -268,27 +268,48 @@ void render_vertical_strip(
             0,
             engine->screen.height
         );
+    
+    texture_resource* texture;
 
-    // Find the texture v coord information:
-    // Where it starts and stops, what step does it take per pixel, etc
-    texture_resource* texture =
-        scene->resources.textures[intersectObject->textureID];
+    if (side == 0)
+    {
+        texture = scene->resources.texturesDark[intersectObject->textureID];
+    }
+    else
+    {
+        texture = scene->resources.textures[intersectObject->textureID];
+    }
 
     uint32_t* texturePixels = (uint32_t*)texture->texture.pixels;
 
+    // Find the texture U coord information, based on where intersect on
+    // the wall was and the side it hit
     double integral;
     int textureU;
     if (side == 0)
     {
-        textureU = (int)(modf(intersectPoint->y, &integral) * 64.0);
+        textureU =
+            (int)
+            (modf(intersectPoint->y, &integral) * 
+            (float)texture->texture.width);
     }
     else
     {
-        textureU = (int)(modf(intersectPoint->x, &integral) * 64.0);
+        textureU = 
+            (int)
+            (modf(intersectPoint->x, &integral) * 
+            (float)texture->texture.width);
     }
 
-    float textureStep = 64.0f / (float)(wallYEnd - wallYStart);
-    float textureV = ((startY - wallYStart) * 64.0f) / (float)wallHeightPixels;
+    // Find the texture V coord information:
+    // Where it starts and stops, what step does it take per pixel, etc
+    float textureStep = 
+        (float)texture->texture.height / (float)(wallYEnd - wallYStart);
+
+    float textureV = 
+        ((startY - wallYStart) * (float)texture->texture.height) / 
+        (float)wallHeightPixels;
+
     int tPixelIndex = ((int)textureV * texture->texture.width) + textureU;
 
     uint32_t* screenPixels = (uint32_t*)engine->screen.pixels;

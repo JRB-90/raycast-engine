@@ -42,7 +42,25 @@ typedef struct {
 
 typedef struct {
 	texture_resource* textures[MAX_TEXTURES];
+	texture_resource* texturesDark[MAX_TEXTURES];
+	texture_resource* texturesLight[MAX_TEXTURES];
 } scene_resources;
+
+int add_texture_to_resources(
+	scene_resources* const resources,
+	const texture_resource* const texture,
+	int textureID
+);
+
+void destroy_resources_texture(
+	const scene_resources* const resources,
+	int textureID
+);
+
+texture_resource* create_new_scaled_texture(
+	const texture_resource* const texture,
+	float scale
+);
 
 int save_texture(
 	const char* const path,

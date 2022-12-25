@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 		"../../../../data/textures/brick/brick_64.rtx"
 	);
 
-	convert_and_save(
+	/*convert_and_save(
 		"../../../../data/textures/brick/brick_128.bmp",
 		"../../../../data/textures/brick/brick_128.rtx"
 	);
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	convert_and_save(
 		"../../../../data/textures/brick/brick_256.bmp",
 		"../../../../data/textures/brick/brick_256.rtx"
-	);
+	);*/
 
 	getchar();
 	exit(EXIT_SUCCESS);
@@ -113,9 +113,6 @@ void convert_and_save(
 		texPixels[i + 3] = imgPixels[i + 0];
 	}
 
-	SDL_FreeSurface(convImg);
-	SDL_FreeSurface(origImg);
-
 	size_t sizeOfTextureBlob = sizeof(texture_data) - sizeof(void*);
 
 	texture_resource textureRes =
@@ -134,6 +131,8 @@ void convert_and_save(
 
 	if (save_texture(output, &textureRes))
 	{
+		SDL_FreeSurface(convImg);
+		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to save texture to disk\n");
 		getchar();
@@ -144,8 +143,10 @@ void convert_and_save(
 	printf("Loading texture from disk...\n");
 
 	texture_resource loadedTexture;
-	if (load_texture("../../../../data/textures/brick/brick_64.rtx", &loadedTexture))
+	if (load_texture(output, &loadedTexture))
 	{
+		SDL_FreeSurface(convImg);
+		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to load texture from disk\n");
 		getchar();
@@ -156,6 +157,8 @@ void convert_and_save(
 
 	printf("Processing complete, now exiting...\n");
 	free(texture.pixels);
+	SDL_FreeSurface(convImg);
+	SDL_FreeSurface(origImg);
 	SDL_Quit();
 }
 

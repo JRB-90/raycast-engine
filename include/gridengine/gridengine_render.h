@@ -35,5 +35,6 @@ extern void render_vertical_strip(
     const grid_object* const intersectObject,
     const vec2d* const intersectPoint,
     int colIndex,
-    float wallDistance
+    float wallDistance,
+    int side
 );

@@ -135,6 +135,11 @@ void cleanup(int status)
 
     if (scene != NULL)
     {
+        if (scene->resources.textures[BRICK_TEX_ID] != NULL)
+        {
+            destroy_resources_texture(&scene->resources, BRICK_TEX_ID);
+        }
+
         destroy_scene(scene);
     }
 
@@ -143,13 +148,17 @@ void cleanup(int status)
 
 void build_test_scene()
 {
-    scene->resources.textures[BRICK_TEX_ID] = 
-        malloc(sizeof(texture_resource));
+    texture_resource* brickTexture = malloc(sizeof(texture_resource));
 
-    if (scene->resources.textures[BRICK_TEX_ID] == NULL ||
-        load_texture(BRICK_TEX_PATH, scene->resources.textures[BRICK_TEX_ID]))
+    if (brickTexture == NULL ||
+        load_texture(BRICK_TEX_PATH, brickTexture))
     {
         fprintf(stderr, "Failed to load textures");
+        cleanup(EXIT_FAILURE);
+    }
+
+    if (add_texture_to_resources(&scene->resources, brickTexture, BRICK_TEX_ID))
+    {
         cleanup(EXIT_FAILURE);
     }
 

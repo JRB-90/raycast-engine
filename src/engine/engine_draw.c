@@ -764,20 +764,3 @@ void draw_grid32(
 		lineCount++;
 	}
 }
-
-uint32_t uv_to_color32(
-	float u,
-	float v,
-	const texture_resource* const texture)
-{
-	// TODO
-
-	int _u = u * texture->texture.width;
-	int _v = v * texture->texture.height;
-
-	uint32_t* pixels = (uint32_t*)texture->texture.pixels;
-	uint32_t pixelColor = pixels[(_v * texture->texture.width) + _u];
-
-	return pixelColor;
-	//return 0xFFFFFFFF;
-}
