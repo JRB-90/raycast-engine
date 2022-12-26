@@ -155,7 +155,7 @@ int save_texture(
 	const char* const path,
 	const texture_resource* const texture)
 {
-	FILE* file = fopen(path, "w");
+	FILE* file = fopen(path, "wb");
 	
 	write_resource_header(file, &texture->header);
 
@@ -174,6 +174,7 @@ int save_texture(
 		}
 	}
 
+	fflush(file);
 	fclose(file);
 }
 
@@ -181,7 +182,7 @@ int load_texture(
 	const char* const path,
 	texture_resource* const texture)
 {
-	FILE* file = fopen(path, "r");
+	FILE* file = fopen(path, "rb");
 
 	int res = read_resource_header(file, &texture->header);
 	res |= read_uint32(file, &texture->texture.format);
@@ -203,6 +204,7 @@ int load_texture(
 	}
 
 	uint8_t* data = (uint8_t*)texture->texture.pixels;
+
 	for (int i = 0; i < texture->texture.sizeInBytes; i++)
 	{
 		uint8_t value;
@@ -218,6 +220,7 @@ int load_texture(
 		}
 	}
 
+	fflush(file);
 	fclose(file);
 
 	return res;

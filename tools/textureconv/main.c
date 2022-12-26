@@ -5,7 +5,8 @@
 #include <string.h>
 #include "SDL.h"
 #include "SDL_image.h"
-#include "engine_resource.h"
+#include "engine/engine_resource.h"
+#include "time/time_helper.h"
 
 void convert_and_save(const char* input, const char* output);
 bool is_supported_format(const SDL_PixelFormat* const format);
@@ -17,7 +18,7 @@ int main(int argc, char** argv)
 		"../../../../data/textures/brick/brick_64.rtx"
 	);
 
-	/*convert_and_save(
+	convert_and_save(
 		"../../../../data/textures/brick/brick_128.bmp",
 		"../../../../data/textures/brick/brick_128.rtx"
 	);
@@ -25,7 +26,27 @@ int main(int argc, char** argv)
 	convert_and_save(
 		"../../../../data/textures/brick/brick_256.bmp",
 		"../../../../data/textures/brick/brick_256.rtx"
-	);*/
+	);
+
+	convert_and_save(
+		"../../../../data/textures/concrete/concrete_64.bmp",
+		"../../../../data/textures/concrete/concrete_64.rtx"
+	);
+
+	convert_and_save(
+		"../../../../data/textures/metal/metal_64.bmp",
+		"../../../../data/textures/metal/metal_64.rtx"
+	);
+
+	convert_and_save(
+		"../../../../data/textures/brick/brick_128.bmp",
+		"../../../../data/textures/brick/brick_128.rtx"
+	);
+
+	convert_and_save(
+		"../../../../data/textures/brick/brick_256.bmp",
+		"../../../../data/textures/brick/brick_256.rtx"
+	);
 
 	getchar();
 	exit(EXIT_SUCCESS);
@@ -160,6 +181,8 @@ void convert_and_save(
 	SDL_FreeSurface(convImg);
 	SDL_FreeSurface(origImg);
 	SDL_Quit();
+
+	//sleep_secs(1);
 }
 
 bool is_supported_format(const SDL_PixelFormat* const format)

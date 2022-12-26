@@ -21,7 +21,9 @@ const float TRANS_AMT = 0.025f;
 const float ROT_AMT = 0.005f;
 
 const char* BRICK_TEX_PATH = "textures/brick/brick_64.rtx";
+const char* CONCRETE_TEX_PATH = "textures/concrete/concrete_64.rtx";
 const int BRICK_TEX_ID = 2;
+const int CONCRETE_TEX_ID = 3;
 
 const vec2d WORLD_FWD =
 {
@@ -138,6 +140,7 @@ void cleanup(int status)
         if (scene->resources.textures[BRICK_TEX_ID] != NULL)
         {
             destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
+            destroy_texture_resources(&scene->resources, CONCRETE_TEX_ID);
         }
 
         destroy_scene(scene);
@@ -156,6 +159,14 @@ void build_test_scene()
             SFORMAT
         );
 
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            CONCRETE_TEX_PATH,
+            CONCRETE_TEX_ID,
+            SFORMAT
+        );
+
     if (textureLoadError)
     {
         fprintf(stderr, "Failed to create texture resources");
@@ -170,9 +181,9 @@ void build_test_scene()
     add_wall(33, 28, BRICK_TEX_ID);
     add_wall(34, 28, BRICK_TEX_ID);
 
-    add_wall(35, 25, BRICK_TEX_ID);
-    add_wall(36, 25, BRICK_TEX_ID);
-    add_wall(37, 25, BRICK_TEX_ID);
+    add_wall(35, 25, CONCRETE_TEX_ID);
+    add_wall(36, 25, CONCRETE_TEX_ID);
+    add_wall(37, 25, CONCRETE_TEX_ID);
 
     add_wall(36, 28, BRICK_TEX_ID);
     add_wall(36, 29, BRICK_TEX_ID);
