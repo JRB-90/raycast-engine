@@ -303,8 +303,8 @@ void render_vertical_strip(
 
     // Find the texture V coord information:
     // Where it starts and stops, what step does it take per pixel, etc
-    float textureStep = 
-        (float)texture->texture.height / (float)(wallYEnd - wallYStart);
+    float textureStep =
+        (float)texture->texture.height / (float)(wallHeightPixels);
 
     float textureV = 
         ((startY - wallYStart) * (float)texture->texture.height) / 
@@ -326,6 +326,4 @@ void render_vertical_strip(
         screenPixels[sPixelIndex] = wallColor;
         sPixelIndex += engine->screen.width;
     }
-
-    int test = 0;
 }
