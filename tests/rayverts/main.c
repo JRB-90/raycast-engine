@@ -6,6 +6,7 @@
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
+#include "engine/engine_resource.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
 #include "time/time_helper.h"
@@ -18,6 +19,9 @@ const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 30;
 const float TRANS_AMT = 0.025f;
 const float ROT_AMT = 0.005f;
+
+const char* BRICK_TEX_PATH = "textures/brick/brick_64.rtx";
+const int BRICK_TEX_ID = 2;
 
 const vec2d WORLD_FWD =
 {
@@ -39,6 +43,7 @@ bool shouldRender = true;
 void sig_handler(int signum);
 void cleanup(int status);
 void build_test_scene();
+void add_wall(int x, int y, int textureID);
 void move_map();
 void render_scene();
 
@@ -130,6 +135,11 @@ void cleanup(int status)
 
     if (scene != NULL)
     {
+        if (scene->resources.textures[BRICK_TEX_ID] != NULL)
+        {
+            destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
+        }
+
         destroy_scene(scene);
     }
 
@@ -138,21 +148,41 @@ void cleanup(int status)
 
 void build_test_scene()
 {
+    int textureLoadError =
+        create_texture_resources(
+            &scene->resources, 
+            BRICK_TEX_PATH, 
+            BRICK_TEX_ID,
+            SFORMAT
+        );
+
+    if (textureLoadError)
+    {
+        fprintf(stderr, "Failed to create texture resources");
+        cleanup(EXIT_FAILURE);
+    }
+
     scene->world.grid[32][32].type = GRID_PSPAWN;
 
-    scene->world.grid[30][28].type = GRID_WALL;
-    scene->world.grid[31][28].type = GRID_WALL;
-    scene->world.grid[32][28].type = GRID_WALL;
-    scene->world.grid[33][28].type = GRID_WALL;
-    scene->world.grid[34][28].type = GRID_WALL;
+    add_wall(30, 28, BRICK_TEX_ID);
+    add_wall(31, 28, BRICK_TEX_ID);
+    add_wall(32, 28, BRICK_TEX_ID);
+    add_wall(33, 28, BRICK_TEX_ID);
+    add_wall(34, 28, BRICK_TEX_ID);
 
-    scene->world.grid[35][25].type = GRID_WALL;
-    scene->world.grid[36][25].type = GRID_WALL;
-    scene->world.grid[37][25].type = GRID_WALL;
+    add_wall(35, 25, BRICK_TEX_ID);
+    add_wall(36, 25, BRICK_TEX_ID);
+    add_wall(37, 25, BRICK_TEX_ID);
 
-    scene->world.grid[36][28].type = GRID_WALL;
-    scene->world.grid[36][29].type = GRID_WALL;
-    scene->world.grid[36][31].type = GRID_WALL;
+    add_wall(36, 28, BRICK_TEX_ID);
+    add_wall(36, 29, BRICK_TEX_ID);
+    add_wall(36, 31, BRICK_TEX_ID);
+}
+
+void add_wall(int x, int y, int textureID)
+{
+    scene->world.grid[x][y].type = GRID_WALL;
+    scene->world.grid[x][y].textureID = textureID;
 }
 
 void move_map()
@@ -208,11 +238,22 @@ void move_map()
 
 void render_scene()
 {
-    draw_ceiling_floor32(
-        &engine->screen,
-        to_argb(&scene->colors.ceilingCol),
-        to_argb(&scene->colors.floorCol)
-    );
+    if (SFORMAT == CF_RGB565)
+    {
+        draw_ceiling_floor16(
+            &engine->screen,
+            to_rgb565(&scene->colors.ceilingCol),
+            to_rgb565(&scene->colors.floorCol)
+        );
+    }
+    else
+    {
+        draw_ceiling_floor32(
+            &engine->screen,
+            to_argb(&scene->colors.ceilingCol),
+            to_argb(&scene->colors.floorCol)
+        );
+    }
 
     render_grid_verts(
         engine,

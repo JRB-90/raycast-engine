@@ -12,6 +12,7 @@ add_library(engine STATIC
 	engine_rayengine.c
     engine_draw.c
 	engine_math.c
+    engine_resource.c
 )
 
 target_include_directories(engine PUBLIC

@@ -44,6 +44,13 @@ grid_scene* create_scene(const char *const name)
 		}
 	}
 
+    for (int i = 0; i < MAX_TEXTURES; i++)
+    {
+        scene->resources.textures[i] = NULL;
+        scene->resources.texturesDark[i] = NULL;
+        scene->resources.texturesLight[i] = NULL;
+    }
+
 	return scene;
 }
 

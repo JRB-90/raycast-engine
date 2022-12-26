@@ -2,6 +2,7 @@
 
 #include "engine/engine_color.h"
 #include "engine/engine_math.h"
+#include "engine/engine_resource.h"
 
 #define SCENE_WIDTH 64
 #define SCENE_HEIGHT 64
@@ -41,6 +42,7 @@ typedef struct {
 	char name[64];
 	world_grid world;
 	player_obj player;
+	scene_resources resources;
 	scene_cols colors;
 } grid_scene;
 
