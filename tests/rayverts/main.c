@@ -137,7 +137,7 @@ void cleanup(int status)
     {
         if (scene->resources.textures[BRICK_TEX_ID] != NULL)
         {
-            destroy_resources_texture(&scene->resources, BRICK_TEX_ID);
+            destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
         }
 
         destroy_scene(scene);
@@ -148,17 +148,17 @@ void cleanup(int status)
 
 void build_test_scene()
 {
-    texture_resource* brickTexture = malloc(sizeof(texture_resource));
+    int textureLoadError =
+        create_texture_resources(
+            &scene->resources, 
+            BRICK_TEX_PATH, 
+            BRICK_TEX_ID,
+            SFORMAT
+        );
 
-    if (brickTexture == NULL ||
-        load_texture(BRICK_TEX_PATH, brickTexture))
+    if (textureLoadError)
     {
-        fprintf(stderr, "Failed to load textures");
-        cleanup(EXIT_FAILURE);
-    }
-
-    if (add_texture_to_resources(&scene->resources, brickTexture, BRICK_TEX_ID))
-    {
+        fprintf(stderr, "Failed to create texture resources");
         cleanup(EXIT_FAILURE);
     }
 
@@ -238,11 +238,22 @@ void move_map()
 
 void render_scene()
 {
-    draw_ceiling_floor32(
-        &engine->screen,
-        to_argb(&scene->colors.ceilingCol),
-        to_argb(&scene->colors.floorCol)
-    );
+    if (SFORMAT == CF_RGB565)
+    {
+        draw_ceiling_floor16(
+            &engine->screen,
+            to_rgb565(&scene->colors.ceilingCol),
+            to_rgb565(&scene->colors.floorCol)
+        );
+    }
+    else
+    {
+        draw_ceiling_floor32(
+            &engine->screen,
+            to_argb(&scene->colors.ceilingCol),
+            to_argb(&scene->colors.floorCol)
+        );
+    }
 
     render_grid_verts(
         engine,

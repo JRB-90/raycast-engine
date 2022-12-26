@@ -223,22 +223,135 @@ void render_grid_verts(
         if (intersectObject != NULL &&
             wallDistance > 0)
         {
-            render_vertical_strip(
-                engine,
-                scene,
-                intersectObject,
-                &intersectPoint,
-                i,
-                wallDistance,
-                side
-            );
+            if (engine->screen.colorFormat == CF_RGB565)
+            {
+                render_vertical_strip16(
+                    engine,
+                    scene,
+                    intersectObject,
+                    &intersectPoint,
+                    i,
+                    wallDistance,
+                    side
+                );
+            }
+            else if (engine->screen.colorFormat == CF_ARGB)
+            {
+                render_vertical_strip32(
+                    engine,
+                    scene,
+                    intersectObject,
+                    &intersectPoint,
+                    i,
+                    wallDistance,
+                    side
+                );
+            }
         }
 
         playerPos.theta += step;
     }
 }
 
-void render_vertical_strip(
+void render_vertical_strip16(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const grid_object* const intersectObject,
+    const vec2d* const intersectPoint,
+    int colIndex,
+    float wallDistance,
+    int side)
+{
+    // Find height of wall based on distance to it,
+    // using TOA to find triangle side
+    float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+    int wallHeightPixels = scene->world.wallHeight / h;
+
+    // Find the start and end of the walls in screen Y coords
+    int wallYStart = (engine->screen.height >> 1) - (wallHeightPixels >> 1);
+    int startY =
+        clampi(
+            wallYStart,
+            0,
+            engine->screen.height
+        );
+
+    int wallYEnd = startY + wallHeightPixels;
+    int endY =
+        clampi(
+            wallYEnd,
+            0,
+            engine->screen.height
+        );
+
+    texture_resource* texture;
+
+    if (side == 0)
+    {
+        texture = scene->resources.texturesDark[intersectObject->textureID];
+    }
+    else
+    {
+        texture = scene->resources.textures[intersectObject->textureID];
+    }
+
+    uint16_t* texturePixels = (uint16_t*)texture->texture.pixels;
+
+    // Find the texture U coord information, based on where intersect on
+    // the wall was and the side it hit
+    double integral;
+    int textureU;
+    if (side == 0)
+    {
+        textureU =
+            (int)
+            (modf(intersectPoint->y, &integral) *
+                (float)texture->texture.width);
+    }
+    else
+    {
+        textureU =
+            (int)
+            (modf(intersectPoint->x, &integral) *
+                (float)texture->texture.width);
+    }
+
+    // Find the texture V coord information:
+    // Where it starts and stops, what step does it take per pixel, etc
+    float textureStep =
+        (float)texture->texture.height / (float)(wallHeightPixels);
+
+    float textureV =
+        ((startY - wallYStart) * (float)texture->texture.height) /
+        (float)wallHeightPixels;
+
+    int tPixelIndex = ((int)textureV * texture->texture.width) + textureU;
+
+    uint16_t* screenPixels = (uint16_t*)engine->screen.pixels;
+    int sPixelIndex = (engine->screen.width * startY) + colIndex;
+
+    // Run through every pixel in the strip and render the color
+    // from the texture
+    for (int j = startY; j < endY; j++)
+    {
+        tPixelIndex = ((int)textureV * texture->texture.width) + textureU;
+        uint16_t wallColor = texturePixels[tPixelIndex];
+        textureV += textureStep;
+
+        if (engine->screen.colorFormat == CF_ARGB)
+        {
+            screenPixels[sPixelIndex] = wallColor;
+            sPixelIndex += engine->screen.width;
+        }
+        else
+        {
+            screenPixels[sPixelIndex] = wallColor;
+            sPixelIndex += engine->screen.width;
+        }
+    }
+}
+
+void render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
     const grid_object* const intersectObject,
@@ -314,7 +427,7 @@ void render_vertical_strip(
 
     uint32_t* screenPixels = (uint32_t*)engine->screen.pixels;
     int sPixelIndex = (engine->screen.width * startY) + colIndex;
-    
+
     // Run through every pixel in the strip and render the color
     // from the texture
     for (int j = startY; j < endY; j++)
@@ -323,7 +436,15 @@ void render_vertical_strip(
         uint32_t wallColor = texturePixels[tPixelIndex];
         textureV += textureStep;
 
-        screenPixels[sPixelIndex] = wallColor;
-        sPixelIndex += engine->screen.width;
+        if (engine->screen.colorFormat == CF_ARGB)
+        {
+            screenPixels[sPixelIndex] = wallColor;
+            sPixelIndex += engine->screen.width;
+        }
+        else
+        {
+            screenPixels[sPixelIndex] = wallColor;
+            sPixelIndex += engine->screen.width;
+        }
     }
 }

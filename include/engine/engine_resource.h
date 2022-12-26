@@ -46,19 +46,21 @@ typedef struct {
 	texture_resource* texturesLight[MAX_TEXTURES];
 } scene_resources;
 
-int add_texture_to_resources(
+int create_texture_resources(
 	scene_resources* const resources,
-	const texture_resource* const texture,
-	int textureID
+	const char* const path,
+	int textureID,
+	colformat format
 );
 
-void destroy_resources_texture(
+void destroy_texture_resources(
 	const scene_resources* const resources,
 	int textureID
 );
 
-texture_resource* create_new_scaled_texture(
+texture_resource* create_new_texture_variant(
 	const texture_resource* const texture,
+	colformat newFormat,
 	float scale
 );
 

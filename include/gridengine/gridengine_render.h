@@ -29,7 +29,17 @@ extern void render_grid_verts(
     const grid_scene* const scene
 );
 
-extern void render_vertical_strip(
+extern void render_vertical_strip16(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const grid_object* const intersectObject,
+    const vec2d* const intersectPoint,
+    int colIndex,
+    float wallDistance,
+    int side
+);
+
+extern void render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
     const grid_object* const intersectObject,

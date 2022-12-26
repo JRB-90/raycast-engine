@@ -2,41 +2,82 @@
 
 #include <stdlib.h>
 
-int add_texture_to_resources(
+int create_texture_resources(
 	scene_resources* const resources,
-	const texture_resource* const texture,
-	int textureID)
+	const char* const path,
+	int textureID,
+	colformat format)
 {
-	resources->textures[textureID] = texture;
+	texture_resource* loadedTexture = malloc(sizeof(texture_resource));
+
+	if (loadedTexture == NULL)
+	{
+		fprintf(stderr, "Failed to malloc loaded texture");
+		return -1;
+	}
+
+	if (load_texture(path, loadedTexture))
+	{
+		fprintf(stderr, "Failed to load texture");
+		free(loadedTexture);
+		return -1;
+	}
+
+	resources->textures[textureID] =
+		create_new_texture_variant(
+			loadedTexture,
+			format,
+			1.0f
+		);
+
+	if (resources->textures[textureID] == NULL)
+	{
+		fprintf(stderr, "Failed to create dark texture variant\n");
+		destroy_texture(loadedTexture);
+
+		return -1;
+	}
 	
 	resources->texturesDark[textureID] =
-		create_new_scaled_texture(
-			texture,
+		create_new_texture_variant(
+			loadedTexture,
+			format,
 			0.5f
 		);
 
 	if (resources->texturesDark[textureID] == NULL)
 	{
 		fprintf(stderr, "Failed to create dark texture variant\n");
+		destroy_texture(loadedTexture);
+		destroy_texture(resources->textures[textureID]);
+
 		return -1;
 	}
 
 	resources->texturesLight[textureID] =
-		create_new_scaled_texture(
-			texture,
+		create_new_texture_variant(
+			loadedTexture,
+			format,
 			1.2f
 		);
 
 	if (resources->texturesLight[textureID] == NULL)
 	{
 		fprintf(stderr, "Failed to create light texture variant\n");
+		destroy_texture(loadedTexture);
+		destroy_texture(loadedTexture);
+		destroy_texture(resources->textures[textureID]);
+		destroy_texture(resources->texturesDark[textureID]);
+
 		return -1;
 	}
+
+	destroy_texture(loadedTexture);
 
 	return 0;
 }
 
-void destroy_resources_texture(
+void destroy_texture_resources(
 	const scene_resources* const resources,
 	int textureID)
 {
@@ -45,8 +86,9 @@ void destroy_resources_texture(
 	free(resources->texturesLight[textureID]);
 }
 
-texture_resource* create_new_scaled_texture(
+texture_resource* create_new_texture_variant(
 	const texture_resource* const texture,
+	colformat newFormat,
 	float scale)
 {
 	texture_resource* scaledTexture = malloc(sizeof(texture_resource));
@@ -58,7 +100,17 @@ texture_resource* create_new_scaled_texture(
 
 	scaledTexture->header = texture->header;
 	scaledTexture->texture = texture->texture;
-	scaledTexture->texture.pixels = malloc(texture->texture.sizeInBytes);
+
+	if (newFormat == CF_RGB565)
+	{
+		scaledTexture->texture.pixels = 
+			malloc(texture->texture.sizeInPixels * 2);
+	}
+	else
+	{
+		scaledTexture->texture.pixels = 
+			malloc(texture->texture.sizeInPixels * 4);
+	}
 
 	if (scaledTexture->texture.pixels == NULL)
 	{
@@ -68,7 +120,6 @@ texture_resource* create_new_scaled_texture(
 	}
 	
 	uint32_t* origPixels = (uint32_t*)texture->texture.pixels;
-	uint32_t* convPixels = (uint32_t*)scaledTexture->texture.pixels;
 
 	for (int i = 0; i < scaledTexture->texture.sizeInPixels; i++)
 	{
@@ -85,7 +136,16 @@ texture_resource* create_new_scaled_texture(
 				(int)((float)b * scale)
 			);
 
-		convPixels[i] = to_argb(&scaledColor);
+		if (newFormat == CF_ARGB)
+		{
+			((uint32_t*)scaledTexture->texture.pixels)[i] =
+				to_argb(&scaledColor);
+		}
+		else if (newFormat == CF_RGB565)
+		{
+			((uint16_t*)scaledTexture->texture.pixels)[i] = 
+				to_rgb565(&scaledColor);
+		}
 	}
 
 	return scaledTexture;
@@ -165,7 +225,14 @@ int load_texture(
 
 void destroy_texture(texture_resource* texture)
 {
-	free(texture->texture.pixels);
+	if (texture != NULL)
+	{
+		if (texture->texture.pixels != NULL)
+		{
+			free(texture->texture.pixels);
+		}
+		free(texture);
+	}
 }
 
 int write_resource_header(
