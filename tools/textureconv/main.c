@@ -39,13 +39,13 @@ int main(int argc, char** argv)
 	);
 
 	convert_and_save(
-		"../../../../data/textures/brick/brick_128.bmp",
-		"../../../../data/textures/brick/brick_128.rtx"
+		"../../../../data/sprites/static/column/column_64.bmp",
+		"../../../../data/sprites/static/column/column_64.rtx"
 	);
 
 	convert_and_save(
-		"../../../../data/textures/brick/brick_256.bmp",
-		"../../../../data/textures/brick/brick_256.rtx"
+		"../../../../data/sprites/static/lamp/lamp_64.bmp",
+		"../../../../data/sprites/static/lamp/lamp_64.rtx"
 	);
 
 	getchar();

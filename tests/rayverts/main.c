@@ -22,8 +22,15 @@ const float ROT_AMT = 0.005f;
 
 const char* BRICK_TEX_PATH = "textures/brick/brick_64.rtx";
 const char* CONCRETE_TEX_PATH = "textures/concrete/concrete_64.rtx";
+const char* METAL_TEX_PATH = "textures/metal/metal_64.rtx";
+const char* LAMP_TEX_PATH = "sprites/static/lamp/lamp_64.rtx";
+const char* COLUMN_TEX_PATH = "sprites/static/column/column_64.rtx";
+
 const int BRICK_TEX_ID = 2;
 const int CONCRETE_TEX_ID = 3;
+const int METAL_TEX_ID = 4;
+const int LAMP_TEX_ID = 5;
+const int COLUMN_TEX_ID = 6;
 
 const vec2d WORLD_FWD =
 {
@@ -146,6 +153,11 @@ void cleanup(int status)
         destroy_scene(scene);
     }
 
+    if (status != EXIT_SUCCESS)
+    {
+        getchar();
+    }
+    
     exit(status);
 }
 
@@ -167,9 +179,33 @@ void build_test_scene()
             SFORMAT
         );
 
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            METAL_TEX_PATH,
+            METAL_TEX_ID,
+            SFORMAT
+        );
+
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            LAMP_TEX_PATH,
+            LAMP_TEX_ID,
+            SFORMAT
+        );
+
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            COLUMN_TEX_PATH,
+            COLUMN_TEX_ID,
+            SFORMAT
+        );
+
     if (textureLoadError)
     {
-        fprintf(stderr, "Failed to create texture resources");
+        fprintf(stderr, "Failed to create texture resources\n");
         cleanup(EXIT_FAILURE);
     }
 
@@ -185,9 +221,9 @@ void build_test_scene()
     add_wall(36, 25, CONCRETE_TEX_ID);
     add_wall(37, 25, CONCRETE_TEX_ID);
 
-    add_wall(36, 28, BRICK_TEX_ID);
-    add_wall(36, 29, BRICK_TEX_ID);
-    add_wall(36, 31, BRICK_TEX_ID);
+    add_wall(36, 28, METAL_TEX_ID);
+    add_wall(36, 29, METAL_TEX_ID);
+    add_wall(36, 31, METAL_TEX_ID);
 }
 
 void add_wall(int x, int y, int textureID)

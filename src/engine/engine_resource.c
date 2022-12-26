@@ -12,13 +12,13 @@ int create_texture_resources(
 
 	if (loadedTexture == NULL)
 	{
-		fprintf(stderr, "Failed to malloc loaded texture");
+		fprintf(stderr, "Failed to malloc loaded texture\n");
 		return -1;
 	}
 
 	if (load_texture(path, loadedTexture))
 	{
-		fprintf(stderr, "Failed to load texture");
+		fprintf(stderr, "Failed to load texture\n");
 		free(loadedTexture);
 		return -1;
 	}
@@ -156,6 +156,12 @@ int save_texture(
 	const texture_resource* const texture)
 {
 	FILE* file = fopen(path, "wb");
+
+	if (file == NULL)
+	{
+		fprintf(stderr, "Failed open file %s\n", path);
+		return -1;
+	}
 	
 	write_resource_header(file, &texture->header);
 
@@ -183,6 +189,12 @@ int load_texture(
 	texture_resource* const texture)
 {
 	FILE* file = fopen(path, "rb");
+
+	if (file == NULL)
+	{
+		fprintf(stderr, "Failed open file %s\n", path);
+		return -1;
+	}
 
 	int res = read_resource_header(file, &texture->header);
 	res |= read_uint32(file, &texture->texture.format);
