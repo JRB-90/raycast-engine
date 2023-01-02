@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
     signal(SIGINT, sig_handler);
 
-    scene = create_scene("Vert drawing test scene");
+    scene = create_scene("Vert drawing test scene", SWIDTH);
     build_test_scene();
 
     engine_config config =

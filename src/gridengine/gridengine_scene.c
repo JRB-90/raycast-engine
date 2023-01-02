@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-grid_scene* create_scene(const char *const name)
+grid_scene* create_scene(
+    const char *const name,
+    int screenWidth)
 {
 	grid_scene* scene = malloc(sizeof(grid_scene));
 	
@@ -13,6 +14,16 @@ grid_scene* create_scene(const char *const name)
 		fprintf(stderr, "Failed to malloc grid_scene\n");
 		return NULL;
 	}
+
+    scene->drawState.numberCols = screenWidth;
+    scene->drawState.wallDistances = malloc(sizeof(float) * screenWidth);
+    reset_draw_state(&scene->drawState);
+
+    if (scene->drawState.wallDistances == NULL)
+    {
+        fprintf(stderr, "Failed to malloc draw state wall height array\n");
+        return NULL;
+    }
 
 	memcpy(scene->name, name, sizeof(scene->name));
 
@@ -68,7 +79,30 @@ grid_scene* create_scene(const char *const name)
 
 void destroy_scene(grid_scene* scene)
 {
-	free(scene);
+    if (scene != NULL)
+    {
+        if (scene->drawState.wallDistances != NULL)
+        {
+            free(scene->drawState.wallDistances);
+        }
+        free(scene);
+    }
+}
+
+void reset_draw_state(draw_state* const state)
+{
+    for (int j = 0; j < SCENE_HEIGHT; j++)
+    {
+        for (int i = 0; i < SCENE_WIDTH; i++)
+        {
+            state->visibleTiles[i][j] = false;
+        }
+    }
+
+    for (int k = 0; k < state->numberCols; k++)
+    {
+        state->wallDistances[k] = -1.0f;
+    }
 }
 
 int add_sprite(
@@ -93,18 +127,16 @@ int add_sprite(
     return 0;
 }
 
-grid_object* project_grid_ray(
-    const grid_scene* const scene,
+int project_grid_ray(
+    grid_scene* const scene,
     const frame2d* const playerPos,
     const vec2d* const worldForward,
     float alpha,
-    vec2d* const intersectPoint,
-    float* const wallDistance,
-    int* const side)
+    traverse_result* const result)
 {
-	grid_object* intersectObject = NULL;
-    *intersectPoint = (vec2d){ 0.0f, 0.0f };
-	*wallDistance = -1.0f;
+	result->intersectedObject = NULL;
+    result->intersectPoint = (vec2d){ 0.0f, 0.0f };
+	result->wallDistance = -1.0f;
     
 	float posX = playerPos->x;
 	float posY = playerPos->y;
@@ -148,56 +180,53 @@ grid_object* project_grid_ray(
         {
             sideDistX += deltaDistX;
             gridX += xDir;
-            *side = 0;
+            result->side = 0;
         }
         else
         {
             sideDistY += deltaDistY;
             gridY += yDir;
-            *side = 1;
+            result->side = 1;
         }
 
-        if (gridX < 0 || gridX > SCENE_WIDTH)
+        if (gridX < 0 || gridX >= SCENE_WIDTH)
         {
             break;
         }
 
-        if (gridY < 0 || gridY > SCENE_HEIGHT)
+        if (gridY < 0 || gridY >= SCENE_HEIGHT)
         {
             break;
         }
 
-        intersectObject = &scene->world.grid[gridX][gridY];
+        result->intersectedObject = &scene->world.grid[gridX][gridY];
+        scene->drawState.visibleTiles[gridX][gridY] = true;
 
-        if (intersectObject->type == GRID_WALL)
+        if (result->intersectedObject->type == GRID_WALL)
         {
-            if (*side == 0)
+            if (result->side == 0)
             {
-                *wallDistance = sideDistX - deltaDistX;
+                result->wallDistance = sideDistX - deltaDistX;
             }
             else
             {
-                *wallDistance = sideDistY - deltaDistY;
+                result->wallDistance = sideDistY - deltaDistY;
             }
 
             break;
         }
     }
 
-    if (*wallDistance > 0.0f)
+    if (result->wallDistance > 0.0f)
     {
         vec2d playerOrigin = to_vec2d(playerPos->x, playerPos->y);
-        *intersectPoint = mul_vec(&ray, *wallDistance);
-        *intersectPoint = add_vec(&playerOrigin, intersectPoint);
+        result->intersectPoint = mul_vec(&ray, result->wallDistance);
+        result->intersectPoint = add_vec(&playerOrigin, &result->intersectPoint);
 
         // Correct for perspective
-        float res = (*wallDistance) * cosf(alpha);
-        *wallDistance = res;
-    }
-    else
-    {
-        return NULL;
+        float pCorrectDist = (result->wallDistance) * cosf(alpha);
+        result->wallDistance = pCorrectDist;
     }
 
-	return intersectObject;
+    return 0;
 }

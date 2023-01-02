@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Test Grid Scene");
+    scene = create_scene("Test Grid Scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
