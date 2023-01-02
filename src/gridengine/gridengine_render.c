@@ -4,6 +4,7 @@
 #include "engine/engine_math.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 const float WALL_SHADOW = 0.5f;
@@ -13,6 +14,58 @@ const static vec2d WORLD_FWD =
     .x = 0.0f,
     .y = 1.0f
 };
+
+draw_state* create_draw_state(int screenWidth)
+{
+    draw_state* state = malloc(sizeof(draw_state));
+
+    if (state != NULL)
+    {
+        state->numberCols = screenWidth;
+        state->wallHeights = malloc(sizeof(int) * screenWidth);
+
+        if (state->wallHeights == NULL)
+        {
+            free(state);
+
+            return NULL;
+        }
+
+        reset_draw_state(state);
+
+        return state;
+    }
+    
+    return NULL;
+}
+
+void destroy_draw_state(draw_state* state)
+{
+    if (state != NULL)
+    {
+        if (state->wallHeights != NULL)
+        {
+            free(state->wallHeights);
+        }
+        free(state);
+    }
+}
+
+void reset_draw_state(draw_state* const state)
+{
+    for (int j = 0; j < SCENE_HEIGHT; j++)
+    {
+        for (int i = 0; i < SCENE_WIDTH; i++)
+        {
+            state->visibleTiles[i][j] = false;
+        }
+    }
+
+    for (int k = 0; k < state->numberCols; k++)
+    {
+        state->wallHeights[k] = -1;
+    }
+}
 
 void render_tile(
     const rayengine* const engine,
@@ -486,13 +539,6 @@ int render_static_sprites32(
             tanf(scene->player.fov / 2.0f);
         float xDisplacement = tanf(angle) * distToSpritePlane;
         int spriteX = (engine->screen.width >> 1) + xDisplacement;
-
-        /*float halfFov = (scene->player.fov / 2.0f);
-        float xScale = angle / halfFov;
-
-        printf("H FoV:  %.3f\n", halfFov);
-        printf("Angle:  %.3f\n", angle);
-        printf("XScale: %.3f\n", xScale);*/
 
         int renderResult =
             render_sprite32(

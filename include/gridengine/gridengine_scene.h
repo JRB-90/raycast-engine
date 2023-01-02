@@ -61,6 +61,13 @@ typedef struct {
 	int scale;
 } map_pos;
 
+typedef struct {
+	grid_object* intersectedObject;
+	vec2d intersectPoint;
+	float wallDistance;
+	int side;
+} traverse_result;
+
 extern grid_scene* create_scene(const char *const name);
 extern void destroy_scene(grid_scene* scene);
 

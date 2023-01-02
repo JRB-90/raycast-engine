@@ -4,6 +4,16 @@
 #include "engine_rayengine.h"
 #include <stdbool.h>
 
+typedef struct {
+    bool visibleTiles[SCENE_WIDTH][SCENE_HEIGHT];
+    int numberCols;
+    int* wallHeights;
+} draw_state;
+
+extern draw_state* create_draw_state(int screenWidth);
+extern void destroy_draw_state(draw_state* state);
+extern void reset_draw_state(draw_state* const state);
+
 extern void render_grid_scene(
     const rayengine* const engine,
     const grid_scene* const scene,
