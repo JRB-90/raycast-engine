@@ -148,6 +148,9 @@ void cleanup(int status)
         {
             destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
             destroy_texture_resources(&scene->resources, CONCRETE_TEX_ID);
+            destroy_texture_resources(&scene->resources, METAL_TEX_ID);
+            destroy_texture_resources(&scene->resources, LAMP_TEX_ID);
+            destroy_texture_resources(&scene->resources, COLUMN_TEX_ID);
         }
 
         destroy_scene(scene);
@@ -206,6 +209,30 @@ void build_test_scene()
     if (textureLoadError)
     {
         fprintf(stderr, "Failed to create texture resources\n");
+        cleanup(EXIT_FAILURE);
+    }
+
+    int spriteAddError =
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 30.0f),
+            0,
+            COLUMN_TEX_ID,
+            1000.0f
+        );
+
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(35.5f, 28.0f),
+            1,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
+    if (spriteAddError)
+    {
+        fprintf(stderr, "Failed to add static sprites\n");
         cleanup(EXIT_FAILURE);
     }
 
@@ -306,6 +333,18 @@ void render_scene()
         engine,
         scene
     );
+
+    if (SFORMAT == CF_RGB565)
+    {
+        
+    }
+    else
+    {
+        render_static_sprites32(
+            engine,
+            scene
+        );
+    }
 
     render_engine(engine);
 }

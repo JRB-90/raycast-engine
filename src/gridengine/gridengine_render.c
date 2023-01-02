@@ -189,14 +189,13 @@ void render_grid_verts(
     // Find the steps to take in the ray sweep based on the screen width,
     // one ray per screen pixel column
     int steps = engine->screen.width;
-    float fovRad = to_rad(scene->player.fov);
-    float step = fovRad / (float)steps;
+    float step = scene->player.fov / (float)steps;
 
     frame2d playerPos =
     {
         .x = scene->player.position.x,
         .y = scene->player.position.y,
-        .theta = scene->player.position.theta - (fovRad / 2.0f)
+        .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
     };
 
     // Loop through every ray angle
@@ -262,9 +261,9 @@ void render_vertical_strip16(
     float wallDistance,
     int side)
 {
-    // Find height of wall based on distance to it,
+    // Find size of wall based on distance to it,
     // using TOA to find triangle side
-    float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+    float h = tanf(scene->player.fov) * wallDistance;
     int wallHeightPixels = scene->world.wallHeight / h;
 
     // Find the start and end of the walls in screen Y coords
@@ -360,9 +359,9 @@ void render_vertical_strip32(
     float wallDistance,
     int side)
 {
-    // Find height of wall based on distance to it,
+    // Find size of wall based on distance to it,
     // using TOA to find triangle side
-    float h = tanf(to_rad(scene->player.fov)) * wallDistance;
+    float h = tanf(scene->player.fov) * wallDistance;
     int wallHeightPixels = scene->world.wallHeight / h;
 
     // Find the start and end of the walls in screen Y coords
@@ -447,4 +446,143 @@ void render_vertical_strip32(
             sPixelIndex += engine->screen.width;
         }
     }
+}
+
+int render_static_sprites32(
+    const rayengine* const engine,
+    const grid_scene* const scene)
+{
+    for (int i = 0; i < MAX_STATIC_SPRITES; i++)
+    {
+        static_sprite* sprite = &scene->world.staticSprites[i];
+
+        if (sprite->spriteID < 0)
+        {
+            continue;
+        }
+
+        vec2d playerPos =
+        {
+            scene->player.position.x,
+            scene->player.position.y
+        };
+
+        vec2d forwards = calc_forwards(&scene->player.position, &WORLD_FWD);
+        vec2d vecToSprite = sub_vec(&sprite->position, &playerPos);
+        vec2d spriteDir = norm_vec(&vecToSprite);
+
+        float angle = angle_between_vecs(&forwards, &spriteDir);
+        if (angle > M_PI / 2.0)
+        {
+            continue;
+        }
+
+        float distanceToSprite = len_vec(&vecToSprite) * cosf(angle);
+        float h = tanf(scene->player.fov) * distanceToSprite;
+        int spriteHeightPixels = (int)(sprite->spriteHeight / h);
+
+        float distToSpritePlane = 
+            (engine->screen.width >> 1) / 
+            tanf(scene->player.fov / 2.0f);
+        float xDisplacement = tanf(angle) * distToSpritePlane;
+        int spriteX = (engine->screen.width >> 1) + xDisplacement;
+
+        /*float halfFov = (scene->player.fov / 2.0f);
+        float xScale = angle / halfFov;
+
+        printf("H FoV:  %.3f\n", halfFov);
+        printf("Angle:  %.3f\n", angle);
+        printf("XScale: %.3f\n", xScale);*/
+
+        int renderResult =
+            render_sprite32(
+                engine,
+                scene,
+                sprite,
+                spriteX,
+                spriteHeightPixels
+            );
+
+        if (renderResult)
+        {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+int render_sprite32(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const static_sprite* const sprite,
+    int x,
+    int size)
+{
+    texture_resource* texture = scene->resources.textures[sprite->textureID];
+
+    if (texture == NULL)
+    {
+        return -1;
+    }
+
+    int halfHeight = size >> 1;
+    int screenWidth = engine->screen.width;
+    int screenHeight = engine->screen.height;
+    int textureWidth = texture->texture.width;
+    int textureHeight = texture->texture.height;
+
+    int screenX = x - halfHeight;
+    int screenY = (screenHeight >> 1) - halfHeight;
+    int screenPixelIndex = (screenY * screenWidth) + screenX;
+    int screenYOffset = screenWidth - size;
+
+    float texturePixelIndex = 0.0f;
+    float textureHorInc = (float)textureWidth / size;
+    float textureVerInc = (float)textureHeight / size;
+    float u = 0.0f;
+    float v = 0.0f;
+
+    uint32_t* screenPixels = (uint32_t*)engine->screen.pixels;
+    uint32_t* texturePixels = (uint32_t*)texture->texture.pixels;
+
+    for (int j = screenY; j < screenY + size; j++)
+    {
+        if (j < 0)
+        {
+            screenPixelIndex += screenWidth;
+            u = 0.0f;
+            v += textureVerInc;
+            continue;
+        }
+
+        if (j >= screenHeight)
+        {
+            return 0;
+        }
+
+        for (int i = screenX; i < screenX + size; i++)
+        {
+            if (i >= 0 &&
+                i < screenWidth)
+            {
+                texturePixelIndex = ((int)v * textureWidth) + (int)u;
+                uint32_t color = texturePixels[(int)texturePixelIndex];
+
+                if (color != 0xFFFF00FF)
+                {
+                    screenPixels[screenPixelIndex] = color;
+                }
+            }
+
+            screenPixelIndex++;
+            u += textureHorInc;
+        }
+
+        screenPixelIndex += screenYOffset;
+        u = 0.0f;
+        v += textureVerInc;
+    }
+
+    return 0;
 }

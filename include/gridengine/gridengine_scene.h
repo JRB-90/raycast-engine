@@ -4,8 +4,9 @@
 #include "engine/engine_math.h"
 #include "engine/engine_resource.h"
 
-#define SCENE_WIDTH 64
-#define SCENE_HEIGHT 64
+#define SCENE_WIDTH			64
+#define SCENE_HEIGHT		64
+#define MAX_STATIC_SPRITES	64
 
 typedef enum {
 	GRID_FLOOR,
@@ -25,7 +26,15 @@ typedef struct {
 } grid_object;
 
 typedef struct {
+	int spriteID;
+	vec2d position;
+	int textureID;
+	float spriteHeight;
+} static_sprite;
+
+typedef struct {
 	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
+	static_sprite staticSprites[MAX_STATIC_SPRITES];
 	float wallHeight;
 } world_grid;
 
@@ -52,9 +61,18 @@ typedef struct {
 	int scale;
 } map_pos;
 
-grid_scene* create_scene(const char *const name);
-void destroy_scene(grid_scene* scene);
-grid_object* project_grid_ray(
+extern grid_scene* create_scene(const char *const name);
+extern void destroy_scene(grid_scene* scene);
+
+extern int add_sprite(
+	grid_scene* const scene,
+	const vec2d position,
+	int spriteID,
+	int textureID,
+	float spriteHeight
+);
+
+extern grid_object* project_grid_ray(
 	const grid_scene* const scene,
 	const frame2d* const playerPos,
 	const vec2d* const worldForward,

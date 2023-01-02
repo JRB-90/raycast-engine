@@ -48,3 +48,16 @@ extern void render_vertical_strip32(
     float wallDistance,
     int side
 );
+
+extern int render_static_sprites32(
+    const rayengine* const engine,
+    const grid_scene* const scene
+);
+
+extern int render_sprite32(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const static_sprite* const sprite,
+    int x,
+    int height
+);

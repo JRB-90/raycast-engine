@@ -32,7 +32,7 @@ grid_scene* create_scene(const char *const name)
 			to_rad(180.0f)
 		);
 
-    scene->player.fov = 45.0f;
+    scene->player.fov = to_rad(45.0f);
     scene->player.playerCol = to_col(255, 255, 0, 0);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)
@@ -51,12 +51,46 @@ grid_scene* create_scene(const char *const name)
         scene->resources.texturesLight[i] = NULL;
     }
 
+    for (int i = 0; i < MAX_STATIC_SPRITES; i++)
+    {
+        scene->world.staticSprites[i].spriteID = -1;
+        scene->world.staticSprites[i].textureID = -1;
+        scene->world.staticSprites[i].spriteHeight = -1.0f;
+        scene->world.staticSprites[i].position = (vec2d)
+        {
+            .x = 0.0f,
+            .y = 0.0f
+        };
+    }
+
 	return scene;
 }
 
 void destroy_scene(grid_scene* scene)
 {
 	free(scene);
+}
+
+int add_sprite(
+    grid_scene* const scene,
+    const vec2d position,
+    int spriteID,
+    int textureID,
+    float spriteHeight)
+{
+    if (spriteID < 0 ||
+        spriteID >= MAX_STATIC_SPRITES)
+    {
+        fprintf(stderr, "Incorrect sprite ID\n");
+        return -1;
+    }
+
+    scene->world.staticSprites[spriteID].spriteID = spriteID;
+    scene->world.staticSprites[spriteID].textureID = textureID;
+    scene->world.staticSprites[spriteID].position = position;
+    scene->world.staticSprites[spriteID].spriteHeight = spriteHeight;
+
+    return 0;
 }
 
 grid_object* project_grid_ray(
