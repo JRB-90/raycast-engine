@@ -17,7 +17,7 @@ add_executable(textureconv
 )
 
 target_include_directories(textureconv PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
+	${PROJECT_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIRS}
 	${SDL2_IMAGE_INCLUDE_DIRS}
 )
@@ -28,6 +28,7 @@ target_link_directories(textureconv PUBLIC
 
 target_link_libraries(textureconv PUBLIC
 	engine
+	time
 	${SDL2_LIBRARIES}
 	SDL2_image
 )

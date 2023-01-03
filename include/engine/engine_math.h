@@ -81,6 +81,15 @@ static inline float dot_vec(const vec2d* const v1, const vec2d* const v2)
 	return (v1->x * v2->x) + (v1->y * v2->y);
 }
 
+static inline float angle_between_vecs(const vec2d* const v1, const vec2d* const v2)
+{
+	return
+		atan2f(
+			(v2->y * v1->x) - (v2->x * v1->y),
+			(v2->x * v1->x) + (v2->y * v1->y)
+		);
+}
+
 static inline float cross_vec(const vec2d* const v1, const vec2d* const v2)
 {
 	return (v1->x * v2->y) - (v1->y * v2->x);

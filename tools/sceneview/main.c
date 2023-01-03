@@ -13,7 +13,7 @@
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
-const int SSIZE = 5;
+const int SSIZE = 20;
 const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 20;
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Test Grid Scene");
+    scene = create_scene("Test Grid Scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
@@ -123,6 +123,14 @@ void build_test_scene()
     scene->world.grid[32][28].type = GRID_WALL;
     scene->world.grid[33][28].type = GRID_WALL;
     scene->world.grid[34][28].type = GRID_WALL;
+
+    scene->world.grid[35][25].type = GRID_WALL;
+    scene->world.grid[36][25].type = GRID_WALL;
+    scene->world.grid[37][25].type = GRID_WALL;
+
+    scene->world.grid[36][28].type = GRID_WALL;
+    scene->world.grid[36][29].type = GRID_WALL;
+    scene->world.grid[36][31].type = GRID_WALL;
 }
 
 void move_map()

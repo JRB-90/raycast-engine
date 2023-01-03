@@ -21,7 +21,16 @@ const float TRANS_AMT = 0.025f;
 const float ROT_AMT = 0.005f;
 
 const char* BRICK_TEX_PATH = "textures/brick/brick_64.rtx";
+const char* CONCRETE_TEX_PATH = "textures/concrete/concrete_64.rtx";
+const char* METAL_TEX_PATH = "textures/metal/metal_64.rtx";
+const char* LAMP_TEX_PATH = "sprites/static/lamp/lamp_64.rtx";
+const char* COLUMN_TEX_PATH = "sprites/static/column/column_64.rtx";
+
 const int BRICK_TEX_ID = 2;
+const int CONCRETE_TEX_ID = 3;
+const int METAL_TEX_ID = 4;
+const int LAMP_TEX_ID = 5;
+const int COLUMN_TEX_ID = 6;
 
 const vec2d WORLD_FWD =
 {
@@ -54,7 +63,7 @@ int main(int argc, char** argv)
 
     signal(SIGINT, sig_handler);
 
-    scene = create_scene("Vert drawing test scene");
+    scene = create_scene("Vert drawing test scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
@@ -138,11 +147,20 @@ void cleanup(int status)
         if (scene->resources.textures[BRICK_TEX_ID] != NULL)
         {
             destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
+            destroy_texture_resources(&scene->resources, CONCRETE_TEX_ID);
+            destroy_texture_resources(&scene->resources, METAL_TEX_ID);
+            destroy_texture_resources(&scene->resources, LAMP_TEX_ID);
+            destroy_texture_resources(&scene->resources, COLUMN_TEX_ID);
         }
 
         destroy_scene(scene);
     }
 
+    if (status != EXIT_SUCCESS)
+    {
+        getchar();
+    }
+    
     exit(status);
 }
 
@@ -156,9 +174,83 @@ void build_test_scene()
             SFORMAT
         );
 
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            CONCRETE_TEX_PATH,
+            CONCRETE_TEX_ID,
+            SFORMAT
+        );
+
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            METAL_TEX_PATH,
+            METAL_TEX_ID,
+            SFORMAT
+        );
+
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            LAMP_TEX_PATH,
+            LAMP_TEX_ID,
+            SFORMAT
+        );
+
+    textureLoadError |=
+        create_texture_resources(
+            &scene->resources,
+            COLUMN_TEX_PATH,
+            COLUMN_TEX_ID,
+            SFORMAT
+        );
+
     if (textureLoadError)
     {
-        fprintf(stderr, "Failed to create texture resources");
+        fprintf(stderr, "Failed to create texture resources\n");
+        cleanup(EXIT_FAILURE);
+    }
+
+    int spriteAddError =
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 30.0f),
+            0,
+            COLUMN_TEX_ID,
+            1000.0f
+        );
+
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(35.5f, 28.0f),
+            1,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 29.5f),
+            2,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 30.5f),
+            3,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
+    if (spriteAddError)
+    {
+        fprintf(stderr, "Failed to add static sprites\n");
         cleanup(EXIT_FAILURE);
     }
 
@@ -170,13 +262,13 @@ void build_test_scene()
     add_wall(33, 28, BRICK_TEX_ID);
     add_wall(34, 28, BRICK_TEX_ID);
 
-    add_wall(35, 25, BRICK_TEX_ID);
-    add_wall(36, 25, BRICK_TEX_ID);
-    add_wall(37, 25, BRICK_TEX_ID);
+    add_wall(35, 25, CONCRETE_TEX_ID);
+    add_wall(36, 25, CONCRETE_TEX_ID);
+    add_wall(37, 25, CONCRETE_TEX_ID);
 
-    add_wall(36, 28, BRICK_TEX_ID);
-    add_wall(36, 29, BRICK_TEX_ID);
-    add_wall(36, 31, BRICK_TEX_ID);
+    add_wall(36, 28, METAL_TEX_ID);
+    add_wall(36, 29, METAL_TEX_ID);
+    add_wall(36, 31, METAL_TEX_ID);
 }
 
 void add_wall(int x, int y, int textureID)
@@ -259,6 +351,18 @@ void render_scene()
         engine,
         scene
     );
+
+    if (SFORMAT == CF_RGB565)
+    {
+        
+    }
+    else
+    {
+        render_sprites32(
+            engine,
+            scene
+        );
+    }
 
     render_engine(engine);
 }

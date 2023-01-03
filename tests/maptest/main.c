@@ -45,7 +45,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Map drawing test scene");
+    scene = create_scene("Map drawing test scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
@@ -231,8 +231,7 @@ void render_scene()
     render_grid_scene(
         engine,
         scene,
-        &mapPosition,
-        drawGrid
+        &mapPosition
     );
 
     render_grid_rays(
@@ -240,6 +239,16 @@ void render_scene()
         scene,
         &mapPosition,
         &scene->player
+    );
+
+    draw_grid32(
+        &engine->screen,
+        0xFF565656,
+        mapPosition.x,
+        mapPosition.y,
+        mapPosition.scale,
+        SCENE_WIDTH,
+        SCENE_HEIGHT
     );
 
     render_grid_player(
