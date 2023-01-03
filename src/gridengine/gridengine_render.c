@@ -575,10 +575,20 @@ int render_vertical_strip32(
     return 0;
 }
 
-int render_static_sprites32(
+int render_sprites32(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
+    vec2d playerPos =
+    {
+        scene->player.position.x,
+        scene->player.position.y
+    };
+
+    // Loop through sprites and check if they are in the visible
+    // grid tiles
+    int numVisible = 0;
+
     for (int i = 0; i < MAX_SPRITES; i++)
     {
         sprite_obj* sprite = &scene->world.sprites[i];
@@ -596,12 +606,7 @@ int render_static_sprites32(
             continue;
         }
 
-        vec2d playerPos =
-        {
-            scene->player.position.x,
-            scene->player.position.y
-        };
-
+        // Calculate angle between the players view and the sprite
         vec2d forwards = calc_forwards(&scene->player.position, &WORLD_FWD);
         vec2d vecToSprite = sub_vec(&sprite->position, &playerPos);
         vec2d spriteDir = norm_vec(&vecToSprite);
@@ -612,21 +617,64 @@ int render_static_sprites32(
             continue;
         }
 
+        // Calulate the perspective correct distance to the sprite
         float distanceToSprite = len_vec(&vecToSprite) * cosf(angle);
-        float h = tanf(scene->player.fov) * distanceToSprite;
-        int spriteHeightPixels = (int)(sprite->spriteHeight / h);
+        
+        // Add to the list of visible sprites
+        vis_sprite* visPtr = &scene->drawState.visibleSprites[numVisible];
+        visPtr->sprite = sprite;
+        visPtr->distanceToSprite = distanceToSprite;
+        visPtr->angle = angle;
+        numVisible++;
+    }
 
-        float distToSpritePlane = 
-            (engine->screen.width >> 1) / 
+    // Use a naive double loop to render the sprites from back to front
+    // Due to the low number of sprites, this approach is perfromant enough
+    vis_sprite* spriteToRender = NULL;
+    float furthest = FLT_MAX;
+
+    for (int i = 0; i < numVisible; i++)
+    {
+        float current = 0.0f;
+
+        for (int j = 0; j < numVisible; j++)
+        {
+            vis_sprite* visSprite = &scene->drawState.visibleSprites[j];
+
+            if (visSprite->distanceToSprite > current &&
+                visSprite->distanceToSprite < furthest)
+            {
+                current = visSprite->distanceToSprite;
+                spriteToRender = visSprite;
+            }
+        }
+
+        furthest = current;
+
+        if (spriteToRender == NULL)
+        {
+            return -1;
+        }
+
+        // Find the height of the sprite in pixels based on its distance
+        float distanceToSprite = spriteToRender->distanceToSprite;
+        float h = tanf(scene->player.fov) * distanceToSprite;
+        int spriteHeightPixels = 
+            (int)(spriteToRender->sprite->spriteHeight / h);
+
+        // Calculate the position on the screen in the X axis
+        float distToSpritePlane =
+            (engine->screen.width >> 1) /
             tanf(scene->player.fov / 2.0f);
-        float xDisplacement = tanf(angle) * distToSpritePlane;
+        float xDisplacement = tanf(spriteToRender->angle) * distToSpritePlane;
         int spriteX = (engine->screen.width >> 1) + xDisplacement;
 
+        // Render the sprite to the screen
         int renderResult =
             render_sprite32(
                 engine,
                 scene,
-                sprite,
+                spriteToRender->sprite,
                 spriteX,
                 spriteHeightPixels,
                 distanceToSprite

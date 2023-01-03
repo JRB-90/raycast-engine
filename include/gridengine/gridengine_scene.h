@@ -40,9 +40,16 @@ typedef struct {
 } world_grid;
 
 typedef struct {
+	sprite_obj* sprite;
+	float distanceToSprite;
+	float angle;
+} vis_sprite;
+
+typedef struct {
 	bool visibleTiles[SCENE_WIDTH][SCENE_HEIGHT];
 	int numberCols;
 	float* wallDistances;
+	vis_sprite visibleSprites[MAX_SPRITES];
 } draw_state;
 
 typedef struct {

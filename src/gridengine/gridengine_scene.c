@@ -103,6 +103,13 @@ void reset_draw_state(draw_state* const state)
     {
         state->wallDistances[k] = -1.0f;
     }
+
+    for (int s = 0; s < MAX_SPRITES; s++)
+    {
+        state->visibleSprites[s].sprite = NULL;
+        state->visibleSprites[s].distanceToSprite = -1.0f;
+        state->visibleSprites[s].angle = 0.0f;
+    }
 }
 
 int add_sprite(

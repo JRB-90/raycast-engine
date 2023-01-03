@@ -48,7 +48,7 @@ extern int render_vertical_strip32(
     int side
 );
 
-extern int render_static_sprites32(
+extern int render_sprites32(
     const rayengine* const engine,
     const grid_scene* const scene
 );

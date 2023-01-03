@@ -230,6 +230,24 @@ void build_test_scene()
             1000.0f
         );
 
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 29.5f),
+            2,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
+    spriteAddError |=
+        add_sprite(
+            scene,
+            to_vec2d(32.0f, 30.5f),
+            3,
+            LAMP_TEX_ID,
+            1000.0f
+        );
+
     if (spriteAddError)
     {
         fprintf(stderr, "Failed to add static sprites\n");
@@ -340,7 +358,7 @@ void render_scene()
     }
     else
     {
-        render_static_sprites32(
+        render_sprites32(
             engine,
             scene
         );
