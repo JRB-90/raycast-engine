@@ -231,7 +231,38 @@ int render_grid_rays(
         {
             if (scene->drawState.visibleTiles[i][j])
             {
-                color visColor = to_col(255, 128, 0, 0);
+                color visColor;
+
+                if (scene->world.grid[i][j].type == GRID_WALL)
+                {
+                    visColor =
+                        to_col(
+                            255,
+                            (0.5 * 128) + (0.5 * scene->colors.wallCol.r),
+                            (0.5 * 128) + (0.5 * scene->colors.wallCol.g),
+                            (0.5 * 128) + (0.5 * scene->colors.wallCol.b)
+                        );
+                }
+                else if (scene->world.grid[i][j].type == GRID_PSPAWN)
+                {
+                    visColor =
+                        to_col(
+                            255,
+                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.r),
+                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.g),
+                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.b)
+                        );
+                }
+                else
+                {
+                    visColor =
+                        to_col(
+                            255,
+                            (0.5 * 128) + (0.5 * scene->colors.floorCol.r),
+                            (0.5 * 128) + (0.5 * scene->colors.floorCol.g),
+                            (0.5 * 128) + (0.5 * scene->colors.floorCol.b)
+                        );
+                }
 
                 render_tile(
                     engine,
