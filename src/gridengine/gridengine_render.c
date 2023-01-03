@@ -62,19 +62,6 @@ int render_grid_scene(
         }
     }
 
-    if (drawGrid)
-    {
-        draw_grid32(
-            &engine->screen,
-            0xFF565656,
-            mapPosition->x,
-            mapPosition->y,
-            mapPosition->scale,
-            SCENE_WIDTH,
-            SCENE_HEIGHT
-        );
-    }
-
     return 0;
 }
 
@@ -117,6 +104,54 @@ int render_grid_player(
 
     vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7);
 
+    frame2d playerPosLeft =
+    {
+        .x = player->position.x,
+        .y = player->position.y,
+        .theta = player->position.theta - (player->fov / 2.0f)
+    };
+
+    vec2d rayLeft =
+        calc_forwards(
+            &playerPosLeft,
+            &WORLD_FWD
+        );
+
+    rayLeft = mul_vec(&rayLeft, 1000.0f);
+
+    frame2d playerPosRight =
+    {
+        .x = player->position.x,
+        .y = player->position.y,
+        .theta = player->position.theta + (player->fov / 2.0f)
+    };
+
+    vec2d rayRight =
+        calc_forwards(
+            &playerPosRight,
+            &WORLD_FWD
+        );
+
+    rayRight = mul_vec(&rayRight, 1000.0f);
+
+    draw_line32_safe(
+        &engine->screen,
+        0xFFFFFFFF,
+        posX,
+        posY,
+        posX + rayLeft.x,
+        posY + rayLeft.y
+    );
+
+    draw_line32_safe(
+        &engine->screen,
+        0xFFFFFFFF,
+        posX,
+        posY,
+        posX + rayRight.x,
+        posY + rayRight.y
+    );
+
     draw_line32_safe(
         &engine->screen,
         to_argb(&player->playerCol),
@@ -137,6 +172,8 @@ int render_grid_player(
 
     return 0;
 }
+
+traverse_result results[2048]; // Note, this will break if screen width is > 2048
 
 int render_grid_rays(
     const rayengine* const engine,
@@ -170,20 +207,57 @@ int render_grid_rays(
                 &result
             );
 
-        if (err == 0 &&
-            result.intersectedObject != NULL)
+        if (err == 0)
+        {
+            results[i] = result;
+        }
+        else
+        {
+            results[i] = (traverse_result)
+            {
+                .intersectedObject = NULL,
+                .intersectPoint = (vec2d) { 0.0f, 0.0f },
+                .wallDistance = -1.0f,
+                .side = 0,
+            };
+        }
+
+        playerPos.theta += step;
+    }
+
+    for (int j = 0; j < SCENE_HEIGHT; j++)
+    {
+        for (int i = 0; i < SCENE_WIDTH; i++)
+        {
+            if (scene->drawState.visibleTiles[i][j])
+            {
+                color visColor = to_col(255, 128, 0, 0);
+
+                render_tile(
+                    engine,
+                    mapPosition,
+                    i,
+                    j,
+                    &visColor
+                );
+            }
+        }
+    }
+
+    for (int k = 0; k < engine->screen.width; k++)
+    {
+        if (results[k].intersectedObject != NULL &&
+            results[k].wallDistance >= 0.0f)
         {
             draw_filled_rect32_safe(
                 &engine->screen,
                 to_argb(&scene->colors.intersectCol),
-                (mapPosition->x + (result.intersectPoint.x * mapPosition->scale)),
-                (mapPosition->y + (result.intersectPoint.y * mapPosition->scale)),
-                1,
-                1
+                (mapPosition->x + (results[k].intersectPoint.x * mapPosition->scale)),
+                (mapPosition->y + (results[k].intersectPoint.y * mapPosition->scale)),
+                2,
+                2
             );
         }
-
-        playerPos.theta += step;
     }
 
     return 0;
