@@ -56,7 +56,7 @@ extern int render_static_sprites32(
 extern int render_sprite32(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const static_sprite* const sprite,
+    const sprite_obj* const sprite,
     int x,
     int height,
     float distanceToSprite

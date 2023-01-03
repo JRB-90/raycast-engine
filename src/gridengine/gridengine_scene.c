@@ -62,12 +62,12 @@ grid_scene* create_scene(
         scene->resources.texturesLight[i] = NULL;
     }
 
-    for (int i = 0; i < MAX_STATIC_SPRITES; i++)
+    for (int i = 0; i < MAX_SPRITES; i++)
     {
-        scene->world.staticSprites[i].spriteID = -1;
-        scene->world.staticSprites[i].textureID = -1;
-        scene->world.staticSprites[i].spriteHeight = -1.0f;
-        scene->world.staticSprites[i].position = (vec2d)
+        scene->world.sprites[i].spriteID = -1;
+        scene->world.sprites[i].textureID = -1;
+        scene->world.sprites[i].spriteHeight = -1.0f;
+        scene->world.sprites[i].position = (vec2d)
         {
             .x = 0.0f,
             .y = 0.0f
@@ -113,16 +113,16 @@ int add_sprite(
     float spriteHeight)
 {
     if (spriteID < 0 ||
-        spriteID >= MAX_STATIC_SPRITES)
+        spriteID >= MAX_SPRITES)
     {
         fprintf(stderr, "Incorrect sprite ID\n");
         return -1;
     }
 
-    scene->world.staticSprites[spriteID].spriteID = spriteID;
-    scene->world.staticSprites[spriteID].textureID = textureID;
-    scene->world.staticSprites[spriteID].position = position;
-    scene->world.staticSprites[spriteID].spriteHeight = spriteHeight;
+    scene->world.sprites[spriteID].spriteID = spriteID;
+    scene->world.sprites[spriteID].textureID = textureID;
+    scene->world.sprites[spriteID].position = position;
+    scene->world.sprites[spriteID].spriteHeight = spriteHeight;
 
     return 0;
 }

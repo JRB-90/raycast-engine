@@ -579,9 +579,9 @@ int render_static_sprites32(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
-    for (int i = 0; i < MAX_STATIC_SPRITES; i++)
+    for (int i = 0; i < MAX_SPRITES; i++)
     {
-        static_sprite* sprite = &scene->world.staticSprites[i];
+        sprite_obj* sprite = &scene->world.sprites[i];
 
         if (sprite->spriteID < 0)
         {
@@ -644,7 +644,7 @@ int render_static_sprites32(
 int render_sprite32(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const static_sprite* const sprite,
+    const sprite_obj* const sprite,
     int x,
     int size,
     float distanceToSprite)

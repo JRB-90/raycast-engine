@@ -7,7 +7,7 @@
 
 #define SCENE_WIDTH			64
 #define SCENE_HEIGHT		64
-#define MAX_STATIC_SPRITES	64
+#define MAX_SPRITES	64
 
 typedef enum {
 	GRID_FLOOR,
@@ -22,10 +22,11 @@ typedef struct {
 } player_obj;
 
 typedef struct {
-	bool visibleTiles[SCENE_WIDTH][SCENE_HEIGHT];
-	int numberCols;
-	float* wallDistances;
-} draw_state;
+	int spriteID;
+	vec2d position;
+	int textureID;
+	float spriteHeight;
+} sprite_obj;
 
 typedef struct {
 	grid_object_type type;
@@ -33,17 +34,16 @@ typedef struct {
 } grid_object;
 
 typedef struct {
-	int spriteID;
-	vec2d position;
-	int textureID;
-	float spriteHeight;
-} static_sprite;
-
-typedef struct {
 	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
-	static_sprite staticSprites[MAX_STATIC_SPRITES];
+	sprite_obj sprites[MAX_SPRITES];
 	float wallHeight;
 } world_grid;
+
+typedef struct {
+	bool visibleTiles[SCENE_WIDTH][SCENE_HEIGHT];
+	int numberCols;
+	float* wallDistances;
+} draw_state;
 
 typedef struct {
 	color floorCol;
