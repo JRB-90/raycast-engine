@@ -53,11 +53,8 @@ void sig_handler(int signum);
 void cleanup(int status);
 void build_test_scene();
 void add_wall(int x, int y, int textureID);
-int on_update(const input_state* const inputState, const float delta);
+int on_update(const input_state* const inputState, const float deltaTimeMS);
 int on_render(screen_buffer* const screen);
-
-void move_map();
-void render_scene();
 
 int main(int argc, char** argv)
 {
@@ -72,7 +69,7 @@ int main(int argc, char** argv)
     engine_config config =
     {
         .type = ENGINE_GRID,
-        .targetFps = 60,
+        .targetFps = 24,
         .format = (screen_format)
         {
             .format = SFORMAT,
@@ -89,7 +86,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    // Test area
     engine->on_update = &on_update;
     engine->on_render = &on_render;
 
@@ -97,50 +93,9 @@ int main(int argc, char** argv)
 
     destroy_engine(engine);
     destroy_scene(scene);
-    printf("Finished\n");
-
-    getchar();
-    exit(EXIT_SUCCESS);
-    // ==========
-
-    render_scene();
-
-    clktimer timer;
-    deltatime totalTime = (deltatime)0.0;
-    int renderCount = 0;
-
-    while (!engine->input.quit)
-    {
-        update_engine(engine);
-        move_map();
-
-        if (shouldRender)
-        {
-            start_timer(&timer);
-
-            render_scene();
-
-            deltatime delta = elapsed_millis(&timer);
-            printf("Map render took %.3fms\n", delta);
-            totalTime += delta;
-            renderCount++;
-
-            render_engine(engine);
-        }
-
-        shouldRender = false;
-        sleep_millis(1);
-    }
-
-    destroy_engine(engine);
-    destroy_scene(scene);
-
-    sleep_millis(500);
-    float aveRenderTime = totalTime / (deltatime)renderCount;
-    printf("\nAverage render time: %.3f\n", aveRenderTime);
     int c = getchar();
 
-    exit(EXIT_SUCCESS);
+    exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 void sig_handler(int signum)
@@ -295,110 +250,21 @@ void add_wall(int x, int y, int textureID)
     scene->world.grid[x][y].textureID = textureID;
 }
 
-int on_update(const input_state* const inputState, const float delta)
+int on_update(const input_state* const inputState, const float deltaTimeMS)
 {
-    printf("Update\tDelta: %.3fms\n", delta);
+    printf("Delta: %.3fms\n", deltaTimeMS);
+    move_player(
+        inputState,
+        scene,
+        &WORLD_FWD,
+        &WORLD_LEFT,
+        deltaTimeMS
+    );
 
     return 0;
 }
 
 int on_render(screen_buffer* const screen)
-{
-    printf("Render\n");
-
-    return 0;
-}
-
-void move_map()
-{
-    int startX = (int)scene->player.position.x;
-    int startY = (int)scene->player.position.y;
-
-    if (engine->input.forwards)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x += transVec.x;
-        scene->player.position.y += transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.backwards)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x -= transVec.x;
-        scene->player.position.y -= transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.left)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x += transVec.x;
-        scene->player.position.y += transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.right)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x -= transVec.x;
-        scene->player.position.y -= transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.rotRight)
-    {
-        scene->player.position.theta += ROT_AMT;
-        shouldRender = true;
-    }
-
-    if (engine->input.rotLeft)
-    {
-        scene->player.position.theta -= ROT_AMT;
-        shouldRender = true;
-    }
-
-    int endX = (int)scene->player.position.x;
-    int endY = (int)scene->player.position.y;
-
-    if (endX > startX)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.x = (float)endX - 0.1f;
-        }
-    }
-
-    if (endX < startX)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.x = (float)startX + 0.1f;
-        }
-    }
-
-    if (endY > startY)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.y = (float)endY - 0.1f;
-        }
-    }
-
-    if (endY < startY)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.y = (float)startY + 0.1f;
-        }
-    }
-}
-
-void render_scene()
 {
     if (SFORMAT == CF_RGB565)
     {
@@ -424,7 +290,7 @@ void render_scene()
 
     if (SFORMAT == CF_RGB565)
     {
-        
+
     }
     else
     {
@@ -434,5 +300,5 @@ void render_scene()
         );
     }
 
-    render_engine(engine);
+    return 0;
 }

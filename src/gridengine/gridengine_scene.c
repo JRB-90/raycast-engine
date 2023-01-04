@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+const float TRANS_SPEED = 0.0075f;
+const float ROT_SPEED   = 0.0025f;
+
 grid_scene* create_scene(
     const char *const name,
     int screenWidth)
@@ -132,6 +135,107 @@ int add_sprite(
     scene->world.sprites[spriteID].spriteHeight = spriteHeight;
 
     return 0;
+}
+
+bool move_player(
+    const input_state* const inputState,
+    grid_scene* const scene,
+    const vec2d* const worldForwards,
+    const vec2d* const worldLeft,
+    const float deltaTimeMS)
+{
+    bool playerMoved = false;
+
+    float transAmt = TRANS_SPEED * deltaTimeMS;
+    float rotAmt = ROT_SPEED * deltaTimeMS;
+
+    int startX = (int)scene->player.position.x;
+    int startY = (int)scene->player.position.y;
+
+    if (inputState->forwards)
+    {
+        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = mul_vec(&travelDir, transAmt);
+        scene->player.position.x += transVec.x;
+        scene->player.position.y += transVec.y;
+        playerMoved = true;
+    }
+
+    if (inputState->backwards)
+    {
+        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = mul_vec(&travelDir, transAmt);
+        scene->player.position.x -= transVec.x;
+        scene->player.position.y -= transVec.y;
+        playerMoved = true;
+    }
+
+    if (inputState->left)
+    {
+        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = mul_vec(&travelDir, transAmt);
+        scene->player.position.x += transVec.x;
+        scene->player.position.y += transVec.y;
+        playerMoved = true;
+    }
+
+    if (inputState->right)
+    {
+        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = mul_vec(&travelDir, transAmt);
+        scene->player.position.x -= transVec.x;
+        scene->player.position.y -= transVec.y;
+        playerMoved = true;
+    }
+
+    if (inputState->rotRight)
+    {
+        scene->player.position.theta += rotAmt;
+        playerMoved = true;
+    }
+
+    if (inputState->rotLeft)
+    {
+        scene->player.position.theta -= rotAmt;
+        playerMoved = true;
+    }
+
+    int endX = (int)scene->player.position.x;
+    int endY = (int)scene->player.position.y;
+
+    if (endX > startX)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.x = (float)endX - 0.1f;
+        }
+    }
+
+    if (endX < startX)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.x = (float)startX + 0.1f;
+        }
+    }
+
+    if (endY > startY)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.y = (float)endY - 0.1f;
+        }
+    }
+
+    if (endY < startY)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.y = (float)startY + 0.1f;
+        }
+    }
+
+    return playerMoved;
 }
 
 int project_grid_ray(

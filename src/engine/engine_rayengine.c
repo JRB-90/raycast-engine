@@ -121,6 +121,12 @@ int run_engine(rayengine* const engine)
                 return res;
             }
 
+            res = render_screen(&engine->screen);
+            if (res)
+            {
+                return res;
+            }
+
             previousTicks = currentTicks;
         }
     }

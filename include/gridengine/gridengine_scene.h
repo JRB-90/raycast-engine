@@ -3,6 +3,7 @@
 #include "engine/engine_color.h"
 #include "engine/engine_math.h"
 #include "engine/engine_resource.h"
+#include "engine/engine_rayengine.h"
 #include <stdbool.h>
 
 #define SCENE_WIDTH			64
@@ -96,6 +97,14 @@ extern int add_sprite(
 	int spriteID,
 	int textureID,
 	float spriteHeight
+);
+
+extern bool move_player(
+	const input_state* const inputState,
+	grid_scene* const scene,
+	const vec2d* const worldForwards,
+	const vec2d* const worldLeft,
+	const float deltaTimeMS
 );
 
 extern int project_grid_ray(
