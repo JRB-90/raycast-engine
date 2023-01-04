@@ -1,5 +1,6 @@
-#include "engine_rayengine.h"
-#include "engine_subsystems.h"
+#include "engine/engine_rayengine.h"
+#include "engine/engine_subsystems.h"
+#include "time/time_helper.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,13 +29,13 @@ rayengine *init_engine(const engine_config *const config)
     if ((engine) == NULL)
     {
         fprintf(stderr, "Failed to malloc rayengine\n");
-
         return NULL;
     }
 
     engine->config = *config;
     engine->screen = default_screen();
     engine->input = blank_input_state();
+    engine->on_update = NULL;
 
     if (init_input_subsystem())
     {
@@ -70,4 +71,59 @@ int update_engine(rayengine *engine)
 int render_engine(rayengine *engine)
 {
     return render_screen(&engine->screen);
+}
+
+int run_engine(rayengine* const engine)
+{
+    // Ensure callbacks have been set
+    if (engine->on_update == NULL ||
+        engine->on_render == NULL)
+    {
+        fprintf(stderr, "Engine callbacks have not been set\n");
+        return -1;
+    }
+
+    float targetDeltaMS = 1000.0f / (float)engine->config.targetFps;
+    clktick previousTicks = get_ticks();
+    clktick currentTicks = previousTicks;
+
+    input_state inputState = blank_input_state();
+
+    while (inputState.quit == false)
+    {
+        currentTicks = get_ticks();
+        deltatime deltaTimeMS = get_delta_ms(currentTicks - previousTicks);
+
+        if (deltaTimeMS > targetDeltaMS)
+        {
+            int res;
+
+            res = update_input_state(&inputState);
+            if (res)
+            {
+                return res;
+            }
+
+            if (inputState.quit)
+            {
+                continue;
+            }
+
+            res = engine->on_update(&inputState, deltaTimeMS);
+            if (res)
+            {
+                return res;
+            }
+
+            res = engine->on_render(&engine->screen);
+            if (res)
+            {
+                return res;
+            }
+
+            previousTicks = currentTicks;
+        }
+    }
+
+    return 0;
 }

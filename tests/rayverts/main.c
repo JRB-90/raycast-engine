@@ -53,6 +53,9 @@ void sig_handler(int signum);
 void cleanup(int status);
 void build_test_scene();
 void add_wall(int x, int y, int textureID);
+int on_update(const input_state* const inputState, const float delta);
+int on_render(screen_buffer* const screen);
+
 void move_map();
 void render_scene();
 
@@ -69,6 +72,7 @@ int main(int argc, char** argv)
     engine_config config =
     {
         .type = ENGINE_GRID,
+        .targetFps = 60,
         .format = (screen_format)
         {
             .format = SFORMAT,
@@ -84,6 +88,20 @@ int main(int argc, char** argv)
         cleanup(EXIT_FAILURE);
         exit(EXIT_FAILURE);
     }
+
+    // Test area
+    engine->on_update = &on_update;
+    engine->on_render = &on_render;
+
+    int res = run_engine(engine);
+
+    destroy_engine(engine);
+    destroy_scene(scene);
+    printf("Finished\n");
+
+    getchar();
+    exit(EXIT_SUCCESS);
+    // ==========
 
     render_scene();
 
@@ -275,6 +293,20 @@ void add_wall(int x, int y, int textureID)
 {
     scene->world.grid[x][y].type = GRID_WALL;
     scene->world.grid[x][y].textureID = textureID;
+}
+
+int on_update(const input_state* const inputState, const float delta)
+{
+    printf("Update\tDelta: %.3fms\n", delta);
+
+    return 0;
+}
+
+int on_render(screen_buffer* const screen)
+{
+    printf("Render\n");
+
+    return 0;
 }
 
 void move_map()
