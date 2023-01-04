@@ -186,6 +186,12 @@ void render_scene()
         SCENE_HEIGHT
     );
 
+    render_grid_sprites(
+        engine,
+        scene,
+        &mapPosition
+    );
+
     render_grid_player(
         engine,
         &mapPosition,

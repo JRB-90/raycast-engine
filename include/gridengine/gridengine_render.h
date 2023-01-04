@@ -17,6 +17,12 @@ extern int render_grid_player(
     const player_obj* const player
 );
 
+extern int render_grid_sprites(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const map_pos* const mapPosition
+);
+
 extern int render_grid_rays(
     const rayengine* const engine,
     const grid_scene* const scene,

@@ -173,6 +173,37 @@ int render_grid_player(
     return 0;
 }
 
+int render_grid_sprites(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const map_pos* const mapPosition)
+{
+    for (int i = 0; i < MAX_SPRITES; i++)
+    {
+        sprite_obj* sprite = &scene->world.sprites[i];
+
+        if (sprite->spriteID < 0)
+        {
+            continue;
+        }
+
+        int posX = mapPosition->x + (sprite->position.x * mapPosition->scale);
+        int posY = mapPosition->y + (sprite->position.y * mapPosition->scale);
+        int size = mapPosition->scale * 0.2;
+
+        draw_filled_rect32_safe(
+            &engine->screen,
+            0xFFFF0000,
+            posX - size + 2,
+            posY - size + 2,
+            (size * 2) - 3,
+            (size * 2) - 3
+        );
+    }
+
+    return 0;
+}
+
 traverse_result results[2048]; // Note, this will break if screen width is > 2048
 
 int render_grid_rays(
