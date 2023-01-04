@@ -8,6 +8,7 @@
 #include "engine/engine_math.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
+#include "gridengine/gridengine_testscenes.h"
 #include "time/time_helper.h"
 
 const colformat SFORMAT = CF_ARGB;
@@ -18,6 +19,18 @@ const int GRID_MIN_SIZE = 4;
 const int GRID_MAX_SIZE = 30;
 const float ROT_AMT = 0.005f;
 
+const vec2d WORLD_FWD =
+{
+    .x = 0.0,
+    .y = 1.0
+};
+
+const vec2d WORLD_LEFT =
+{
+    .x = 1.0,
+    .y = 0.0
+};
+
 rayengine* engine;
 grid_scene* scene;
 map_pos mapPosition;
@@ -27,8 +40,6 @@ bool shouldRender = true;
 
 void sig_handler(int signum);
 void cleanup(int status);
-void build_test_scene();
-void move_map();
 void render_scene();
 
 int main(int argc, char** argv)
@@ -37,16 +48,6 @@ int main(int argc, char** argv)
     scene = NULL;
 
     signal(SIGINT, sig_handler);
-
-    mapPosition = (map_pos)
-    {
-        .x = (-SSIZE * (SCENE_WIDTH / 2)) + (SWIDTH / 2),
-        .y = (-SSIZE * (SCENE_HEIGHT / 2)) + (SHEIGHT / 2),
-        .scale = SSIZE,
-    };
-
-    scene = create_scene("Map drawing test scene", SWIDTH);
-    build_test_scene();
 
     engine_config config =
     {
@@ -57,6 +58,21 @@ int main(int argc, char** argv)
             .width = SWIDTH,
             .height = SHEIGHT
         }
+    };
+
+    scene = create_test_scene2("Map drawing test scene", &config.format);
+    if (scene == NULL)
+    {
+        fprintf(stderr, "Failed to create test scene, shutting down...\n");
+        cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
+    }
+
+    mapPosition = (map_pos)
+    {
+        .x = (-scene->player.position.x * SSIZE) + (SWIDTH / 2),
+        .y = (-scene->player.position.y * SSIZE) + (SHEIGHT / 2),
+        .scale = SSIZE,
     };
 
     engine = init_engine(&config);
@@ -76,10 +92,21 @@ int main(int argc, char** argv)
     while (!engine->input.quit)
     {
         update_engine(engine);
-        move_map();
+
+        shouldRender =
+            move_player(
+                &engine->input,
+                scene,
+                &WORLD_FWD,
+                &WORLD_LEFT,
+                3.0f
+            );
 
         if (shouldRender)
         {
+            mapPosition.x = (-scene->player.position.x * SSIZE) + (SWIDTH / 2);
+            mapPosition.y = (-scene->player.position.y * SSIZE) + (SHEIGHT / 2);
+
             start_timer(&timer);
 
             render_scene();
@@ -97,11 +124,7 @@ int main(int argc, char** argv)
     }
 
     destroy_engine(engine);
-    destroy_scene(scene);
-
-    sleep_millis(500);
-    float aveRenderTime = totalTime / (deltatime)renderCount;
-    printf("\nAverage render time: %.3f\n", aveRenderTime);
+    destroy_test_scene(scene);
     int c = getchar();
 
     exit(EXIT_SUCCESS);
@@ -126,104 +149,15 @@ void cleanup(int status)
 
     if (scene != NULL)
     {
-        destroy_scene(scene);
+        destroy_test_scene(scene);
+    }
+
+    if (status != EXIT_SUCCESS)
+    {
+        getchar();
     }
 
     exit(status);
-}
-
-void build_test_scene()
-{
-    scene->world.grid[32][32].type = GRID_PSPAWN;
-
-    scene->world.grid[30][28].type = GRID_WALL;
-    scene->world.grid[31][28].type = GRID_WALL;
-    scene->world.grid[32][28].type = GRID_WALL;
-    scene->world.grid[33][28].type = GRID_WALL;
-    scene->world.grid[34][28].type = GRID_WALL;
-
-    scene->world.grid[35][25].type = GRID_WALL;
-    scene->world.grid[36][25].type = GRID_WALL;
-    scene->world.grid[37][25].type = GRID_WALL;
-
-    scene->world.grid[36][28].type = GRID_WALL;
-    scene->world.grid[36][29].type = GRID_WALL;
-    scene->world.grid[36][31].type = GRID_WALL;
-}
-
-void move_map()
-{
-    if (engine->input.rotLeft)
-    {
-        scene->player.position.theta -= ROT_AMT;
-        shouldRender = true;
-    }
-
-    if (engine->input.rotRight)
-    {
-        scene->player.position.theta += ROT_AMT;
-        shouldRender = true;
-    }
-
-    if (engine->input.left)
-    {
-        mapPosition.x++;
-        scene->player.position.x -= 1.0f / mapPosition.scale;
-        shouldRender = true;
-    }
-
-    if (engine->input.right)
-    {
-        mapPosition.x--;
-        scene->player.position.x += 1.0f / mapPosition.scale;
-        shouldRender = true;
-    }
-
-    if (engine->input.forwards)
-    {
-        mapPosition.y++;
-        scene->player.position.y -= 1.0f / mapPosition.scale;
-        shouldRender = true;
-    }
-
-    if (engine->input.backwards)
-    {
-        mapPosition.y--;
-        scene->player.position.y += 1.0f / mapPosition.scale;
-        shouldRender = true;
-    }
-
-    if (engine->input.toggleDebug)
-    {
-        shouldRender = true;
-        mapPosition.scale--;
-
-        if (mapPosition.scale < GRID_MIN_SIZE)
-        {
-            mapPosition.scale = GRID_MIN_SIZE;
-        }
-        else
-        {
-            mapPosition.x += SCENE_WIDTH / 2;
-            mapPosition.y += SCENE_WIDTH / 2;
-        }
-    }
-
-    if (engine->input.toggleRenderMode)
-    {
-        shouldRender = true;
-        mapPosition.scale++;
-
-        if (mapPosition.scale > GRID_MAX_SIZE)
-        {
-            mapPosition.scale = GRID_MAX_SIZE;
-        }
-        else
-        {
-            mapPosition.x -= SCENE_WIDTH / 2;
-            mapPosition.y -= SCENE_WIDTH / 2;
-        }
-    }
 }
 
 void render_scene()
