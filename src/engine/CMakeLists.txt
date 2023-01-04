@@ -16,7 +16,11 @@ add_library(engine STATIC
 )
 
 target_include_directories(engine PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
+	"${PROJECT_INCLUDE_DIR}"
+)
+
+target_link_libraries(engine PUBLIC
+	time
 )
 
 if (UNIX)

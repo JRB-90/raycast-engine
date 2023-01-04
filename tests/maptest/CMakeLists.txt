@@ -33,3 +33,19 @@ else()
 		"No subsystem implementation configured, cannot configure"
 	)
 endif()
+
+add_custom_command(
+	TARGET maptest POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/textures
+        ${CMAKE_CURRENT_BINARY_DIR}/textures
+)
+
+add_custom_command(
+	TARGET maptest POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/sprites
+        ${CMAKE_CURRENT_BINARY_DIR}/sprites
+)

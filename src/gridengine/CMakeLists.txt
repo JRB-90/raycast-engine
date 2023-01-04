@@ -9,7 +9,7 @@ project(gridengine
 add_library(gridengine STATIC
     gridengine_scene.c
     gridengine_render.c
-)
+ "gridengine_testscenes.c")
 
 target_include_directories(gridengine PUBLIC
 	${PROJECT_INCLUDE_DIR}
@@ -17,4 +17,20 @@ target_include_directories(gridengine PUBLIC
 
 target_link_libraries(gridengine PUBLIC
 	engine
+)
+
+add_custom_command(
+	TARGET gridengine POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/textures
+        ${CMAKE_CURRENT_BINARY_DIR}/textures
+)
+
+add_custom_command(
+	TARGET gridengine POST_BUILD
+    COMMAND 
+		${CMAKE_COMMAND} -E copy_directory
+		${PROJECT_DATA_DIR}/sprites
+        ${CMAKE_CURRENT_BINARY_DIR}/sprites
 )

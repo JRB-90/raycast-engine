@@ -9,28 +9,13 @@
 #include "engine/engine_resource.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
+#include "gridengine/gridengine_testscenes.h"
 #include "time/time_helper.h"
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
 const int SSIZE = 30;
-const int GRID_MIN_SIZE = 4;
-const int GRID_MAX_SIZE = 30;
-const float TRANS_AMT = 0.025f;
-const float ROT_AMT = 0.005f;
-
-const char* BRICK_TEX_PATH = "textures/brick/brick_64.rtx";
-const char* CONCRETE_TEX_PATH = "textures/concrete/concrete_64.rtx";
-const char* METAL_TEX_PATH = "textures/metal/metal_64.rtx";
-const char* LAMP_TEX_PATH = "sprites/static/lamp/lamp_64.rtx";
-const char* COLUMN_TEX_PATH = "sprites/static/column/column_64.rtx";
-
-const int BRICK_TEX_ID = 2;
-const int CONCRETE_TEX_ID = 3;
-const int METAL_TEX_ID = 4;
-const int LAMP_TEX_ID = 5;
-const int COLUMN_TEX_ID = 6;
 
 const vec2d WORLD_FWD =
 {
@@ -47,14 +32,10 @@ const vec2d WORLD_LEFT =
 rayengine* engine;
 grid_scene* scene;
 
-bool shouldRender = true;
-
 void sig_handler(int signum);
 void cleanup(int status);
-void build_test_scene();
-void add_wall(int x, int y, int textureID);
-void move_map();
-void render_scene();
+int on_update(const input_state* const inputState, const float deltaTimeMS);
+int on_render(screen_buffer* const screen);
 
 int main(int argc, char** argv)
 {
@@ -63,12 +44,10 @@ int main(int argc, char** argv)
 
     signal(SIGINT, sig_handler);
 
-    scene = create_scene("Vert drawing test scene", SWIDTH);
-    build_test_scene();
-
     engine_config config =
     {
         .type = ENGINE_GRID,
+        .targetFps = 10000,
         .format = (screen_format)
         {
             .format = SFORMAT,
@@ -76,6 +55,14 @@ int main(int argc, char** argv)
             .height = SHEIGHT
         }
     };
+
+    scene = create_test_scene2("Vert drawing test scene", &config.format);
+    if (scene == NULL)
+    {
+        fprintf(stderr, "Failed to create test scene, shutting down...\n");
+        cleanup(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
+    }
 
     engine = init_engine(&config);
     if (engine == NULL)
@@ -85,44 +72,16 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    render_scene();
+    engine->on_update = &on_update;
+    engine->on_render = &on_render;
 
-    clktimer timer;
-    deltatime totalTime = (deltatime)0.0;
-    int renderCount = 0;
-
-    while (!engine->input.quit)
-    {
-        update_engine(engine);
-        move_map();
-
-        if (shouldRender)
-        {
-            start_timer(&timer);
-
-            render_scene();
-
-            deltatime delta = elapsed_millis(&timer);
-            printf("Map render took %.3fms\n", delta);
-            totalTime += delta;
-            renderCount++;
-
-            render_engine(engine);
-        }
-
-        shouldRender = false;
-        sleep_millis(1);
-    }
+    int res = run_engine(engine);
 
     destroy_engine(engine);
-    destroy_scene(scene);
-
-    sleep_millis(500);
-    float aveRenderTime = totalTime / (deltatime)renderCount;
-    printf("\nAverage render time: %.3f\n", aveRenderTime);
+    destroy_test_scene(scene);
     int c = getchar();
 
-    exit(EXIT_SUCCESS);
+    exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 void sig_handler(int signum)
@@ -144,16 +103,7 @@ void cleanup(int status)
 
     if (scene != NULL)
     {
-        if (scene->resources.textures[BRICK_TEX_ID] != NULL)
-        {
-            destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
-            destroy_texture_resources(&scene->resources, CONCRETE_TEX_ID);
-            destroy_texture_resources(&scene->resources, METAL_TEX_ID);
-            destroy_texture_resources(&scene->resources, LAMP_TEX_ID);
-            destroy_texture_resources(&scene->resources, COLUMN_TEX_ID);
-        }
-
-        destroy_scene(scene);
+        destroy_test_scene(scene);
     }
 
     if (status != EXIT_SUCCESS)
@@ -164,209 +114,21 @@ void cleanup(int status)
     exit(status);
 }
 
-void build_test_scene()
+int on_update(const input_state* const inputState, const float deltaTimeMS)
 {
-    int textureLoadError =
-        create_texture_resources(
-            &scene->resources, 
-            BRICK_TEX_PATH, 
-            BRICK_TEX_ID,
-            SFORMAT
-        );
+    printf("Delta: %.3fms\n", deltaTimeMS);
+    move_player(
+        inputState,
+        scene,
+        &WORLD_FWD,
+        &WORLD_LEFT,
+        deltaTimeMS
+    );
 
-    textureLoadError |=
-        create_texture_resources(
-            &scene->resources,
-            CONCRETE_TEX_PATH,
-            CONCRETE_TEX_ID,
-            SFORMAT
-        );
-
-    textureLoadError |=
-        create_texture_resources(
-            &scene->resources,
-            METAL_TEX_PATH,
-            METAL_TEX_ID,
-            SFORMAT
-        );
-
-    textureLoadError |=
-        create_texture_resources(
-            &scene->resources,
-            LAMP_TEX_PATH,
-            LAMP_TEX_ID,
-            SFORMAT
-        );
-
-    textureLoadError |=
-        create_texture_resources(
-            &scene->resources,
-            COLUMN_TEX_PATH,
-            COLUMN_TEX_ID,
-            SFORMAT
-        );
-
-    if (textureLoadError)
-    {
-        fprintf(stderr, "Failed to create texture resources\n");
-        cleanup(EXIT_FAILURE);
-    }
-
-    int spriteAddError =
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 30.0f),
-            0,
-            COLUMN_TEX_ID,
-            1000.0f
-        );
-
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(35.5f, 28.0f),
-            1,
-            LAMP_TEX_ID,
-            1000.0f
-        );
-
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 29.5f),
-            2,
-            LAMP_TEX_ID,
-            1000.0f
-        );
-
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 30.5f),
-            3,
-            LAMP_TEX_ID,
-            1000.0f
-        );
-
-    if (spriteAddError)
-    {
-        fprintf(stderr, "Failed to add static sprites\n");
-        cleanup(EXIT_FAILURE);
-    }
-
-    scene->world.grid[32][32].type = GRID_PSPAWN;
-
-    add_wall(30, 28, BRICK_TEX_ID);
-    add_wall(31, 28, BRICK_TEX_ID);
-    add_wall(32, 28, BRICK_TEX_ID);
-    add_wall(33, 28, BRICK_TEX_ID);
-    add_wall(34, 28, BRICK_TEX_ID);
-
-    add_wall(35, 25, CONCRETE_TEX_ID);
-    add_wall(36, 25, CONCRETE_TEX_ID);
-    add_wall(37, 25, CONCRETE_TEX_ID);
-
-    add_wall(36, 28, METAL_TEX_ID);
-    add_wall(36, 29, METAL_TEX_ID);
-    add_wall(36, 31, METAL_TEX_ID);
+    return 0;
 }
 
-void add_wall(int x, int y, int textureID)
-{
-    scene->world.grid[x][y].type = GRID_WALL;
-    scene->world.grid[x][y].textureID = textureID;
-}
-
-void move_map()
-{
-    int startX = (int)scene->player.position.x;
-    int startY = (int)scene->player.position.y;
-
-    if (engine->input.forwards)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x += transVec.x;
-        scene->player.position.y += transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.backwards)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x -= transVec.x;
-        scene->player.position.y -= transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.left)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x += transVec.x;
-        scene->player.position.y += transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.right)
-    {
-        vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        scene->player.position.x -= transVec.x;
-        scene->player.position.y -= transVec.y;
-        shouldRender = true;
-    }
-
-    if (engine->input.rotRight)
-    {
-        scene->player.position.theta += ROT_AMT;
-        shouldRender = true;
-    }
-
-    if (engine->input.rotLeft)
-    {
-        scene->player.position.theta -= ROT_AMT;
-        shouldRender = true;
-    }
-
-    int endX = (int)scene->player.position.x;
-    int endY = (int)scene->player.position.y;
-
-    if (endX > startX)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.x = (float)endX - 0.1f;
-        }
-    }
-
-    if (endX < startX)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.x = (float)startX + 0.1f;
-        }
-    }
-
-    if (endY > startY)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.y = (float)endY - 0.1f;
-        }
-    }
-
-    if (endY < startY)
-    {
-        if (scene->world.grid[endX][endY].type == GRID_WALL)
-        {
-            scene->player.position.y = (float)startY + 0.1f;
-        }
-    }
-}
-
-void render_scene()
+int on_render(screen_buffer* const screen)
 {
     if (SFORMAT == CF_RGB565)
     {
@@ -392,7 +154,7 @@ void render_scene()
 
     if (SFORMAT == CF_RGB565)
     {
-        
+
     }
     else
     {
@@ -402,5 +164,5 @@ void render_scene()
         );
     }
 
-    render_engine(engine);
+    return 0;
 }

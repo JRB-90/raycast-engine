@@ -24,16 +24,18 @@ typedef enum {
 typedef struct {
     engine_type type;
     screen_format format;
+    int targetFps;
 } engine_config;
 
 typedef struct {
     engine_config config;
     screen_buffer screen;
     input_state input;
+    int (*on_update)(const input_state* const, const float);
+    int (*on_render)(screen_buffer* const screen);
 } rayengine;
 
 input_state blank_input_state();
 rayengine *init_engine(const engine_config *const config);
 void destroy_engine(rayengine *engine);
-int update_engine(rayengine* engine);
-int render_engine(rayengine* engine);
+int run_engine(rayengine* const engine);
