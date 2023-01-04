@@ -279,6 +279,9 @@ void add_wall(int x, int y, int textureID)
 
 void move_map()
 {
+    int startX = (int)scene->player.position.x;
+    int startY = (int)scene->player.position.y;
+
     if (engine->input.forwards)
     {
         vec2d travelDir = calc_forwards(&scene->player.position, &WORLD_FWD);
@@ -325,6 +328,41 @@ void move_map()
     {
         scene->player.position.theta -= ROT_AMT;
         shouldRender = true;
+    }
+
+    int endX = (int)scene->player.position.x;
+    int endY = (int)scene->player.position.y;
+
+    if (endX > startX)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.x = (float)endX - 0.1f;
+        }
+    }
+
+    if (endX < startX)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.x = (float)startX + 0.1f;
+        }
+    }
+
+    if (endY > startY)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.y = (float)endY - 0.1f;
+        }
+    }
+
+    if (endY < startY)
+    {
+        if (scene->world.grid[endX][endY].type == GRID_WALL)
+        {
+            scene->player.position.y = (float)startY + 0.1f;
+        }
     }
 }
 
