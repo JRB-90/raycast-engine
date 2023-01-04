@@ -56,7 +56,7 @@ int main(int argc, char** argv)
         }
     };
 
-    scene = create_test_scene1("Vert drawing test scene", &config.format);
+    scene = create_test_scene2("Vert drawing test scene", &config.format);
     if (scene == NULL)
     {
         fprintf(stderr, "Failed to create test scene, shutting down...\n");
