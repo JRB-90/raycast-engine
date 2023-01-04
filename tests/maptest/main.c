@@ -231,7 +231,8 @@ void render_scene()
     render_grid_scene(
         engine,
         scene,
-        &mapPosition
+        &mapPosition,
+        true
     );
 
     render_grid_rays(

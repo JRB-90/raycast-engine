@@ -7,7 +7,8 @@
 extern int render_grid_scene(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const map_pos* const mapPosition
+    const map_pos* const mapPosition,
+    bool drawGrid
 );
 
 extern int render_grid_player(

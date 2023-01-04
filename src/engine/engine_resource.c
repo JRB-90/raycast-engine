@@ -65,7 +65,6 @@ int create_texture_resources(
 	{
 		fprintf(stderr, "Failed to create light texture variant\n");
 		destroy_texture(loadedTexture);
-		destroy_texture(loadedTexture);
 		destroy_texture(resources->textures[textureID]);
 		destroy_texture(resources->texturesDark[textureID]);
 
