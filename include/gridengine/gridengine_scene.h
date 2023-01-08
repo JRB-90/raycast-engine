@@ -8,7 +8,7 @@
 
 #define SCENE_WIDTH			64
 #define SCENE_HEIGHT		64
-#define MAX_SPRITES	64
+#define MAX_SPRITES			64
 
 typedef enum {
 	GRID_FLOOR,

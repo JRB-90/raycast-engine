@@ -7,7 +7,7 @@
 #define RES_HEADER_SIZE		24
 #define TEXTURE_DATA_SIZE	36
 
-#define MAX_TEXTURES		32
+#define MAX_TEXTURES		128
 
 typedef enum {
 	RES_BLOB = 1,
