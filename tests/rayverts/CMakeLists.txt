@@ -17,7 +17,7 @@ target_include_directories(rayverts PUBLIC
 target_link_libraries(rayverts PUBLIC
 	engine
 	gridengine
-	time
+	crossplatform
 )
 
 if(USE_SDL)
@@ -40,12 +40,4 @@ add_custom_command(
 		${CMAKE_COMMAND} -E copy_directory
 		${PROJECT_DATA_DIR}/textures
         ${CMAKE_CURRENT_BINARY_DIR}/textures
-)
-
-add_custom_command(
-	TARGET rayverts POST_BUILD
-    COMMAND 
-		${CMAKE_COMMAND} -E copy_directory
-		${PROJECT_DATA_DIR}/sprites
-        ${CMAKE_CURRENT_BINARY_DIR}/sprites
 )

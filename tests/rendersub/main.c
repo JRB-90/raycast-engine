@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "engine_subsystems.h"
-#include "time_helper.h"
+#include "engine/engine_subsystems.h"
+#include "crossplatform/crossplatform_time.h"
 
 void render_16bit(screen_buffer* const screen, uint16_t color)
 {

@@ -11,7 +11,7 @@ add_executable(mathtests
 )
 
 target_include_directories(mathtests PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
+	"${PROJECT_INCLUDE_DIR}"
 )
 
 target_link_libraries(mathtests PUBLIC

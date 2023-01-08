@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-add_subdirectory("time")
+add_subdirectory("crossplatform")
 add_subdirectory("engine")
 add_subdirectory("gridengine")
 add_subdirectory("enginedemo")

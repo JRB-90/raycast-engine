@@ -10,7 +10,7 @@
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
 #include "gridengine/gridengine_testscenes.h"
-#include "time/time_helper.h"
+#include "crossplatform/crossplatform_time.h"
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;

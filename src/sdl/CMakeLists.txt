@@ -13,7 +13,7 @@ add_library(sdlsubsystem STATIC
 )
 
 target_include_directories(sdlsubsystem PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
+	${PROJECT_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIRS}
 )
 

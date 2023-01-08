@@ -1,6 +1,6 @@
-#include "engine_subsystems.h"
-#include "engine_screen.h"
-#include "engine_rayengine.h"
+#include "engine/engine_subsystems.h"
+#include "engine/engine_screen.h"
+#include "engine/engine_rayengine.h"
 #include "SDL.h"
 #include <stdio.h>
 #include <stdbool.h>

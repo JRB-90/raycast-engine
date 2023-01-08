@@ -1,4 +1,4 @@
-#include "time_helper.h"
+#include "crossplatform/crossplatform_time.h"
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 #define TIMER_PLATFORM_WINDOWS 1

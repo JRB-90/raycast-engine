@@ -6,55 +6,18 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "engine/engine_resource.h"
-#include "time/time_helper.h"
+#include "crossplatform/crossplatform_file.h"
+#include "crossplatform/crossplatform_time.h"
 
-void convert_and_save(const char* input, const char* output);
+const char* IN_DATA_DIR = "../../../../raw/";
+const char* OUT_DATA_DIR = "../../../../data/textures/";
+
+int process_file(const char* path);
+int convert_and_save(const char* input, const char* output);
+bool is_compatible_file(const char* ext);
 bool is_supported_format(const SDL_PixelFormat* const format);
 
 int main(int argc, char** argv)
-{
-	convert_and_save(
-		"../../../../data/textures/brick/brick_64.bmp",
-		"../../../../data/textures/brick/brick_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/brick/brick_128.bmp",
-		"../../../../data/textures/brick/brick_128.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/brick/brick_256.bmp",
-		"../../../../data/textures/brick/brick_256.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/concrete/concrete_64.bmp",
-		"../../../../data/textures/concrete/concrete_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/metal/metal_64.bmp",
-		"../../../../data/textures/metal/metal_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/sprites/static/column/column_64.bmp",
-		"../../../../data/sprites/static/column/column_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/sprites/static/lamp/lamp_64.bmp",
-		"../../../../data/sprites/static/lamp/lamp_64.rtx"
-	);
-
-	getchar();
-	exit(EXIT_SUCCESS);
-}
-
-void convert_and_save(
-	const char* input, 
-	const char* output)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
@@ -63,6 +26,55 @@ void convert_and_save(
 		exit(EXIT_FAILURE);
 	}
 
+	int res = process_dir_recursively(IN_DATA_DIR, &process_file);
+
+	SDL_Quit();
+
+	getchar();
+	exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+}
+
+int process_file(const char* path)
+{
+	char filename[256];
+	char ext[32];
+
+	int res = 
+		get_filename_ext(
+			path, 
+			&filename,
+			&ext
+		);
+	
+	if (res)
+	{
+		return res;
+	}
+
+	if (!is_compatible_file(ext))
+	{
+		fprintf(stderr, "Incorrect file type: %s\n", ext);
+		return -1;
+	}
+
+	char outputPath[1024] = "";
+	strcat(outputPath, OUT_DATA_DIR);
+	strcat(outputPath, filename);
+	strcat(outputPath, ".rtx");
+
+	res =
+		convert_and_save(
+			path,
+			outputPath
+		);
+
+	return res;
+}
+
+int convert_and_save(
+	const char* input, 
+	const char* output)
+{
 	printf("Loading file %s...\n", input);
 
 	SDL_Surface* origImg = IMG_Load(input);
@@ -70,8 +82,8 @@ void convert_and_save(
 	if (origImg == NULL)
 	{
 		fprintf(stderr, "Failed to load image\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	printf("File loaded successfully\n");
@@ -82,8 +94,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "File color format not supported\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	texture_data texture =
@@ -101,8 +113,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to malloc texture pixels\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	SDL_Surface* convImg =
@@ -117,8 +129,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to malloc texture pixels\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	memcpy(texture.pixels, convImg->pixels, texture.sizeInBytes);
@@ -156,8 +168,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to save texture to disk\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	printf("Texture saved to disk\n");
@@ -170,8 +182,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to load texture from disk\n");
-		getchar();
-		exit(EXIT_FAILURE);
+
+		return -1;
 	}
 
 	printf("Texture loaded successfully\n");
@@ -180,39 +192,73 @@ void convert_and_save(
 	free(texture.pixels);
 	SDL_FreeSurface(convImg);
 	SDL_FreeSurface(origImg);
-	SDL_Quit();
 
-	//sleep_secs(1);
+	return 0;
 }
 
-bool is_supported_format(const SDL_PixelFormat* const format)
+bool is_compatible_file(const char* ext)
 {
-	if (format->format == SDL_PIXELFORMAT_ARGB32)
+	if (strcmp(ext, "PNG"))
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_ARGB8888)
+	else if (strcmp(ext, "BMP"))
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_RGB24)
+
+	return false;
+}
+
+bool is_supported_format(const SDL_PixelFormat* const sdlFormat)
+{
+	uint32_t format = sdlFormat->format;
+
+	if (format == SDL_PIXELFORMAT_UNKNOWN)
+	{
+		format =
+			SDL_MasksToPixelFormatEnum(
+				sdlFormat->BitsPerPixel,
+				sdlFormat->Rmask,
+				sdlFormat->Gmask,
+				sdlFormat->Bmask,
+				sdlFormat->Amask
+			);
+	}
+
+	if (format == SDL_PIXELFORMAT_ARGB32)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_RGB888)
+	else if (format == SDL_PIXELFORMAT_ARGB8888)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_BGR24)
+	else if (format == SDL_PIXELFORMAT_ABGR8888)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_BGR888)
+	else if (format == SDL_PIXELFORMAT_RGB24)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_RGB888)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_BGR24)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_BGR888)
 	{
 		return true;
 	}
 	else
 	{
+		char* formatString = SDL_GetPixelFormatName(format);
+		fprintf(stderr, "Pixel format: %s, not supported\n", formatString);
+
 		return false;
 	}
 }

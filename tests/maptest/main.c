@@ -6,10 +6,11 @@
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
+#include "engine/engine_subsystems.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
 #include "gridengine/gridengine_testscenes.h"
-#include "time/time_helper.h"
+#include "crossplatform/crossplatform_time.h"
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
@@ -91,7 +92,7 @@ int main(int argc, char** argv)
 
     while (!engine->input.quit)
     {
-        update_engine(engine);
+        update_input_state(&engine->input);
 
         shouldRender =
             move_player(
@@ -116,7 +117,7 @@ int main(int argc, char** argv)
             totalTime += delta;
             renderCount++;
 
-            render_engine(engine);
+            render_screen(&engine->screen);
         }
 
         shouldRender = false;
@@ -198,5 +199,5 @@ void render_scene()
         &scene->player
     );
 
-    render_engine(engine);
+    render_screen(&engine->screen);
 }

@@ -6,9 +6,10 @@
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
+#include "engine/engine_subsystems.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_render.h"
-#include "time/time_helper.h"
+#include "crossplatform/crossplatform_time.h"
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
@@ -70,7 +71,7 @@ int main(int argc, char** argv)
 
     while (!engine->input.quit)
     {
-        update_engine(engine);
+        update_input_state(&engine->input);
         move_map();
         
         if (shouldRender)
@@ -201,5 +202,5 @@ void render_scene()
         drawGrid
     );
 
-    render_engine(engine);
+    render_screen(&engine->screen);
 }

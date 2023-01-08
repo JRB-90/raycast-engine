@@ -11,13 +11,12 @@ add_executable(inputsub
 )
 
 target_include_directories(inputsub PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
-	"${PROJECT_INCLUDE_DIR}/time"
+	"${PROJECT_INCLUDE_DIR}"
 )
 
 target_link_libraries(inputsub PUBLIC
 	engine
-	time
+	crossplatform
 )
 
 if(USE_SDL)

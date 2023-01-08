@@ -20,7 +20,7 @@ target_include_directories(engine PUBLIC
 )
 
 target_link_libraries(engine PUBLIC
-	time
+	crossplatform
 )
 
 if (UNIX)

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "engine_subsystems.h"
-#include "engine_rayengine.h"
-#include "time_helper.h"
+#include "engine/engine_subsystems.h"
+#include "engine/engine_rayengine.h"
+#include "crossplatform/crossplatform_time.h"
 
 int main(int argc, char** argv)
 {
