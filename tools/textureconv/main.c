@@ -3,18 +3,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <windows.h>
 #include "SDL.h"
 #include "SDL_image.h"
 #include "engine/engine_resource.h"
+#include "crossplatform/crossplatform_file.h"
 #include "crossplatform/crossplatform_time.h"
 
 const char* IN_DATA_DIR = "../../../../raw/";
 const char* OUT_DATA_DIR = "../../../../data/textures/";
 
-int process_dir(const char* dirPath);
-int process_file(const char* path, const char* outputDir);
-void convert_and_save(const char* input, const char* output);
+int process_file(const char* path);
+int convert_and_save(const char* input, const char* output);
+bool is_compatible_file(const char* ext);
 bool is_supported_format(const SDL_PixelFormat* const format);
 
 int main(int argc, char** argv)
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
-	int res = process_dir(IN_DATA_DIR);
+	int res = process_dir_recursively(IN_DATA_DIR, &process_file);
 
 	SDL_Quit();
 
@@ -34,59 +34,44 @@ int main(int argc, char** argv)
 	exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int process_dir(const char* dirPath)
+int process_file(const char* path)
 {
-	WIN32_FIND_DATA findData;
-	HANDLE file = NULL;
+	char filename[256];
+	char ext[32];
 
-	char path[2048];
-	sprintf(path, "%s\\*.*", dirPath);
-
-	if ((file = FindFirstFile(path, &findData)) == INVALID_HANDLE_VALUE)
+	int res = 
+		get_filename_ext(
+			path, 
+			&filename,
+			&ext
+		);
+	
+	if (res)
 	{
-		fprintf(stderr, "Path not found: %s\n", dirPath);
+		return res;
+	}
+
+	if (!is_compatible_file(ext))
+	{
+		fprintf(stderr, "Incorrect file type: %s\n", ext);
 		return -1;
 	}
 
-	do
-	{
-		if (strcmp(findData.cFileName, ".") != 0 &&
-			strcmp(findData.cFileName, "..") != 0)
-		{
-			sprintf(path, "%s\\%s", dirPath, findData.cFileName);
+	char outputPath[1024] = "";
+	strcat(outputPath, OUT_DATA_DIR);
+	strcat(outputPath, filename);
+	strcat(outputPath, ".rtx");
 
-			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			{
-				printf("Entering dir: %s\n", path);
-				if (process_dir(path))
-				{
-					return -1;
-				}
-			}
-			else
-			{
-				printf("Processing file: %s\n", path);
-				process_file(path, OUT_DATA_DIR);
-			}
-		}
-	} while (FindNextFile(file, &findData));
+	res =
+		convert_and_save(
+			path,
+			outputPath
+		);
 
-	FindClose(file);
-
-	return 0;
+	return res;
 }
 
-int process_file(const char* path, const char* outputDir)
-{
-	char filename[1024];
-	char ext[1024];
-
-	// TODO - Extract ext and filename from path
-	//        then convert to multiple versions
-	//        and save to disk
-}
-
-void convert_and_save(
+int convert_and_save(
 	const char* input, 
 	const char* output)
 {
@@ -97,8 +82,8 @@ void convert_and_save(
 	if (origImg == NULL)
 	{
 		fprintf(stderr, "Failed to load image\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	printf("File loaded successfully\n");
@@ -109,8 +94,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "File color format not supported\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	texture_data texture =
@@ -128,8 +113,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to malloc texture pixels\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	SDL_Surface* convImg =
@@ -144,8 +129,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to malloc texture pixels\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	memcpy(texture.pixels, convImg->pixels, texture.sizeInBytes);
@@ -183,8 +168,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to save texture to disk\n");
-		getchar();
-		exit(EXIT_FAILURE);
+		
+		return -1;
 	}
 
 	printf("Texture saved to disk\n");
@@ -197,8 +182,8 @@ void convert_and_save(
 		SDL_FreeSurface(origImg);
 		SDL_Quit();
 		fprintf(stderr, "Failed to load texture from disk\n");
-		getchar();
-		exit(EXIT_FAILURE);
+
+		return -1;
 	}
 
 	printf("Texture loaded successfully\n");
@@ -207,36 +192,73 @@ void convert_and_save(
 	free(texture.pixels);
 	SDL_FreeSurface(convImg);
 	SDL_FreeSurface(origImg);
+
+	return 0;
 }
 
-bool is_supported_format(const SDL_PixelFormat* const format)
+bool is_compatible_file(const char* ext)
 {
-	if (format->format == SDL_PIXELFORMAT_ARGB32)
+	if (strcmp(ext, "PNG"))
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_ARGB8888)
+	else if (strcmp(ext, "BMP"))
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_RGB24)
+
+	return false;
+}
+
+bool is_supported_format(const SDL_PixelFormat* const sdlFormat)
+{
+	uint32_t format = sdlFormat->format;
+
+	if (format == SDL_PIXELFORMAT_UNKNOWN)
+	{
+		format =
+			SDL_MasksToPixelFormatEnum(
+				sdlFormat->BitsPerPixel,
+				sdlFormat->Rmask,
+				sdlFormat->Gmask,
+				sdlFormat->Bmask,
+				sdlFormat->Amask
+			);
+	}
+
+	if (format == SDL_PIXELFORMAT_ARGB32)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_RGB888)
+	else if (format == SDL_PIXELFORMAT_ARGB8888)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_BGR24)
+	else if (format == SDL_PIXELFORMAT_ABGR8888)
 	{
 		return true;
 	}
-	else if (format->format == SDL_PIXELFORMAT_BGR888)
+	else if (format == SDL_PIXELFORMAT_RGB24)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_RGB888)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_BGR24)
+	{
+		return true;
+	}
+	else if (format == SDL_PIXELFORMAT_BGR888)
 	{
 		return true;
 	}
 	else
 	{
+		char* formatString = SDL_GetPixelFormatName(format);
+		fprintf(stderr, "Pixel format: %s, not supported\n", formatString);
+
 		return false;
 	}
 }
