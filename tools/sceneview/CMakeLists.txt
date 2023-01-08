@@ -17,7 +17,7 @@ target_include_directories(sceneview PUBLIC
 target_link_libraries(sceneview PUBLIC
 	engine
 	gridengine
-	time
+	crossplatform
 )
 
 if(USE_SDL)

@@ -74,7 +74,7 @@ grid_scene* create_test_scene1(
     if (spriteAddError)
     {
         fprintf(stderr, "Failed to add static sprites\n");
-        return -1;
+        return NULL;
     }
 
     scene->world.grid[32][32].type = GRID_PSPAWN;
@@ -196,7 +196,7 @@ grid_scene* create_test_scene2(
     if (spriteAddError)
     {
         fprintf(stderr, "Failed to add static sprites\n");
-        return -1;
+        return NULL;
     }
 
     scene->player.position = (frame2d)
@@ -380,6 +380,8 @@ int load_test_textures(
         fprintf(stderr, "Failed to create texture resources\n");
         return -1;
     }
+
+    return 0;
 }
 
 void destroy_test_textures(grid_scene* const scene)

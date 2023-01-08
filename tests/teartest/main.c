@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "engine_subsystems.h"
-#include "engine_screen.h"
-#include "engine_color.h"
-#include "time_helper.h"
+#include "engine/engine_subsystems.h"
+#include "engine/engine_screen.h"
+#include "engine/engine_color.h"
+#include "crossplatform/crossplatform_time.h"
 
 const int SWIDTH = 640;
 const int SHEIGHT = 480;

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "engine_rayengine.h"
-#include "engine_screen.h"
-#include "engine_draw.h"
-#include "engine_color.h"
-#include "time_helper.h"
+#include "engine/engine_rayengine.h"
+#include "engine/engine_screen.h"
+#include "engine/engine_draw.h"
+#include "engine/engine_color.h"
+#include "engine/engine_subsystems.h"
+#include "crossplatform/crossplatform_time.h"
 
 #define LINES_TO_READ 10000
 #define RECTS_TO_READ 10000
@@ -148,7 +149,7 @@ void run_basic_tests(engine_config config)
         start_timer(&timer);
         draw_clear_screen16(&engine->screen, 0xFFFF);
         delta16 += elapsed_millis(&timer);
-        render_engine(engine);
+        render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -156,7 +157,7 @@ void run_basic_tests(engine_config config)
         start_timer(&timer);
         draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
         delta32 += elapsed_millis(&timer);
-        render_engine(engine);
+        render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -164,7 +165,7 @@ void run_basic_tests(engine_config config)
         start_timer(&timer);
         draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
         delta64 += elapsed_millis(&timer);
-        render_engine(engine);
+        render_screen(&engine->screen);
     }
 
     printf("Shutting down engine...\n");

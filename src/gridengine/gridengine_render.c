@@ -94,7 +94,7 @@ int render_grid_player(
 {
     int posX = mapPosition->x + (player->position.x * mapPosition->scale);
     int posY = mapPosition->y + (player->position.y * mapPosition->scale);
-    int size = mapPosition->scale * 0.3;
+    int size = (int)((float)mapPosition->scale * 0.3f);
 
     vec2d forward =
         calc_forwards(
@@ -102,7 +102,7 @@ int render_grid_player(
             &WORLD_FWD
         );
 
-    vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7);
+    vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7f);
 
     frame2d playerPosLeft =
     {
@@ -139,8 +139,8 @@ int render_grid_player(
         0xFFFFFFFF,
         posX,
         posY,
-        posX + rayLeft.x,
-        posY + rayLeft.y
+        posX + (int)rayLeft.x,
+        posY + (int)rayLeft.y
     );
 
     draw_line32_safe(
@@ -148,8 +148,8 @@ int render_grid_player(
         0xFFFFFFFF,
         posX,
         posY,
-        posX + rayRight.x,
-        posY + rayRight.y
+        posX + (int)rayRight.x,
+        posY + (int)rayRight.y
     );
 
     draw_line32_safe(
@@ -157,8 +157,8 @@ int render_grid_player(
         to_argb(&player->playerCol),
         posX,
         posY,
-        posX + arrow.x,
-        posY + arrow.y
+        posX + (int)arrow.x,
+        posY + (int)arrow.y
     );
 
     draw_filled_rect32_safe(
@@ -180,7 +180,7 @@ int render_grid_sprites(
 {
     for (int i = 0; i < MAX_SPRITES; i++)
     {
-        sprite_obj* sprite = &scene->world.sprites[i];
+        sprite_obj* const sprite = &scene->world.sprites[i];
 
         if (sprite->spriteID < 0)
         {
@@ -189,7 +189,7 @@ int render_grid_sprites(
 
         int posX = mapPosition->x + (sprite->position.x * mapPosition->scale);
         int posY = mapPosition->y + (sprite->position.y * mapPosition->scale);
-        int size = mapPosition->scale * 0.2;
+        int size = mapPosition->scale * 0.2f;
 
         draw_filled_rect32_safe(
             &engine->screen,
@@ -269,9 +269,9 @@ int render_grid_rays(
                     visColor =
                         to_col(
                             255,
-                            (0.5 * 128) + (0.5 * scene->colors.wallCol.r),
-                            (0.5 * 128) + (0.5 * scene->colors.wallCol.g),
-                            (0.5 * 128) + (0.5 * scene->colors.wallCol.b)
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.r)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.g)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.b))
                         );
                 }
                 else if (scene->world.grid[i][j].type == GRID_PSPAWN)
@@ -279,9 +279,9 @@ int render_grid_rays(
                     visColor =
                         to_col(
                             255,
-                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.r),
-                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.g),
-                            (0.5 * 128) + (0.5 * scene->colors.pSpawnCol.b)
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.r)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.g)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.b))
                         );
                 }
                 else
@@ -289,9 +289,9 @@ int render_grid_rays(
                     visColor =
                         to_col(
                             255,
-                            (0.5 * 128) + (0.5 * scene->colors.floorCol.r),
-                            (0.5 * 128) + (0.5 * scene->colors.floorCol.g),
-                            (0.5 * 128) + (0.5 * scene->colors.floorCol.b)
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.r)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.g)),
+                            (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.b))
                         );
                 }
 

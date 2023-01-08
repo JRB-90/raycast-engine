@@ -28,7 +28,7 @@ target_link_directories(textureconv PUBLIC
 
 target_link_libraries(textureconv PUBLIC
 	engine
-	time
+	crossplatform
 	${SDL2_LIBRARIES}
 	SDL2_image
 )

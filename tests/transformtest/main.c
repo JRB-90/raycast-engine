@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <signal.h>
-#include "time/time_helper.h"
 #include "engine/engine_rayengine.h"
 #include "engine/engine_screen.h"
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
+#include "engine/engine_subsystems.h"
+#include "crossplatform/crossplatform_time.h"
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
@@ -66,8 +67,8 @@ int main(int argc, char** argv)
         },
         .trans = (vec2d)
         {
-            .x = (SWIDTH / 2),
-            .y = (SHEIGHT / 2)
+            .x = (float)(SWIDTH / 2),
+            .y = (float)(SHEIGHT / 2)
         },
         .rot = to_rad(180.0f)
     };
@@ -121,7 +122,7 @@ int main(int argc, char** argv)
     
     while (!engine->input.quit)
     {
-        update_engine(engine);
+        update_input_state(&engine->input);
         move_shape();
 
         if (shouldRender)
@@ -244,10 +245,41 @@ void render_shape()
 
     draw_clear_screen32(&engine->screen, 0xFF000000);
 
-    draw_line32_safe(&engine->screen, 0xFFFFFFFF, _sq1.x, _sq1.y, _sq2.x, _sq2.y);
-    draw_line32_safe(&engine->screen, 0xFFFFFFFF, _sq2.x, _sq2.y, _sq3.x, _sq3.y);
-    draw_line32_safe(&engine->screen, 0xFFFFFFFF, _sq3.x, _sq3.y, _sq4.x, _sq4.y);
-    draw_line32_safe(&engine->screen, 0xFFFFFFFF, _sq4.x, _sq4.y, _sq1.x, _sq1.y);
+    draw_line32_safe(
+        &engine->screen, 
+        0xFFFFFFFF, 
+        (int)_sq1.x, 
+        (int)_sq1.y, 
+        (int)_sq2.x, 
+        (int)_sq2.y
+    );
+
+    draw_line32_safe(
+        &engine->screen, 
+        0xFFFFFFFF, 
+        (int)_sq2.x, 
+        (int)_sq2.y, 
+        (int)_sq3.x, 
+        (int)_sq3.y
+    );
+
+    draw_line32_safe(
+        &engine->screen, 
+        0xFFFFFFFF, 
+        (int)_sq3.x, 
+        (int)_sq3.y, 
+        (int)_sq4.x, 
+        (int)_sq4.y
+    );
+
+    draw_line32_safe(
+        &engine->screen, 
+        0xFFFFFFFF, 
+        (int)_sq4.x, 
+        (int)_sq4.y, 
+        (int)_sq1.x, 
+        (int)_sq1.y
+    );
 
     // Draw player
     float width = _pl2.x - _pl1.x;
@@ -256,22 +288,22 @@ void render_shape()
     draw_filled_rect32_safe(
         &engine->screen,
         0xFFFF0000,
-        _pl1.x,
-        _pl1.y,
-        _pl2.x - _pl1.x,
-        _pl2.y - _pl1.y
+        (int)_pl1.x,
+        (int)_pl1.y,
+        (int)_pl2.x - (int)_pl1.x,
+        (int)_pl2.y - (int)_pl1.y
     );
 
     draw_line32_safe(
         &engine->screen,
         0xFFFF0000,
-        _pl3.x,
-        _pl3.y,
-        _pl4.x,
-        _pl4.y
+        (int)_pl3.x,
+        (int)_pl3.y,
+        (int)_pl4.x,
+        (int)_pl4.y
     );
 
-    render_engine(engine);
+    render_screen(&engine->screen);
 
     deltatime renderTime = elapsed_millis(&timer);
 

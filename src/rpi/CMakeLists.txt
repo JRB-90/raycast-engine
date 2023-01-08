@@ -11,7 +11,7 @@ add_library(rpisubsystem STATIC
 )
 
 target_include_directories(rpisubsystem PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
+	"${PROJECT_INCLUDE_DIR}"
 )
 
 target_link_libraries(rpisubsystem PUBLIC

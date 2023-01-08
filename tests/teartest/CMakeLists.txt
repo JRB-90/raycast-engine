@@ -11,13 +11,12 @@ add_executable(teartest
 )
 
 target_include_directories(teartest PUBLIC
-	"${PROJECT_INCLUDE_DIR}/engine"
-	"${PROJECT_INCLUDE_DIR}/time"
+	"${PROJECT_INCLUDE_DIR}"
 )
 
 target_link_libraries(teartest PUBLIC
 	engine
-	time
+	crossplatform
 )
 
 if(USE_SDL)

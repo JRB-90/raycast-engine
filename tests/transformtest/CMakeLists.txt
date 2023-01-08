@@ -17,7 +17,7 @@ target_include_directories(transformtest PUBLIC
 target_link_libraries(transformtest PUBLIC
 	engine
 	gridengine
-	time
+	crossplatform
 )
 
 if(USE_SDL)

@@ -4,11 +4,12 @@
 #include <time.h>
 #include <inttypes.h>
 #include <stdbool.h>
-#include "engine_rayengine.h"
-#include "engine_screen.h"
-#include "engine_draw.h"
-#include "engine_color.h"
-#include "time_helper.h"
+#include "engine/engine_rayengine.h"
+#include "engine/engine_screen.h"
+#include "engine/engine_draw.h"
+#include "engine/engine_color.h"
+#include "engine/engine_subsystems.h"
+#include "crossplatform/crossplatform_time.h"
 
 const int SWIDTH = 640;
 const int SHEIGHT = 480;
@@ -50,7 +51,7 @@ int main(int argc, char** argv)
     }
 
     draw_clear_screen16(&engine->screen, 0x00);
-    render_engine(engine);
+    render_screen(&engine->screen);
 
     for (int i = 0; i < NUM_RECTS; i++)
     {
@@ -90,7 +91,7 @@ int main(int argc, char** argv)
             );
         }
 
-        render_engine(engine);
+        render_screen(&engine->screen);
 
         if (isSlow)
         {
@@ -122,7 +123,7 @@ int main(int argc, char** argv)
     }
 
     draw_clear_screen32(&engine->screen, 0x0000);
-    render_engine(engine);
+    render_screen(&engine->screen);
 
     for (int i = 0; i < NUM_RECTS; i++)
     {
@@ -162,7 +163,7 @@ int main(int argc, char** argv)
             );
         }
 
-        render_engine(engine);
+        render_screen(&engine->screen);
 
         if (isSlow)
         {

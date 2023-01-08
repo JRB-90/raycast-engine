@@ -3,58 +3,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <windows.h>
 #include "SDL.h"
 #include "SDL_image.h"
 #include "engine/engine_resource.h"
-#include "time/time_helper.h"
+#include "crossplatform/crossplatform_time.h"
 
+const char* IN_DATA_DIR = "../../../../raw/";
+const char* OUT_DATA_DIR = "../../../../data/textures/";
+
+int process_dir(const char* dirPath);
+int process_file(const char* path, const char* outputDir);
 void convert_and_save(const char* input, const char* output);
 bool is_supported_format(const SDL_PixelFormat* const format);
 
 int main(int argc, char** argv)
-{
-	convert_and_save(
-		"../../../../data/textures/brick/brick_64.bmp",
-		"../../../../data/textures/brick/brick_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/brick/brick_128.bmp",
-		"../../../../data/textures/brick/brick_128.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/brick/brick_256.bmp",
-		"../../../../data/textures/brick/brick_256.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/concrete/concrete_64.bmp",
-		"../../../../data/textures/concrete/concrete_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/textures/metal/metal_64.bmp",
-		"../../../../data/textures/metal/metal_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/sprites/static/column/column_64.bmp",
-		"../../../../data/sprites/static/column/column_64.rtx"
-	);
-
-	convert_and_save(
-		"../../../../data/sprites/static/lamp/lamp_64.bmp",
-		"../../../../data/sprites/static/lamp/lamp_64.rtx"
-	);
-
-	getchar();
-	exit(EXIT_SUCCESS);
-}
-
-void convert_and_save(
-	const char* input, 
-	const char* output)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
@@ -63,6 +26,70 @@ void convert_and_save(
 		exit(EXIT_FAILURE);
 	}
 
+	int res = process_dir(IN_DATA_DIR);
+
+	SDL_Quit();
+
+	getchar();
+	exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+}
+
+int process_dir(const char* dirPath)
+{
+	WIN32_FIND_DATA findData;
+	HANDLE file = NULL;
+
+	char path[2048];
+	sprintf(path, "%s\\*.*", dirPath);
+
+	if ((file = FindFirstFile(path, &findData)) == INVALID_HANDLE_VALUE)
+	{
+		fprintf(stderr, "Path not found: %s\n", dirPath);
+		return -1;
+	}
+
+	do
+	{
+		if (strcmp(findData.cFileName, ".") != 0 &&
+			strcmp(findData.cFileName, "..") != 0)
+		{
+			sprintf(path, "%s\\%s", dirPath, findData.cFileName);
+
+			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				printf("Entering dir: %s\n", path);
+				if (process_dir(path))
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				printf("Processing file: %s\n", path);
+				process_file(path, OUT_DATA_DIR);
+			}
+		}
+	} while (FindNextFile(file, &findData));
+
+	FindClose(file);
+
+	return 0;
+}
+
+int process_file(const char* path, const char* outputDir)
+{
+	char filename[1024];
+	char ext[1024];
+
+	// TODO - Extract ext and filename from path
+	//        then convert to multiple versions
+	//        and save to disk
+}
+
+void convert_and_save(
+	const char* input, 
+	const char* output)
+{
 	printf("Loading file %s...\n", input);
 
 	SDL_Surface* origImg = IMG_Load(input);
@@ -180,9 +207,6 @@ void convert_and_save(
 	free(texture.pixels);
 	SDL_FreeSurface(convImg);
 	SDL_FreeSurface(origImg);
-	SDL_Quit();
-
-	//sleep_secs(1);
 }
 
 bool is_supported_format(const SDL_PixelFormat* const format)

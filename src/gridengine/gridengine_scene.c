@@ -260,8 +260,8 @@ int project_grid_ray(
 	int yDir;
 
 	vec2d ray = calc_forwards(playerPos, worldForward);
-	float deltaDistX = fabs(1.0 / ray.x);
-	float deltaDistY = fabs(1.0 / ray.y);
+	float deltaDistX = fabsf(1.0f / ray.x);
+	float deltaDistY = fabsf(1.0f / ray.y);
 
     if (ray.x < 0)
     {
@@ -271,7 +271,7 @@ int project_grid_ray(
     else
     {
         xDir = 1;
-        sideDistX = ((float)gridX + 1.0 - posX) * deltaDistX;
+        sideDistX = ((float)gridX + 1.0f - posX) * deltaDistX;
     }
 
     if (ray.y < 0)
@@ -282,7 +282,7 @@ int project_grid_ray(
     else
     {
         yDir = 1;
-        sideDistY = ((float)gridY + 1.0 - posY) * deltaDistY;
+        sideDistY = ((float)gridY + 1.0f - posY) * deltaDistY;
     }
 
     while (true)
