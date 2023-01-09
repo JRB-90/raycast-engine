@@ -10,10 +10,3 @@ extern int get_filename_ext(
 	char* filename,
 	char* ext
 );
-
-extern char* substring(
-	char* destination,
-	const char* source, 
-	int start, 
-	int len
-);

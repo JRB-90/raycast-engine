@@ -12,5 +12,9 @@ add_library(crossplatform STATIC
 )
 
 target_include_directories(crossplatform PUBLIC
-	"${PROJECT_INCLUDE_DIR}"
+	${PROJECT_INCLUDE_DIR}
+)
+
+target_link_libraries(crossplatform PUBLIC
+	utils
 )

@@ -1,8 +1,10 @@
 #include "crossplatform/crossplatform_file.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
+#include "utils/utils_string.h"
 
 int process_dir_recursively(
 	const char* dirPath, 
@@ -109,15 +111,4 @@ int get_filename_ext(
 	}
 
 	return 0;
-}
-char* substring(
-	char* destination, 
-	const char* source, 
-	int start, 
-	int len)
-{
-	strncpy(destination, (source + start), len);
-	destination[len] = '\0';
-
-	return destination;
 }
