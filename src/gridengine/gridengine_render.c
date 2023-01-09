@@ -651,7 +651,7 @@ int render_sprites32(
         // Calulate the perspective correct distance to the sprite
         float distanceToSprite = len_vec(&vecToSprite) * cosf(angle);
         
-        // Add to the list of visible sprites
+        // Add to the linked_list of visible sprites
         vis_sprite* visPtr = &scene->drawState.visibleSprites[numVisible];
         visPtr->sprite = sprite;
         visPtr->distanceToSprite = distanceToSprite;
