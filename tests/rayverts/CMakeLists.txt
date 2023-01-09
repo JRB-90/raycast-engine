@@ -11,7 +11,7 @@ add_executable(rayverts
 )
 
 target_include_directories(rayverts PUBLIC
-	"${PROJECT_INCLUDE_DIR}"
+	${PROJECT_INCLUDE_DIR}
 )
 
 target_link_libraries(rayverts PUBLIC
