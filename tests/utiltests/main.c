@@ -11,7 +11,7 @@ void print_node_data(void* data);
 
 int main(int argc, char** argv)
 {
-	//string_tests();
+	string_tests();
 	list_tests();
 
 	printf("\nTests complete\n");
