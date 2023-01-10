@@ -114,6 +114,12 @@ sprite_obj* create_sprite(
     const vec2d position,
     float spriteHeight)
 {
+    if (scene->world.sprites.size == MAX_SPRITES)
+    {
+        fprintf(stderr, "Max sprites reached\n");
+        return NULL;
+    }
+
     sprite_obj* sprite = (sprite_obj*)malloc(sizeof(sprite_obj));
 
     if (sprite == NULL)
