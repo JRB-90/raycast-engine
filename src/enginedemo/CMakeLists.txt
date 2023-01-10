@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project(enginedemo
 	VERSION 0.1
     LANGUAGES C
-    DESCRIPTION "Demo program for the raycast engine"
+    DESCRIPTION "Library for supporting a grid-based scene"
 )
 
 add_executable(enginedemo
@@ -16,4 +16,5 @@ target_include_directories(enginedemo PUBLIC
 
 target_link_libraries(enginedemo PUBLIC
 	engine
+	utils
 )

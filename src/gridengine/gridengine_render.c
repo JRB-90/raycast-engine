@@ -1,12 +1,13 @@
 #include "gridengine/gridengine_render.h"
 
-#include "engine/engine_draw.h"
-#include "engine/engine_math.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <float.h>
+#include "engine/engine_draw.h"
+#include "engine/engine_math.h"
+#include "utils/utils_list.h"
 
 const float WALL_SHADOW = 0.5f;
 
@@ -15,6 +16,8 @@ const static vec2d WORLD_FWD =
     .x = 0.0f,
     .y = 1.0f
 };
+
+traverse_result results[2048]; // Note, this will break if screen width is > 2048
 
 int render_tile(
     const rayengine* const engine,
@@ -178,9 +181,16 @@ int render_grid_sprites(
     const grid_scene* const scene,
     const map_pos* const mapPosition)
 {
-    for (int i = 0; i < MAX_SPRITES; i++)
+    list_node* currentNode = scene->world.sprites.head;
+
+    for (int i = 0; i < scene->world.sprites.size; i++)
     {
-        sprite_obj* const sprite = &scene->world.sprites[i];
+        if (currentNode == NULL)
+        {
+            return 0;;
+        }
+
+        sprite_obj* const sprite = (sprite_obj*)currentNode->data;
 
         if (sprite->spriteID < 0)
         {
@@ -199,12 +209,12 @@ int render_grid_sprites(
             (size * 2) - 3,
             (size * 2) - 3
         );
+
+        currentNode = currentNode->next;
     }
 
     return 0;
 }
-
-traverse_result results[2048]; // Note, this will break if screen width is > 2048
 
 int render_grid_rays(
     const rayengine* const engine,
@@ -620,20 +630,23 @@ int render_sprites32(
     // grid tiles
     int numVisible = 0;
 
-    for (int i = 0; i < MAX_SPRITES; i++)
-    {
-        sprite_obj* sprite = &scene->world.sprites[i];
+    list_node* currentNode = scene->world.sprites.head;
 
-        if (sprite->spriteID < 0)
+    while (currentNode != NULL)
+    {
+        if (currentNode == NULL)
         {
-            continue;
+            break;
         }
+
+        sprite_obj* sprite = (sprite_obj*)currentNode->data;
 
         bool isInVisibleTile =
             scene->drawState.visibleTiles[(int)sprite->position.x][(int)sprite->position.y];
 
         if (isInVisibleTile == false)
         {
+            currentNode = currentNode->next;
             continue;
         }
 
@@ -645,6 +658,7 @@ int render_sprites32(
         float angle = angle_between_vecs(&forwards, &spriteDir);
         if (angle > M_PI / 2.0)
         {
+            currentNode = currentNode->next;
             continue;
         }
 
@@ -657,6 +671,8 @@ int render_sprites32(
         visPtr->distanceToSprite = distanceToSprite;
         visPtr->angle = angle;
         numVisible++;
+
+        currentNode = currentNode->next;
     }
 
     // Use a naive double loop to render the sprites from back to front

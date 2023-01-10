@@ -1,7 +1,9 @@
 #include "gridengine/gridengine_scene.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utils/utils_list.h"
 
 const float TRANS_SPEED = 0.0075f;
 const float ROT_SPEED   = 0.0025f;
@@ -65,17 +67,7 @@ grid_scene* create_scene(
         scene->resources.texturesLight[i] = NULL;
     }
 
-    for (int i = 0; i < MAX_SPRITES; i++)
-    {
-        scene->world.sprites[i].spriteID = -1;
-        scene->world.sprites[i].textureID = -1;
-        scene->world.sprites[i].spriteHeight = -1.0f;
-        scene->world.sprites[i].position = (vec2d)
-        {
-            .x = 0.0f,
-            .y = 0.0f
-        };
-    }
+    scene->world.sprites = list_create();
 
 	return scene;
 }
@@ -115,26 +107,58 @@ void reset_draw_state(draw_state* const state)
     }
 }
 
-int add_sprite(
+sprite_obj* create_sprite(
     grid_scene* const scene,
-    const vec2d position,
     int spriteID,
     int textureID,
+    const vec2d position,
     float spriteHeight)
 {
-    if (spriteID < 0 ||
-        spriteID >= MAX_SPRITES)
+    sprite_obj* sprite = (sprite_obj*)malloc(sizeof(sprite_obj));
+
+    if (sprite == NULL)
     {
-        fprintf(stderr, "Incorrect sprite ID\n");
-        return -1;
+        fprintf(stderr, "Failed to malloc new sprite\n");
+        return NULL;
     }
 
-    scene->world.sprites[spriteID].spriteID = spriteID;
-    scene->world.sprites[spriteID].textureID = textureID;
-    scene->world.sprites[spriteID].position = position;
-    scene->world.sprites[spriteID].spriteHeight = spriteHeight;
+    sprite->spriteID = spriteID;
+    sprite->textureID = textureID;
+    sprite->position = position;
+    sprite->spriteHeight = spriteHeight;
 
-    return 0;
+    list_push(&scene->world.sprites, sprite);
+}
+
+int destroy_sprite(
+    grid_scene* const scene, 
+    sprite_obj* sprite)
+{
+    int index = 0;
+    list_node* current = scene->world.sprites.head;
+
+    while (current != NULL)
+    {
+        sprite_obj* spritPtr = (sprite_obj*)current->data;
+
+        if (spritPtr == NULL)
+        {
+            return -1;
+        }
+
+        if (spritPtr == sprite)
+        {
+            free(sprite);
+            current->data = NULL;
+
+            return list_remove_at(&scene->world.sprites, index);
+        }
+
+        current = current->next;
+        index++;
+    }
+
+    return -1;
 }
 
 bool move_player(
