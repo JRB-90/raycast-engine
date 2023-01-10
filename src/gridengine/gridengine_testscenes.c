@@ -1,4 +1,6 @@
 #include "gridengine/gridengine_testscenes.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 // Wall textures
 const char* BRICK_TEX_PATH      = "textures/brick.rtx";
@@ -81,6 +83,7 @@ int load_test_textures(
     grid_scene* const scene,
     colformat format
 );
+void destroy_test_sprites(grid_scene* const scene);
 void destroy_test_textures(grid_scene* const scene);
 
 grid_scene* create_test_scene1(
@@ -99,47 +102,39 @@ grid_scene* create_test_scene1(
         return NULL;
     }
 
-    int spriteAddError =
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 30.0f),
-            0,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    int spriteID = 0;
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(35.5f, 28.0f),
-            1,
-            LAMP_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(32.0f, 30.0f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 29.5f),
-            2,
-            LAMP_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        LAMP_TEX_ID,
+        to_vec2d(35.5f, 28.0f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(32.0f, 30.5f),
-            3,
-            LAMP_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        LAMP_TEX_ID,
+        to_vec2d(32.0f, 29.5f),
+        1000.0f
+    );
 
-    if (spriteAddError)
-    {
-        fprintf(stderr, "Failed to add static sprites\n");
-        return NULL;
-    }
+    create_sprite(
+        scene,
+        spriteID++,
+        LAMP_TEX_ID,
+        to_vec2d(32.0f, 30.5f),
+        1000.0f
+    );
 
     scene->world.grid[32][32].type = GRID_PSPAWN;
 
@@ -176,92 +171,79 @@ grid_scene* create_test_scene2(
         return NULL;
     }
 
-    int spriteAddError =
-        add_sprite(
-            scene,
-            to_vec2d(1.5f, 4.5f),
-            0,
-            LAMP_TEX_ID,
-            1000.0f
-        );
+    int spriteID = 0;
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(1.5f, 6.5f),
-            1,
-            LAMP_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        LAMP_TEX_ID,
+        to_vec2d(1.5f, 4.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(9.5f, 2.5f),
-            2,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        LAMP_TEX_ID,
+        to_vec2d(1.5f, 6.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(12.5f, 2.5f),
-            3,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(9.5f, 2.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(15.5f, 2.5f),
-            4,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(12.5f, 2.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(18.5f, 2.5f),
-            5,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(15.5f, 2.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(9.5f, 8.5f),
-            6,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(18.5f, 2.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(12.5f, 8.5f),
-            7,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(9.5f, 8.5f),
+        1000.0f
+    );
 
-    spriteAddError |=
-        add_sprite(
-            scene,
-            to_vec2d(15.5f, 8.5f),
-            8,
-            BARREL1_TEX_ID,
-            1000.0f
-        );
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(12.5f, 8.5f),
+        1000.0f
+    );
 
-    if (spriteAddError)
-    {
-        fprintf(stderr, "Failed to add static sprites\n");
-        return NULL;
-    }
+    create_sprite(
+        scene,
+        spriteID++,
+        BARREL1_TEX_ID,
+        to_vec2d(15.5f, 8.5f),
+        1000.0f
+    );
 
     scene->player.position = (frame2d)
     {
@@ -385,6 +367,7 @@ grid_scene* create_test_scene2(
 
 void destroy_test_scene(grid_scene* scene)
 {
+    destroy_test_sprites(scene);
     destroy_test_textures(scene);
     destroy_scene(scene);
 }
@@ -661,6 +644,26 @@ int load_test_textures(
     }
 
     return 0;
+}
+
+void destroy_test_sprites(grid_scene* const scene)
+{
+    list_node* current = scene->world.sprites.head;
+    
+    while (current != NULL)
+    {
+        sprite_obj* sprite = (sprite_obj*)current->data;
+
+        if (sprite != NULL)
+        {
+            free(sprite);
+            current->data = NULL;
+        }
+
+        current = current->next;
+    }
+
+    list_clear(&scene->world.sprites);
 }
 
 void destroy_test_textures(grid_scene* const scene)

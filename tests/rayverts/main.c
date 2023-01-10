@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
     destroy_engine(engine);
     destroy_test_scene(scene);
-    int c = getchar();
+    //int c = getchar();
 
     exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

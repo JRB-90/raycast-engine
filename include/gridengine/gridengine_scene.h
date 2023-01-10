@@ -4,6 +4,7 @@
 #include "engine/engine_math.h"
 #include "engine/engine_resource.h"
 #include "engine/engine_rayengine.h"
+#include "utils/utils_list.h"
 #include <stdbool.h>
 
 #define SCENE_WIDTH			64
@@ -36,7 +37,7 @@ typedef struct {
 
 typedef struct {
 	grid_object grid[SCENE_WIDTH][SCENE_HEIGHT];
-	sprite_obj sprites[MAX_SPRITES];
+	linked_list sprites;
 	float wallHeight;
 } world_grid;
 
@@ -91,13 +92,15 @@ extern grid_scene* create_scene(
 extern void destroy_scene(grid_scene* scene);
 extern void reset_draw_state(draw_state* const state);
 
-extern int add_sprite(
+extern sprite_obj* create_sprite(
 	grid_scene* const scene,
-	const vec2d position,
 	int spriteID,
 	int textureID,
+	const vec2d position,
 	float spriteHeight
 );
+
+extern int destroy_sprite(grid_scene* const scene, sprite_obj* sprite);
 
 extern bool move_player(
 	const input_state* const inputState,
