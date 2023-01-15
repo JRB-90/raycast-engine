@@ -118,7 +118,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     exit(status);
@@ -128,7 +128,7 @@ void run_basic_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -160,7 +160,7 @@ void run_basic_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
     printf("Shutdown\n");
 
     printf(
@@ -182,7 +182,7 @@ void run_basic_line_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -237,7 +237,7 @@ void run_basic_line_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
     printf("Shutdown\n");
 
     printf(
@@ -252,7 +252,7 @@ void run_basic_rect_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -344,7 +344,7 @@ void run_basic_rect_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
     printf("Shutdown\n");
 
     printf(
@@ -413,7 +413,7 @@ void run_file_line_tests(engine_config config)
 
     printf("Initialising engine...\n");
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -468,7 +468,7 @@ void run_file_line_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
     printf("Shutdown\n");
 
     printf(
@@ -530,7 +530,7 @@ void run_file_rect_tests(engine_config config)
 
     printf("Initialising engine...\n");
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -627,7 +627,7 @@ void run_file_rect_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
     printf("Shutdown\n");
 
     printf(

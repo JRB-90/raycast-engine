@@ -60,7 +60,7 @@ int main(int argc, char** argv)
         }
     };
 
-    scene = create_test_scene2("Map drawing test scene", &config.format);
+    scene = gridengine_create_test_scene2("Map drawing test scene", &config.format);
     if (scene == NULL)
     {
         fprintf(stderr, "Failed to create test scene, shutting down...\n");
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         engine_update_input_state(&engine->input);
 
         shouldRender =
-            move_player(
+            gridengine_move_player(
                 &engine->input,
                 scene,
                 &WORLD_FWD,
@@ -123,8 +123,8 @@ int main(int argc, char** argv)
         cross_sleep_ms(1);
     }
 
-    engine_destroy(engine);
-    destroy_test_scene(scene);
+    engine_destroy_rayengine(engine);
+    gridengine_destroy_test_scene(scene);
     int c = getchar();
 
     exit(EXIT_SUCCESS);
@@ -144,12 +144,12 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     if (scene != NULL)
     {
-        destroy_test_scene(scene);
+        gridengine_destroy_test_scene(scene);
     }
 
     if (status != EXIT_SUCCESS)
@@ -162,14 +162,14 @@ void cleanup(int status)
 
 void render_scene()
 {
-    render_grid_scene(
+    gridengine_render_topdown_scene(
         engine,
         scene,
         &mapPosition,
         true
     );
 
-    render_grid_rays(
+    gridengine_render_topdown_rays(
         engine,
         scene,
         &mapPosition,
@@ -186,13 +186,13 @@ void render_scene()
         SCENE_HEIGHT
     );
 
-    render_grid_sprites(
+    gridengine_render_topdown_sprites(
         engine,
         scene,
         &mapPosition
     );
 
-    render_grid_player(
+    gridengine_render_topdown_player(
         engine,
         &mapPosition,
         &scene->player

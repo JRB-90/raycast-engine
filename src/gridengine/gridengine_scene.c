@@ -8,7 +8,7 @@
 const float TRANS_SPEED = 0.0075f;
 const float ROT_SPEED   = 0.0025f;
 
-grid_scene* create_scene(
+grid_scene* gridengine_create_new_scene(
     const char *const name,
     int screenWidth)
 {
@@ -22,7 +22,7 @@ grid_scene* create_scene(
 
     scene->drawState.numberCols = screenWidth;
     scene->drawState.wallDistances = malloc(sizeof(float) * screenWidth);
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     if (scene->drawState.wallDistances == NULL)
     {
@@ -72,7 +72,7 @@ grid_scene* create_scene(
 	return scene;
 }
 
-void destroy_scene(grid_scene* scene)
+void gridengine_destroy_scene(grid_scene* scene)
 {
     if (scene != NULL)
     {
@@ -84,7 +84,7 @@ void destroy_scene(grid_scene* scene)
     }
 }
 
-void reset_draw_state(draw_state* const state)
+void gridengine_reset_draw_state(draw_state* const state)
 {
     for (int j = 0; j < SCENE_HEIGHT; j++)
     {
@@ -107,7 +107,7 @@ void reset_draw_state(draw_state* const state)
     }
 }
 
-sprite_obj* create_sprite(
+sprite_obj* gridengine_create_sprite(
     grid_scene* const scene,
     int spriteID,
     int textureID,
@@ -136,7 +136,7 @@ sprite_obj* create_sprite(
     list_push(&scene->world.sprites, sprite);
 }
 
-int destroy_sprite(
+int gridengine_destroy_sprite(
     grid_scene* const scene, 
     sprite_obj* sprite)
 {
@@ -167,7 +167,7 @@ int destroy_sprite(
     return -1;
 }
 
-bool move_player(
+bool gridengine_move_player(
     const input_state* const inputState,
     grid_scene* const scene,
     const vec2d* const worldForwards,
@@ -268,7 +268,7 @@ bool move_player(
     return playerMoved;
 }
 
-int project_grid_ray(
+int gridengine_project_ray(
     grid_scene* const scene,
     const frame2d* const playerPos,
     const vec2d* const worldForward,

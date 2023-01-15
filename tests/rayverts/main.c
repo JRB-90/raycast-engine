@@ -55,7 +55,7 @@ int main(int argc, char** argv)
         }
     };
 
-    scene = create_test_scene2("Vert drawing test scene", &config.format);
+    scene = gridengine_create_test_scene2("Vert drawing test scene", &config.format);
     if (scene == NULL)
     {
         fprintf(stderr, "Failed to create test scene, shutting down...\n");
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -74,10 +74,10 @@ int main(int argc, char** argv)
     engine->on_update = &on_update;
     engine->on_render = &on_render;
 
-    int res = engine_run(engine);
+    int res = engine_run_rayengine(engine);
 
-    engine_destroy(engine);
-    destroy_test_scene(scene);
+    engine_destroy_rayengine(engine);
+    gridengine_destroy_test_scene(scene);
     //int c = getchar();
 
     exit(res == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
@@ -97,12 +97,12 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     if (scene != NULL)
     {
-        destroy_test_scene(scene);
+        gridengine_destroy_test_scene(scene);
     }
 
     if (status != EXIT_SUCCESS)
@@ -116,7 +116,7 @@ void cleanup(int status)
 int on_update(const input_state* const inputState, const float deltaTimeMS)
 {
     printf("Delta: %.3fms\n", deltaTimeMS);
-    move_player(
+    gridengine_move_player(
         inputState,
         scene,
         &WORLD_FWD,
@@ -146,7 +146,7 @@ int on_render(screen_buffer* const screen)
         );
     }
 
-    render_grid_verts(
+    gridengine_render_firstperson(
         engine,
         scene
     );
@@ -157,7 +157,7 @@ int on_render(screen_buffer* const screen)
     }
     else
     {
-        render_sprites32(
+        gridengine_render_sprites32(
             engine,
             scene
         );

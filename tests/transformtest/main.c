@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         }
     };
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -149,7 +149,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     exit(status);

@@ -27,11 +27,11 @@ int render_tile(
     const color* const color
 );
 
-int render_grid_scene(
+int gridengine_render_topdown_scene(
     const rayengine* const engine,
     const grid_scene *const scene,
     const map_pos* const mapPosition,
-    bool drawGrid)
+    bool drawGridLines)
 {
     draw_clear_screen32(
         &engine->screen, 
@@ -90,7 +90,7 @@ int render_tile(
     return 0;
 }
 
-int render_grid_player(
+int gridengine_render_topdown_player(
     const rayengine* const engine,
     const map_pos* const mapPosition,
     const player_obj* const player)
@@ -176,7 +176,7 @@ int render_grid_player(
     return 0;
 }
 
-int render_grid_sprites(
+int gridengine_render_topdown_sprites(
     const rayengine* const engine,
     const grid_scene* const scene,
     const map_pos* const mapPosition)
@@ -216,13 +216,13 @@ int render_grid_sprites(
     return 0;
 }
 
-int render_grid_rays(
+int gridengine_render_topdown_rays(
     const rayengine* const engine,
     const grid_scene* const scene,
     const map_pos* const mapPosition,
     const player_obj* const player)
 {
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     int steps = engine->screen.width;
     float step = player->fov / (float)steps;
@@ -240,7 +240,7 @@ int render_grid_rays(
         float angle = scene->player.position.theta - playerPos.theta;
 
         int err =
-            project_grid_ray(
+            gridengine_project_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
@@ -335,12 +335,12 @@ int render_grid_rays(
     return 0;
 }
 
-int render_grid_verts(
+int gridengine_render_firstperson(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
     // Ensure we reset the draw state tracker before we render a new frame
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     // Find the steps to take in the ray sweep based on the screen width,
     // one ray per screen pixel column
@@ -362,7 +362,7 @@ int render_grid_verts(
 
         // Find object ray collides with first, if any
         int err =
-            project_grid_ray(
+            gridengine_project_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
@@ -386,7 +386,7 @@ int render_grid_verts(
         {
             if (engine->screen.colorFormat == CF_RGB565)
             {
-                render_vertical_strip16(
+                gridengine_render_vertical_strip16(
                     engine,
                     scene,
                     result.intersectedObject,
@@ -398,7 +398,7 @@ int render_grid_verts(
             }
             else if (engine->screen.colorFormat == CF_ARGB)
             {
-                render_vertical_strip32(
+                gridengine_render_vertical_strip32(
                     engine,
                     scene,
                     result.intersectedObject,
@@ -416,7 +416,7 @@ int render_grid_verts(
     return 0;
 }
 
-int render_vertical_strip16(
+int gridengine_render_vertical_strip16(
     const rayengine* const engine,
     const grid_scene* const scene,
     const grid_object* const intersectObject,
@@ -516,7 +516,7 @@ int render_vertical_strip16(
     return 0;
 }
 
-int render_vertical_strip32(
+int gridengine_render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
     const grid_object* const intersectObject,
@@ -616,7 +616,7 @@ int render_vertical_strip32(
     return 0;
 }
 
-int render_sprites32(
+int gridengine_render_sprites32(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
@@ -718,7 +718,7 @@ int render_sprites32(
 
         // Render the sprite to the screen
         int renderResult =
-            render_sprite32(
+            gridengine_render_sprite32(
                 engine,
                 scene,
                 spriteToRender->sprite,
@@ -736,7 +736,7 @@ int render_sprites32(
     return 0;
 }
 
-int render_sprite32(
+int gridengine_render_sprite32(
     const rayengine* const engine,
     const grid_scene* const scene,
     const sprite_obj* const sprite,

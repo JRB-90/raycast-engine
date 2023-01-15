@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
     printf("16 BPP test\n");
 
-    engine = engine_create_new(&config16);
+    engine = engine_create_new_rayengine(&config16);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
         }
     }
 
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
 
     engine_config config32 =
     {
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
     printf("32 BPP test\n");
 
-    engine = engine_create_new(&config32);
+    engine = engine_create_new_rayengine(&config32);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -129,7 +129,7 @@ int main(int argc, char** argv)
         }
     }
 
-    engine_destroy(engine);
+    engine_destroy_rayengine(engine);
 
 	printf("Demo complete\n");
 	exit(EXIT_SUCCESS);
@@ -149,7 +149,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     exit(status);

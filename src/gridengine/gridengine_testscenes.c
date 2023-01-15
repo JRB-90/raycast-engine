@@ -86,11 +86,11 @@ int load_test_textures(
 void destroy_test_sprites(grid_scene* const scene);
 void destroy_test_textures(grid_scene* const scene);
 
-grid_scene* create_test_scene1(
+grid_scene* gridengine_create_test_scene1(
     const char* const name,
     const screen_format* const screenFormat)
 {
-    grid_scene* scene = create_scene(name, screenFormat->width);
+    grid_scene* scene = gridengine_create_new_scene(name, screenFormat->width);
 
     if (scene == NULL)
     {
@@ -104,7 +104,7 @@ grid_scene* create_test_scene1(
 
     int spriteID = 0;
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -112,7 +112,7 @@ grid_scene* create_test_scene1(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
@@ -120,7 +120,7 @@ grid_scene* create_test_scene1(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
@@ -128,7 +128,7 @@ grid_scene* create_test_scene1(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
@@ -155,11 +155,11 @@ grid_scene* create_test_scene1(
     return scene;
 }
 
-grid_scene* create_test_scene2(
+grid_scene* gridengine_create_test_scene2(
     const char* const name,
     const screen_format* const screenFormat)
 {
-    grid_scene* scene = create_scene(name, screenFormat->width);
+    grid_scene* scene = gridengine_create_new_scene(name, screenFormat->width);
 
     if (scene == NULL)
     {
@@ -173,7 +173,7 @@ grid_scene* create_test_scene2(
 
     int spriteID = 0;
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
@@ -181,7 +181,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
@@ -189,7 +189,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -197,7 +197,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -205,7 +205,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -213,7 +213,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -221,7 +221,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -229,7 +229,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -237,7 +237,7 @@ grid_scene* create_test_scene2(
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
@@ -365,11 +365,11 @@ grid_scene* create_test_scene2(
     return scene;
 }
 
-void destroy_test_scene(grid_scene* scene)
+void gridengine_destroy_test_scene(grid_scene* scene)
 {
     destroy_test_sprites(scene);
     destroy_test_textures(scene);
-    destroy_scene(scene);
+    gridengine_destroy_scene(scene);
 }
 
 void add_wall(grid_scene* const scene, int x, int y, int textureID)

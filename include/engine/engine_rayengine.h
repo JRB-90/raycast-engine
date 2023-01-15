@@ -74,13 +74,13 @@ extern screen_buffer engine_get_default_screen();
 /// </summary>
 /// <param name="config">Configuration of the engine to create.</param>
 /// <returns>Instantiated engine object. NULL if error occured.</returns>
-extern rayengine * engine_create_new(const engine_config *const config);
+extern rayengine * engine_create_new_rayengine(const engine_config *const config);
 
 /// <summary>
 /// Destroys the engine.
 /// </summary>
 /// <param name="engine">Engine to destroy.</param>
-extern void engine_destroy(rayengine *engine);
+extern void engine_destroy_rayengine(rayengine *engine);
 
 /// <summary>
 /// Runs the engine in continous render mode, using the engines configuration
@@ -88,4 +88,4 @@ extern void engine_destroy(rayengine *engine);
 /// </summary>
 /// <param name="engine">Engine to run in continous render rmode.</param>
 /// <returns>Non-zero if an error occured.</returns>
-extern int engine_run(rayengine* const engine);
+extern int engine_run_rayengine(rayengine* const engine);

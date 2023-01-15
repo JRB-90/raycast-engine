@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Test Grid Scene", SWIDTH);
+    scene = gridengine_create_new_scene("Test Grid Scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
         }
     };
 
-    engine = engine_create_new(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -103,12 +103,12 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        engine_destroy(engine);
+        engine_destroy_rayengine(engine);
     }
 
     if (scene != NULL)
     {
-        destroy_scene(scene);
+        gridengine_destroy_scene(scene);
     }
 
     exit(status);
@@ -194,7 +194,7 @@ void move_map()
 
 void render_scene()
 {
-    render_grid_scene(
+    gridengine_render_topdown_scene(
         engine,
         scene,
         &mapPosition,

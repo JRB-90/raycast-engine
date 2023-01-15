@@ -41,7 +41,7 @@ screen_buffer engine_get_default_screen()
     return screen;
 }
 
-rayengine *engine_create_new(const engine_config *const config)
+rayengine *engine_create_new_rayengine(const engine_config *const config)
 {
     rayengine *engine = (rayengine *)malloc(sizeof(rayengine));
 
@@ -71,7 +71,7 @@ rayengine *engine_create_new(const engine_config *const config)
     return engine;
 }
 
-void engine_destroy(rayengine *engine)
+void engine_destroy_rayengine(rayengine *engine)
 {
     if (engine != NULL)
     {
@@ -92,7 +92,7 @@ int render_engine(rayengine *engine)
     return engine_render_screen(&engine->screen);
 }
 
-int engine_run(rayengine* const engine)
+int engine_run_rayengine(rayengine* const engine)
 {
     // Ensure callbacks have been set
     if (engine->on_update == NULL ||
