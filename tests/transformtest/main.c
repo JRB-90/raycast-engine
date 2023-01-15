@@ -244,7 +244,7 @@ void render_shape()
 
     draw_clear_screen32(&engine->screen, 0xFF000000);
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq1.x, 
@@ -253,7 +253,7 @@ void render_shape()
         (int)_sq2.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq2.x, 
@@ -262,7 +262,7 @@ void render_shape()
         (int)_sq3.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq3.x, 
@@ -271,7 +271,7 @@ void render_shape()
         (int)_sq4.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq4.x, 
@@ -284,7 +284,7 @@ void render_shape()
     float width = _pl2.x - _pl1.x;
     float height = _pl2.y - _pl1.y;
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
         0xFFFF0000,
         (int)_pl1.x,
@@ -293,7 +293,7 @@ void render_shape()
         (int)_pl2.y - (int)_pl1.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFF0000,
         (int)_pl3.x,

@@ -158,14 +158,6 @@ void run_basic_tests(engine_config config)
         delta32 += clktimer_elapsed_ms(&timer);
         engine_render_screen(&engine->screen);
     }
-    
-    for (int i = 0; i < CLEAR_ITR; i++)
-    {
-        clktimer_start(&timer);
-        draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
-        delta64 += clktimer_elapsed_ms(&timer);
-        engine_render_screen(&engine->screen);
-    }
 
     printf("Shutting down engine...\n");
     engine_destroy(engine);
@@ -183,13 +175,6 @@ void run_basic_tests(engine_config config)
         delta32,
         CLEAR_ITR,
         delta32 / (deltatime)CLEAR_ITR
-    );
-
-    printf(
-        "64 bit test took %.3fms %i iterations, ave: %.3fms\n",
-        delta64,
-        CLEAR_ITR,
-        delta64 / (deltatime)CLEAR_ITR
     );
 }
 
@@ -219,7 +204,7 @@ void run_basic_line_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_line16_safe(
+            draw_line16(
                 &engine->screen,
                 0b1111100000000000,
                 200, 200,
@@ -239,7 +224,7 @@ void run_basic_line_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_line32_safe(
+            draw_line32(
                 &engine->screen,
                 0b1111100000000000,
                 200, 200,
@@ -290,7 +275,7 @@ void run_basic_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_filled_rect16_safe(
+            draw_filled_rect16(
                 &engine->screen,
                 0b1111100000000000,
                 50, 50,
@@ -308,7 +293,7 @@ void run_basic_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_unfilled_rect16_safe(
+            draw_unfilled_rect16(
                 &engine->screen,
                 0b1111100000000000,
                 50, 50,
@@ -328,7 +313,7 @@ void run_basic_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_filled_rect32_safe(
+            draw_filled_rect32(
                 &engine->screen,
                 0xFF00FF00,
                 50, 50,
@@ -346,7 +331,7 @@ void run_basic_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_unfilled_rect32_safe(
+            draw_unfilled_rect32(
                 &engine->screen,
                 0xFF00FF00,
                 50, 50,
@@ -568,7 +553,7 @@ void run_file_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_unfilled_rect16_safe(
+            draw_unfilled_rect16(
                 &engine->screen,
                 0b1111100000000000,
                 params[i].p1, params[i].p2,
@@ -588,7 +573,7 @@ void run_file_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_unfilled_rect32_safe(
+            draw_unfilled_rect32(
                 &engine->screen,
                 0b1111100000000000,
                 params[i].p1, params[i].p2,
@@ -609,7 +594,7 @@ void run_file_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_filled_rect16_safe(
+            draw_filled_rect16(
                 &engine->screen,
                 0b1111100000000000,
                 params[i].p1, params[i].p2,
@@ -629,7 +614,7 @@ void run_file_rect_tests(engine_config config)
         {
             clktimer_start(&timer);
 
-            draw_filled_rect32_safe(
+            draw_filled_rect32(
                 &engine->screen,
                 0b1111100000000000,
                 params[i].p1, params[i].p2,

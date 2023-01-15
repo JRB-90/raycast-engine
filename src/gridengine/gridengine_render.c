@@ -78,7 +78,7 @@ int render_tile(
     int posX = mapPosition->x + (col * mapPosition->scale);
     int posY = mapPosition->y + (row * mapPosition->scale);
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
         color_to_argb(color),
         posX,
@@ -137,7 +137,7 @@ int render_grid_player(
 
     rayRight = vec2d_mul(&rayRight, 1000.0f);
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFFFFFF,
         posX,
@@ -146,7 +146,7 @@ int render_grid_player(
         posY + (int)rayLeft.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFFFFFF,
         posX,
@@ -155,7 +155,7 @@ int render_grid_player(
         posY + (int)rayRight.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         color_to_argb(&player->playerCol),
         posX,
@@ -164,7 +164,7 @@ int render_grid_player(
         posY + (int)arrow.y
     );
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
         color_to_argb(&player->playerCol),
         posX - size + 2,
@@ -201,7 +201,7 @@ int render_grid_sprites(
         int posY = mapPosition->y + (sprite->position.y * mapPosition->scale);
         int size = mapPosition->scale * 0.2f;
 
-        draw_filled_rect32_safe(
+        draw_filled_rect32(
             &engine->screen,
             0xFFFF0000,
             posX - size + 2,
@@ -321,7 +321,7 @@ int render_grid_rays(
         if (results[k].intersectedObject != NULL &&
             results[k].wallDistance >= 0.0f)
         {
-            draw_filled_rect32_safe(
+            draw_filled_rect32(
                 &engine->screen,
                 color_to_argb(&scene->colors.intersectCol),
                 (mapPosition->x + (results[k].intersectPoint.x * mapPosition->scale)),
