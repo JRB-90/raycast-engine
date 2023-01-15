@@ -64,7 +64,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -75,9 +75,9 @@ int main(int argc, char** argv)
     engine->on_update = &on_update;
     engine->on_render = &on_render;
 
-    int res = run_engine(engine);
+    int res = engine_run(engine);
 
-    destroy_engine(engine);
+    engine_destroy(engine);
     destroy_test_scene(scene);
     //int c = getchar();
 
@@ -98,7 +98,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy(engine);
     }
 
     if (scene != NULL)

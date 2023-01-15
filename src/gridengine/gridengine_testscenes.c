@@ -108,7 +108,7 @@ grid_scene* create_test_scene1(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(32.0f, 30.0f),
+        vec2d_build(32.0f, 30.0f),
         1000.0f
     );
 
@@ -116,7 +116,7 @@ grid_scene* create_test_scene1(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(35.5f, 28.0f),
+        vec2d_build(35.5f, 28.0f),
         1000.0f
     );
 
@@ -124,7 +124,7 @@ grid_scene* create_test_scene1(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(32.0f, 29.5f),
+        vec2d_build(32.0f, 29.5f),
         1000.0f
     );
 
@@ -132,7 +132,7 @@ grid_scene* create_test_scene1(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(32.0f, 30.5f),
+        vec2d_build(32.0f, 30.5f),
         1000.0f
     );
 
@@ -177,7 +177,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(1.5f, 4.5f),
+        vec2d_build(1.5f, 4.5f),
         1000.0f
     );
 
@@ -185,7 +185,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(1.5f, 6.5f),
+        vec2d_build(1.5f, 6.5f),
         1000.0f
     );
 
@@ -193,7 +193,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(9.5f, 2.5f),
+        vec2d_build(9.5f, 2.5f),
         1000.0f
     );
 
@@ -201,7 +201,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(12.5f, 2.5f),
+        vec2d_build(12.5f, 2.5f),
         1000.0f
     );
 
@@ -209,7 +209,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(15.5f, 2.5f),
+        vec2d_build(15.5f, 2.5f),
         1000.0f
     );
 
@@ -217,7 +217,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(18.5f, 2.5f),
+        vec2d_build(18.5f, 2.5f),
         1000.0f
     );
 
@@ -225,7 +225,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(9.5f, 8.5f),
+        vec2d_build(9.5f, 8.5f),
         1000.0f
     );
 
@@ -233,7 +233,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(12.5f, 8.5f),
+        vec2d_build(12.5f, 8.5f),
         1000.0f
     );
 
@@ -241,7 +241,7 @@ grid_scene* create_test_scene2(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(15.5f, 8.5f),
+        vec2d_build(15.5f, 8.5f),
         1000.0f
     );
 

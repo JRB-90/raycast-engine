@@ -21,7 +21,7 @@ typedef struct {
 	float rot;
 } transform2d;
 
-static inline vec2d to_vec2d(float x, float y)
+static inline vec2d vec2d_build(float x, float y)
 {
 	vec2d vec =
 	{
@@ -32,77 +32,7 @@ static inline vec2d to_vec2d(float x, float y)
 	return vec;
 }
 
-static inline vec2d add_vec(const vec2d* const v1, const vec2d* const v2)
-{
-	vec2d res =
-	{
-		.x = v1->x + v2->x,
-		.y = v1->y + v2->y,
-	};
-
-	return res;
-}
-
-static inline vec2d sub_vec(const vec2d* const v1, const vec2d* const v2)
-{
-	vec2d res =
-	{
-		.x = v1->x - v2->x,
-		.y = v1->y - v2->y,
-	};
-
-	return res;
-}
-
-static inline vec2d mul_vec(const vec2d* const v1, float scalar)
-{
-	vec2d res =
-	{
-		.x = v1->x * scalar,
-		.y = v1->y * scalar,
-	};
-
-	return res;
-}
-
-static inline vec2d div_vec(const vec2d* const v1, float scalar)
-{
-	vec2d res =
-	{
-		.x = v1->x / scalar,
-		.y = v1->y / scalar,
-	};
-
-	return res;
-}
-
-static inline float dot_vec(const vec2d* const v1, const vec2d* const v2)
-{
-	return (v1->x * v2->x) + (v1->y * v2->y);
-}
-
-static inline float angle_between_vecs(const vec2d* const v1, const vec2d* const v2)
-{
-	return
-		atan2f(
-			(v2->y * v1->x) - (v2->x * v1->y),
-			(v2->x * v1->x) + (v2->y * v1->y)
-		);
-}
-
-static inline float cross_vec(const vec2d* const v1, const vec2d* const v2)
-{
-	return (v1->x * v2->y) - (v1->y * v2->x);
-}
-
-static inline float len_vec(const vec2d* const vec)
-{
-	return (float)sqrt((vec->x * vec->x) + (vec->y * vec->y));
-}
-
-extern vec2d norm_vec(const vec2d* const vec);
-
-static inline frame2d to_frame2d(float x, float y, float theta)
+static inline frame2d frame2d_build(float x, float y, float theta)
 {
 	frame2d frame =
 	{
@@ -114,20 +44,109 @@ static inline frame2d to_frame2d(float x, float y, float theta)
 	return frame;
 }
 
-extern vec2d transform_vec2_by_frame2d(
+static inline vec2d vec2d_add(const vec2d* const v1, const vec2d* const v2)
+{
+	vec2d res =
+	{
+		.x = v1->x + v2->x,
+		.y = v1->y + v2->y,
+	};
+
+	return res;
+}
+
+static inline vec2d vec2d_sub(const vec2d* const v1, const vec2d* const v2)
+{
+	vec2d res =
+	{
+		.x = v1->x - v2->x,
+		.y = v1->y - v2->y,
+	};
+
+	return res;
+}
+
+static inline vec2d vec2d_mul(const vec2d* const v1, float scalar)
+{
+	vec2d res =
+	{
+		.x = v1->x * scalar,
+		.y = v1->y * scalar,
+	};
+
+	return res;
+}
+
+static inline vec2d vec2d_div(const vec2d* const v1, float scalar)
+{
+	vec2d res =
+	{
+		.x = v1->x / scalar,
+		.y = v1->y / scalar,
+	};
+
+	return res;
+}
+
+static inline float vec2d_dot(const vec2d* const v1, const vec2d* const v2)
+{
+	return (v1->x * v2->x) + (v1->y * v2->y);
+}
+
+static inline float vec2d_angle_between(const vec2d* const v1, const vec2d* const v2)
+{
+	return
+		atan2f(
+			(v2->y * v1->x) - (v2->x * v1->y),
+			(v2->x * v1->x) + (v2->y * v1->y)
+		);
+}
+
+static inline float vec2d_cross(const vec2d* const v1, const vec2d* const v2)
+{
+	return (v1->x * v2->y) - (v1->y * v2->x);
+}
+
+static inline float vec2d_len(const vec2d* const vec)
+{
+	return (float)sqrt((vec->x * vec->x) + (vec->y * vec->y));
+}
+
+extern vec2d vec2d_norm(const vec2d* const vec);
+
+extern vec2d vec2_transform_by_frame2d(
 	const vec2d* const point,
 	const frame2d* const frame
 );
 
-extern vec2d transform_vec2_by_frame2d_inv(
+extern vec2d vec2_transform_by_frame2d_inv(
 	const vec2d* const point,
 	const frame2d* const frame
 );
 
-extern vec2d calc_forwards(
+extern vec2d vec2d_calc_forwards(
 	const frame2d* const frame, 
 	const vec2d* const worldForward
 );
+
+extern vec2d vec2d_calc_forwards_trans(
+	const transform2d* const frame,
+	const vec2d* const worldForward
+);
+
+extern vec2d vec2_transform(
+	const vec2d* const point,
+	const transform2d* const transform
+);
+
+extern vec2d vec2_transform_inv(
+	const vec2d* const point,
+	const transform2d* const transform
+);
+
+extern void vec2d_print(const vec2d* const vec);
+
+extern void frame2d_print(const frame2d* const frame);
 
 static inline int get_sign(int value)
 {
@@ -188,46 +207,3 @@ static inline float clampf(float value, float lower, float upper)
 		return upper;
 	}
 }
-
-static inline transform2d to_transform(
-	float px, 
-	float py, 
-	float sx, 
-	float sy, 
-	float rot)
-{
-	transform2d transform =
-	{
-		.trans = (vec2d)
-		{
-			.x = px,
-			.y = py
-		},
-		.scale = (vec2d)
-		{
-			.x = sx,
-			.y = sy
-		},
-		.rot = rot
-	};
-
-	return transform;
-}
-
-extern vec2d calc_forwards_trans(
-	const transform2d* const frame,
-	const vec2d* const worldForward
-);
-
-extern vec2d transform_vec2(
-	const vec2d* const point,
-	const transform2d* const transform
-);
-
-extern vec2d transform_vec2_inv(
-	const vec2d* const point,
-	const transform2d* const transform
-);
-
-void print_vec2d(const vec2d* const vec);
-void print_frame2d(const frame2d* const frame);

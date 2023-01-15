@@ -35,11 +35,11 @@ int main(int argc, char** argv)
 		.format = CF_RGB565
 	};
 
-	init_render_subsystem(&format, &screen);
+	engine_init_render_subsystem(&format, &screen);
 
 	clear_screen();
 	draw_bars();
-	render_screen(&screen);
+	engine_render_screen(&screen);
 	cross_sleep_s(1);
 
 	int numRuns = 300;
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 		innerDrawDelta += clktimer_elapsed_ms(&clock2);
 
 		clktimer_start(&clock2);
-		render_screen(&screen);
+		engine_render_screen(&screen);
 		innerFlipDelta += clktimer_elapsed_ms(&clock2);
 		
 		barOffset++;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
 	cross_sleep_s(1);
 
-	destroy_render_subsystem(&screen);
+	engine_destroy_render_subsystem(&screen);
 
 	printf("Done\n");
 	//getchar();

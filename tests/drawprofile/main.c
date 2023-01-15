@@ -119,7 +119,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy(engine);
     }
 
     exit(status);
@@ -129,7 +129,7 @@ void run_basic_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -149,7 +149,7 @@ void run_basic_tests(engine_config config)
         clktimer_start(&timer);
         draw_clear_screen16(&engine->screen, 0xFFFF);
         delta16 += clktimer_elapsed_ms(&timer);
-        render_screen(&engine->screen);
+        engine_render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -157,7 +157,7 @@ void run_basic_tests(engine_config config)
         clktimer_start(&timer);
         draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
         delta32 += clktimer_elapsed_ms(&timer);
-        render_screen(&engine->screen);
+        engine_render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
@@ -165,11 +165,11 @@ void run_basic_tests(engine_config config)
         clktimer_start(&timer);
         draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
         delta64 += clktimer_elapsed_ms(&timer);
-        render_screen(&engine->screen);
+        engine_render_screen(&engine->screen);
     }
 
     printf("Shutting down engine...\n");
-    destroy_engine(engine);
+    engine_destroy(engine);
     printf("Shutdown\n");
 
     printf(
@@ -198,7 +198,7 @@ void run_basic_line_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -253,7 +253,7 @@ void run_basic_line_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    destroy_engine(engine);
+    engine_destroy(engine);
     printf("Shutdown\n");
 
     printf(
@@ -268,7 +268,7 @@ void run_basic_rect_tests(engine_config config)
 {
     printf("Initialising engine...\n");
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -360,7 +360,7 @@ void run_basic_rect_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    destroy_engine(engine);
+    engine_destroy(engine);
     printf("Shutdown\n");
 
     printf(
@@ -429,7 +429,7 @@ void run_file_line_tests(engine_config config)
 
     printf("Initialising engine...\n");
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -484,7 +484,7 @@ void run_file_line_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    destroy_engine(engine);
+    engine_destroy(engine);
     printf("Shutdown\n");
 
     printf(
@@ -546,7 +546,7 @@ void run_file_rect_tests(engine_config config)
 
     printf("Initialising engine...\n");
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -643,7 +643,7 @@ void run_file_rect_tests(engine_config config)
     }
 
     printf("Shutting down engine...\n");
-    destroy_engine(engine);
+    engine_destroy(engine);
     printf("Shutdown\n");
 
     printf(

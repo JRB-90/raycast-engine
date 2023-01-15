@@ -59,7 +59,7 @@ int main(int argc, char** argv)
         }
     };
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
     while (!engine->input.quit)
     {
-        update_input_state(&engine->input);
+        engine_update_input_state(&engine->input);
         move_map();
         
         if (shouldRender)
@@ -104,7 +104,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy(engine);
     }
 
     if (scene != NULL)
@@ -202,5 +202,5 @@ void render_scene()
         drawGrid
     );
 
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 }

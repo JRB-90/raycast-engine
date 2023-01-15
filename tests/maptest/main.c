@@ -76,7 +76,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    engine = init_engine(&config);
+    engine = engine_create_new(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 
     while (!engine->input.quit)
     {
-        update_input_state(&engine->input);
+        engine_update_input_state(&engine->input);
 
         shouldRender =
             move_player(
@@ -117,14 +117,14 @@ int main(int argc, char** argv)
             totalTime += delta;
             renderCount++;
 
-            render_screen(&engine->screen);
+            engine_render_screen(&engine->screen);
         }
 
         shouldRender = false;
         cross_sleep_ms(1);
     }
 
-    destroy_engine(engine);
+    engine_destroy(engine);
     destroy_test_scene(scene);
     int c = getchar();
 
@@ -145,7 +145,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy(engine);
     }
 
     if (scene != NULL)
@@ -199,5 +199,5 @@ void render_scene()
         &scene->player
     );
 
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 }

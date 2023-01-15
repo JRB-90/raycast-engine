@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
 	screen_buffer screen = default_screen();
 
-	if (init_render_subsystem(&sformat, &screen))
+	if (engine_init_render_subsystem(&sformat, &screen))
 	{
 		fprintf(stderr, "Failed to init render subsystem, exiting...");
 		int c = getchar();
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	}
 #endif // _USE_SDL
 
-	if (init_input_subsystem())
+	if (engine_init_input_subsystem())
 	{
 		fprintf(stderr, "Failed to init input subsystem, exiting...");
 		int c = getchar();
@@ -35,16 +35,16 @@ int main(int argc, char** argv)
 
 	printf("Input subsystem initialised\n");
 	printf("Waiting for quit to be entered...\n");
-	input_state inputState = blank_input_state();
+	input_state inputState = engine_get_default_input();
 
 	while (!inputState.quit)
 	{
-		if (update_input_state(&inputState))
+		if (engine_update_input_state(&inputState))
 		{
 			fprintf(stderr, "Failed to update input state, exiting...");
-			destroy_input_subsystem();
+			engine_destroy_input_subsystem();
 #ifdef _USE_SDL
-			destroy_render_subsystem(&screen);
+			engine_destroy_render_subsystem(&screen);
 #endif // _USE_SDL
 			int c = getchar();
 			exit(EXIT_FAILURE);
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 		cross_sleep_ms(100);
 	}
 
-	if (destroy_input_subsystem())
+	if (engine_destroy_input_subsystem())
 	{
 		fprintf(stderr, "Failed to destroy input subsystem, exiting...");
 		int c = getchar();
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 	}
 
 #ifdef _USE_SDL
-	if (destroy_render_subsystem(&screen))
+	if (engine_destroy_render_subsystem(&screen))
 	{
 		fprintf(stderr, "Failed to destroy render subsystem, exiting...");
 		int c = getchar();

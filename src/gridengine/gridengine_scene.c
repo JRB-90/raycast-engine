@@ -42,7 +42,7 @@ grid_scene* create_scene(
 	scene->colors.intersectCol = to_col(255, 0, 255, 0);
 
 	scene->player.position = 
-		to_frame2d(
+		frame2d_build(
 			(SCENE_WIDTH / 2) + 0.5f, 
 			(SCENE_HEIGHT / 2) + 0.5f, 
 			to_rad(180.0f)
@@ -184,8 +184,8 @@ bool move_player(
 
     if (inputState->forwards)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x += transVec.x;
         scene->player.position.y += transVec.y;
         playerMoved = true;
@@ -193,8 +193,8 @@ bool move_player(
 
     if (inputState->backwards)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x -= transVec.x;
         scene->player.position.y -= transVec.y;
         playerMoved = true;
@@ -202,8 +202,8 @@ bool move_player(
 
     if (inputState->left)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x += transVec.x;
         scene->player.position.y += transVec.y;
         playerMoved = true;
@@ -211,8 +211,8 @@ bool move_player(
 
     if (inputState->right)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x -= transVec.x;
         scene->player.position.y -= transVec.y;
         playerMoved = true;
@@ -289,7 +289,7 @@ int project_grid_ray(
 	int xDir;
 	int yDir;
 
-	vec2d ray = calc_forwards(playerPos, worldForward);
+	vec2d ray = vec2d_calc_forwards(playerPos, worldForward);
 	float deltaDistX = fabsf(1.0f / ray.x);
 	float deltaDistY = fabsf(1.0f / ray.y);
 
@@ -360,9 +360,9 @@ int project_grid_ray(
 
     if (result->wallDistance > 0.0f)
     {
-        vec2d playerOrigin = to_vec2d(playerPos->x, playerPos->y);
-        result->intersectPoint = mul_vec(&ray, result->wallDistance);
-        result->intersectPoint = add_vec(&playerOrigin, &result->intersectPoint);
+        vec2d playerOrigin = vec2d_build(playerPos->x, playerPos->y);
+        result->intersectPoint = vec2d_mul(&ray, result->wallDistance);
+        result->intersectPoint = vec2d_add(&playerOrigin, &result->intersectPoint);
 
         // Correct for perspective
         float pCorrectDist = (result->wallDistance) * cosf(alpha);

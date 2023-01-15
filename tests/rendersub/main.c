@@ -17,10 +17,10 @@ void render_16bit(screen_buffer* const screen, uint16_t color)
 	deltatime drawTime = clktimer_elapsed_ms(&timer);
 
 	clktimer_restart(&timer);
-	if (render_screen(screen))
+	if (engine_render_screen(screen))
 	{
 		fprintf(stderr, "Failed to render screen, exiting...");
-		destroy_render_subsystem(screen);
+		engine_destroy_render_subsystem(screen);
 		getchar();
 		exit(EXIT_FAILURE);
 	}
@@ -42,10 +42,10 @@ void render_32bit(screen_buffer* const screen, uint32_t color)
 	deltatime drawTime = clktimer_elapsed_ms(&timer);
 
 	clktimer_restart(&timer);
-	if (render_screen(screen))
+	if (engine_render_screen(screen))
 	{
 		fprintf(stderr, "Failed to render screen, exiting...");
-		destroy_render_subsystem(screen);
+		engine_destroy_render_subsystem(screen);
 		getchar();
 		exit(EXIT_FAILURE);
 	}
@@ -65,7 +65,7 @@ void run_format_test(colformat format)
 
 	screen_buffer screen = default_screen();
 
-	if (init_render_subsystem(&sformat, &screen))
+	if (engine_init_render_subsystem(&sformat, &screen))
 	{
 		fprintf(stderr, "Failed to init render subsystem, exiting...");
 		getchar();
@@ -95,7 +95,7 @@ void run_format_test(colformat format)
 		printf("\n");
 	}
 
-	if (destroy_render_subsystem(&screen))
+	if (engine_destroy_render_subsystem(&screen))
 	{
 		fprintf(stderr, "Failed to destroy render subsystem, exiting...");
 		getchar();

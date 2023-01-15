@@ -19,7 +19,7 @@ Uint32 to_sdl_colformat(const colformat colorFormat);
 void reset_pulse_keys(input_state* const state);
 void update_controls(input_state* const state, SDL_Event* const e);
 
-int init_render_subsystem(
+int engine_init_render_subsystem(
 	const screen_format* const format,
 	screen_buffer* const screen)
 {
@@ -103,7 +103,7 @@ int init_render_subsystem(
     return 0;
 }
 
-int destroy_render_subsystem(screen_buffer* const screen)
+int engine_destroy_render_subsystem(screen_buffer* const screen)
 {
     free(screen->pixels);
     SDL_DestroyTexture(display.texture);
@@ -114,7 +114,7 @@ int destroy_render_subsystem(screen_buffer* const screen)
     return 0;
 }
 
-int render_screen(screen_buffer* const screen)
+int engine_render_screen(screen_buffer* const screen)
 {
     int res = SDL_RenderClear(display.renderer);
     if (res)
@@ -161,17 +161,17 @@ int render_screen(screen_buffer* const screen)
     return 0;
 }
 
-int init_input_subsystem()
+int engine_init_input_subsystem()
 {
     return 0;
 }
 
-int destroy_input_subsystem()
+int engine_destroy_input_subsystem()
 {
     return 0;
 }
 
-int update_input_state(input_state* const state)
+int engine_update_input_state(input_state* const state)
 {
     SDL_Event e;
     reset_pulse_keys(state);

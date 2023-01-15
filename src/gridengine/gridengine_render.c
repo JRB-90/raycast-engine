@@ -100,12 +100,12 @@ int render_grid_player(
     int size = (int)((float)mapPosition->scale * 0.3f);
 
     vec2d forward =
-        calc_forwards(
+        vec2d_calc_forwards(
             &player->position,
             &WORLD_FWD
         );
 
-    vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7f);
+    vec2d arrow = vec2d_mul(&forward, mapPosition->scale * 0.7f);
 
     frame2d playerPosLeft =
     {
@@ -115,12 +115,12 @@ int render_grid_player(
     };
 
     vec2d rayLeft =
-        calc_forwards(
+        vec2d_calc_forwards(
             &playerPosLeft,
             &WORLD_FWD
         );
 
-    rayLeft = mul_vec(&rayLeft, 1000.0f);
+    rayLeft = vec2d_mul(&rayLeft, 1000.0f);
 
     frame2d playerPosRight =
     {
@@ -130,12 +130,12 @@ int render_grid_player(
     };
 
     vec2d rayRight =
-        calc_forwards(
+        vec2d_calc_forwards(
             &playerPosRight,
             &WORLD_FWD
         );
 
-    rayRight = mul_vec(&rayRight, 1000.0f);
+    rayRight = vec2d_mul(&rayRight, 1000.0f);
 
     draw_line32_safe(
         &engine->screen,
@@ -651,11 +651,11 @@ int render_sprites32(
         }
 
         // Calculate angle between the players view and the sprite
-        vec2d forwards = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d vecToSprite = sub_vec(&sprite->position, &playerPos);
-        vec2d spriteDir = norm_vec(&vecToSprite);
+        vec2d forwards = vec2d_calc_forwards(&scene->player.position, &WORLD_FWD);
+        vec2d vecToSprite = vec2d_sub(&sprite->position, &playerPos);
+        vec2d spriteDir = vec2d_norm(&vecToSprite);
 
-        float angle = angle_between_vecs(&forwards, &spriteDir);
+        float angle = vec2d_angle_between(&forwards, &spriteDir);
         if (angle > M_PI / 2.0)
         {
             currentNode = currentNode->next;
@@ -663,7 +663,7 @@ int render_sprites32(
         }
 
         // Calulate the perspective correct distance to the sprite
-        float distanceToSprite = len_vec(&vecToSprite) * cosf(angle);
+        float distanceToSprite = vec2d_len(&vecToSprite) * cosf(angle);
         
         // Add to the linked_list of visible sprites
         vis_sprite* visPtr = &scene->drawState.visibleSprites[numVisible];
