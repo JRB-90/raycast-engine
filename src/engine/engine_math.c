@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <assert.h>
 
-vec2d norm_vec(const vec2d* const vec)
+vec2d vec2d_norm(const vec2d* const vec)
 {
-	float len = len_vec(vec);
+	float len = vec2d_len(vec);
 
 	assert(len != 0.0);
 
@@ -17,7 +17,7 @@ vec2d norm_vec(const vec2d* const vec)
 	return normalisedVec;
 }
 
-vec2d transform_vec2_by_frame2d(
+vec2d vec2_transform_by_frame2d(
 	const vec2d* const point,
 	const frame2d* const frame)
 {
@@ -37,7 +37,7 @@ vec2d transform_vec2_by_frame2d(
 	return res;
 }
 
-vec2d transform_vec2_by_frame2d_inv(
+vec2d vec2_transform_by_frame2d_inv(
 	const vec2d* const point,
 	const frame2d* const frame)
 {
@@ -57,7 +57,7 @@ vec2d transform_vec2_by_frame2d_inv(
 	return res;
 }
 
-vec2d calc_forwards(
+vec2d vec2d_calc_forwards(
 	const frame2d* const frame,
 	const vec2d* const worldForward)
 {
@@ -67,12 +67,12 @@ vec2d calc_forwards(
 		.y = (worldForward->y * cosf(frame->theta)) + (worldForward->x * sinf(frame->theta))
 	};
 
-	lookVector = norm_vec(&lookVector);
+	lookVector = vec2d_norm(&lookVector);
 
 	return lookVector;
 }
 
-vec2d calc_forwards_trans(
+vec2d vec2d_calc_forwards_trans(
 	const transform2d* const transform,
 	const vec2d* const worldForward)
 {
@@ -86,12 +86,12 @@ vec2d calc_forwards_trans(
 			(worldForward->x * sinf(transform->rot))
 	};
 
-	lookVector = norm_vec(&lookVector);
+	lookVector = vec2d_norm(&lookVector);
 
 	return lookVector;
 }
 
-vec2d transform_vec2(
+vec2d vec2_transform(
 	const vec2d* const point,
 	const transform2d* const transform)
 {
@@ -115,7 +115,7 @@ vec2d transform_vec2(
 	return res;
 }
 
-vec2d transform_vec2_inv(
+vec2d vec2_transform_inv(
 	const vec2d* const point,
 	const transform2d* const transform)
 {
@@ -139,12 +139,12 @@ vec2d transform_vec2_inv(
 	return res;
 }
 
-void print_vec2d(const vec2d* const vec)
+void vec2d_print(const vec2d* const vec)
 {
 	printf("vec2d [%.3f, %.3f]\n", vec->x, vec->y);
 }
 
-void print_frame2d(const frame2d* const frame)
+void frame2d_print(const frame2d* const frame)
 {
 	printf("frame2d [%.3f, %.3f, %.3f]\n", frame->x, frame->y, frame->theta);
 }

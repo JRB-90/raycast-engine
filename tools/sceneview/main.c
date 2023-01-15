@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
@@ -45,7 +44,7 @@ int main(int argc, char** argv)
         .scale = SSIZE,
     };
 
-    scene = create_scene("Test Grid Scene", SWIDTH);
+    scene = gridengine_create_new_scene("Test Grid Scene", SWIDTH);
     build_test_scene();
 
     engine_config config =
@@ -59,7 +58,7 @@ int main(int argc, char** argv)
         }
     };
 
-    engine = init_engine(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -71,20 +70,20 @@ int main(int argc, char** argv)
 
     while (!engine->input.quit)
     {
-        update_input_state(&engine->input);
+        engine_update_input_state(&engine->input);
         move_map();
         
         if (shouldRender)
         {
             clktimer timer;
-            start_timer(&timer);
+            clktimer_start(&timer);
             render_scene();
-            deltatime delta = elapsed_millis(&timer);
+            deltatime delta = clktimer_elapsed_ms(&timer);
             printf("Map render took %.3fms\n", delta);
         }
 
         shouldRender = false;
-        sleep_millis(1);
+        cross_sleep_ms(1);
     }
 
     cleanup(EXIT_SUCCESS);
@@ -104,12 +103,12 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy_rayengine(engine);
     }
 
     if (scene != NULL)
     {
-        destroy_scene(scene);
+        gridengine_destroy_scene(scene);
     }
 
     exit(status);
@@ -195,12 +194,12 @@ void move_map()
 
 void render_scene()
 {
-    render_grid_scene(
+    gridengine_render_topdown_scene(
         engine,
         scene,
         &mapPosition,
         drawGrid
     );
 
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 }

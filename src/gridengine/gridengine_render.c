@@ -27,15 +27,15 @@ int render_tile(
     const color* const color
 );
 
-int render_grid_scene(
+int gridengine_render_topdown_scene(
     const rayengine* const engine,
     const grid_scene *const scene,
     const map_pos* const mapPosition,
-    bool drawGrid)
+    bool drawGridLines)
 {
     draw_clear_screen32(
         &engine->screen, 
-        to_argb(&scene->colors.floorCol)
+        color_to_argb(&scene->colors.floorCol)
     );
 
     for (int j = 0; j < SCENE_HEIGHT; j++)
@@ -78,9 +78,9 @@ int render_tile(
     int posX = mapPosition->x + (col * mapPosition->scale);
     int posY = mapPosition->y + (row * mapPosition->scale);
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
-        to_argb(color),
+        color_to_argb(color),
         posX,
         posY,
         mapPosition->scale,
@@ -90,7 +90,7 @@ int render_tile(
     return 0;
 }
 
-int render_grid_player(
+int gridengine_render_topdown_player(
     const rayengine* const engine,
     const map_pos* const mapPosition,
     const player_obj* const player)
@@ -100,12 +100,12 @@ int render_grid_player(
     int size = (int)((float)mapPosition->scale * 0.3f);
 
     vec2d forward =
-        calc_forwards(
+        vec2d_calc_forwards(
             &player->position,
             &WORLD_FWD
         );
 
-    vec2d arrow = mul_vec(&forward, mapPosition->scale * 0.7f);
+    vec2d arrow = vec2d_mul(&forward, mapPosition->scale * 0.7f);
 
     frame2d playerPosLeft =
     {
@@ -115,12 +115,12 @@ int render_grid_player(
     };
 
     vec2d rayLeft =
-        calc_forwards(
+        vec2d_calc_forwards(
             &playerPosLeft,
             &WORLD_FWD
         );
 
-    rayLeft = mul_vec(&rayLeft, 1000.0f);
+    rayLeft = vec2d_mul(&rayLeft, 1000.0f);
 
     frame2d playerPosRight =
     {
@@ -130,14 +130,14 @@ int render_grid_player(
     };
 
     vec2d rayRight =
-        calc_forwards(
+        vec2d_calc_forwards(
             &playerPosRight,
             &WORLD_FWD
         );
 
-    rayRight = mul_vec(&rayRight, 1000.0f);
+    rayRight = vec2d_mul(&rayRight, 1000.0f);
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFFFFFF,
         posX,
@@ -146,7 +146,7 @@ int render_grid_player(
         posY + (int)rayLeft.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFFFFFF,
         posX,
@@ -155,18 +155,18 @@ int render_grid_player(
         posY + (int)rayRight.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
-        to_argb(&player->playerCol),
+        color_to_argb(&player->playerCol),
         posX,
         posY,
         posX + (int)arrow.x,
         posY + (int)arrow.y
     );
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
-        to_argb(&player->playerCol),
+        color_to_argb(&player->playerCol),
         posX - size + 2,
         posY - size + 2,
         (size * 2) - 3,
@@ -176,7 +176,7 @@ int render_grid_player(
     return 0;
 }
 
-int render_grid_sprites(
+int gridengine_render_topdown_sprites(
     const rayengine* const engine,
     const grid_scene* const scene,
     const map_pos* const mapPosition)
@@ -201,7 +201,7 @@ int render_grid_sprites(
         int posY = mapPosition->y + (sprite->position.y * mapPosition->scale);
         int size = mapPosition->scale * 0.2f;
 
-        draw_filled_rect32_safe(
+        draw_filled_rect32(
             &engine->screen,
             0xFFFF0000,
             posX - size + 2,
@@ -216,13 +216,13 @@ int render_grid_sprites(
     return 0;
 }
 
-int render_grid_rays(
+int gridengine_render_topdown_rays(
     const rayengine* const engine,
     const grid_scene* const scene,
     const map_pos* const mapPosition,
     const player_obj* const player)
 {
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     int steps = engine->screen.width;
     float step = player->fov / (float)steps;
@@ -240,7 +240,7 @@ int render_grid_rays(
         float angle = scene->player.position.theta - playerPos.theta;
 
         int err =
-            project_grid_ray(
+            gridengine_project_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
@@ -277,7 +277,7 @@ int render_grid_rays(
                 if (scene->world.grid[i][j].type == GRID_WALL)
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.g)),
@@ -287,7 +287,7 @@ int render_grid_rays(
                 else if (scene->world.grid[i][j].type == GRID_PSPAWN)
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.g)),
@@ -297,7 +297,7 @@ int render_grid_rays(
                 else
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.g)),
@@ -321,9 +321,9 @@ int render_grid_rays(
         if (results[k].intersectedObject != NULL &&
             results[k].wallDistance >= 0.0f)
         {
-            draw_filled_rect32_safe(
+            draw_filled_rect32(
                 &engine->screen,
-                to_argb(&scene->colors.intersectCol),
+                color_to_argb(&scene->colors.intersectCol),
                 (mapPosition->x + (results[k].intersectPoint.x * mapPosition->scale)),
                 (mapPosition->y + (results[k].intersectPoint.y * mapPosition->scale)),
                 2,
@@ -335,12 +335,12 @@ int render_grid_rays(
     return 0;
 }
 
-int render_grid_verts(
+int gridengine_render_firstperson(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
     // Ensure we reset the draw state tracker before we render a new frame
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     // Find the steps to take in the ray sweep based on the screen width,
     // one ray per screen pixel column
@@ -362,7 +362,7 @@ int render_grid_verts(
 
         // Find object ray collides with first, if any
         int err =
-            project_grid_ray(
+            gridengine_project_ray(
                 scene,
                 &playerPos,
                 &WORLD_FWD,
@@ -386,26 +386,20 @@ int render_grid_verts(
         {
             if (engine->screen.colorFormat == CF_RGB565)
             {
-                render_vertical_strip16(
+                gridengine_render_vertical_strip16(
                     engine,
                     scene,
-                    result.intersectedObject,
-                    &result.intersectPoint,
-                    i,
-                    result.wallDistance,
-                    result.side
+                    &result,
+                    i
                 );
             }
             else if (engine->screen.colorFormat == CF_ARGB)
             {
-                render_vertical_strip32(
+                gridengine_render_vertical_strip32(
                     engine,
                     scene,
-                    result.intersectedObject,
-                    &result.intersectPoint,
-                    i,
-                    result.wallDistance,
-                    result.side
+                    &result,
+                    i
                 );
             }
         }
@@ -416,15 +410,17 @@ int render_grid_verts(
     return 0;
 }
 
-int render_vertical_strip16(
+int gridengine_render_vertical_strip16(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side)
+    const traverse_result* const traverseResult,
+    int colIndex)
 {
+    grid_object* intersectObject = traverseResult->intersectedObject;
+    vec2d* intersectPoint = &traverseResult->intersectPoint;
+    float wallDistance = traverseResult->wallDistance;
+    int side = traverseResult->side;
+
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
     float h = tanf(scene->player.fov) * wallDistance;
@@ -462,20 +458,20 @@ int render_vertical_strip16(
 
     // Find the texture U coord information, based on where intersect on
     // the wall was and the side it hit
-    double integral;
+    float integral;
     int textureU;
     if (side == 0)
     {
         textureU =
             (int)
-            (modf(intersectPoint->y, &integral) *
+            (modff(intersectPoint->y, &integral) *
                 (float)texture->texture.width);
     }
     else
     {
         textureU =
             (int)
-            (modf(intersectPoint->x, &integral) *
+            (modff(intersectPoint->x, &integral) *
                 (float)texture->texture.width);
     }
 
@@ -516,15 +512,17 @@ int render_vertical_strip16(
     return 0;
 }
 
-int render_vertical_strip32(
+int gridengine_render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side)
+    const traverse_result* const traverseResult,
+    int colIndex)
 {
+    grid_object* intersectObject = traverseResult->intersectedObject;
+    vec2d* intersectPoint = &traverseResult->intersectPoint;
+    float wallDistance = traverseResult->wallDistance;
+    int side = traverseResult->side;
+
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
     float h = tanf(scene->player.fov) * wallDistance;
@@ -616,7 +614,7 @@ int render_vertical_strip32(
     return 0;
 }
 
-int render_sprites32(
+int gridengine_render_sprites(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
@@ -651,11 +649,11 @@ int render_sprites32(
         }
 
         // Calculate angle between the players view and the sprite
-        vec2d forwards = calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d vecToSprite = sub_vec(&sprite->position, &playerPos);
-        vec2d spriteDir = norm_vec(&vecToSprite);
+        vec2d forwards = vec2d_calc_forwards(&scene->player.position, &WORLD_FWD);
+        vec2d vecToSprite = vec2d_sub(&sprite->position, &playerPos);
+        vec2d spriteDir = vec2d_norm(&vecToSprite);
 
-        float angle = angle_between_vecs(&forwards, &spriteDir);
+        float angle = vec2d_angle_between(&forwards, &spriteDir);
         if (angle > M_PI / 2.0)
         {
             currentNode = currentNode->next;
@@ -663,7 +661,7 @@ int render_sprites32(
         }
 
         // Calulate the perspective correct distance to the sprite
-        float distanceToSprite = len_vec(&vecToSprite) * cosf(angle);
+        float distanceToSprite = vec2d_len(&vecToSprite) * cosf(angle);
         
         // Add to the linked_list of visible sprites
         vis_sprite* visPtr = &scene->drawState.visibleSprites[numVisible];
@@ -717,15 +715,31 @@ int render_sprites32(
         int spriteX = (engine->screen.width >> 1) + xDisplacement;
 
         // Render the sprite to the screen
-        int renderResult =
-            render_sprite32(
-                engine,
-                scene,
-                spriteToRender->sprite,
-                spriteX,
-                spriteHeightPixels,
-                distanceToSprite
-            );
+        int renderResult = 0;
+        if (engine->config.format.format == CF_RGB565)
+        {
+            renderResult =
+                gridengine_render_sprite16(
+                    engine,
+                    scene,
+                    spriteToRender->sprite,
+                    spriteX,
+                    spriteHeightPixels,
+                    distanceToSprite
+                );
+        }
+        else
+        {
+            renderResult =
+                gridengine_render_sprite32(
+                    engine,
+                    scene,
+                    spriteToRender->sprite,
+                    spriteX,
+                    spriteHeightPixels,
+                    distanceToSprite
+                );
+        }
 
         if (renderResult)
         {
@@ -736,7 +750,87 @@ int render_sprites32(
     return 0;
 }
 
-int render_sprite32(
+int gridengine_render_sprite16(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const sprite_obj* const sprite,
+    int x,
+    int size,
+    float distanceToSprite)
+{
+    texture_resource* texture = scene->resources.textures[sprite->textureID];
+
+    if (texture == NULL)
+    {
+        return -1;
+    }
+
+    int halfHeight = size >> 1;
+    int screenWidth = engine->screen.width;
+    int screenHeight = engine->screen.height;
+    int textureWidth = texture->texture.width;
+    int textureHeight = texture->texture.height;
+
+    int screenX = x - halfHeight;
+    int screenY = (screenHeight >> 1) - halfHeight;
+    int screenPixelIndex = (screenY * screenWidth) + screenX;
+    int screenYOffset = screenWidth - size;
+
+    float texturePixelIndex = 0.0f;
+    float textureHorInc = (float)textureWidth / size;
+    float textureVerInc = (float)textureHeight / size;
+    float u = 0.0f;
+    float v = 0.0f;
+
+    uint16_t* screenPixels = (uint16_t*)engine->screen.pixels;
+    uint16_t* texturePixels = (uint16_t*)texture->texture.pixels;
+
+    for (int j = screenY; j < screenY + size; j++)
+    {
+        if (j < 0)
+        {
+            screenPixelIndex += screenWidth;
+            u = 0.0f;
+            v += textureVerInc;
+            continue;
+        }
+
+        if (j >= screenHeight)
+        {
+            return 0;
+        }
+
+        for (int i = screenX; i < screenX + size; i++)
+        {
+            if (i >= 0 &&
+                i < screenWidth)
+            {
+                float wallDist = scene->drawState.wallDistances[i];
+                if (wallDist > distanceToSprite)
+                {
+                    texturePixelIndex = ((int)v * textureWidth) + (int)u;
+                    uint16_t color = texturePixels[(int)texturePixelIndex];
+
+                    if (color != 0b1111100000011111)
+                    {
+                        screenPixels[screenPixelIndex] = color;
+                    }
+                }
+            }
+
+            screenPixelIndex++;
+            u += textureHorInc;
+        }
+
+        screenPixelIndex += screenYOffset;
+        u = 0.0f;
+        v += textureVerInc;
+    }
+
+    return 0;
+}
+
+int gridengine_render_sprite32(
     const rayengine* const engine,
     const grid_scene* const scene,
     const sprite_obj* const sprite,

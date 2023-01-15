@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+	Scene implementation that uses a flat 2d grid to store wall and sprite
+	data in. This is more limited, but allows for faster ray projection
+	through the scene and thus, a better performing engine.
+*/
+
 #include "engine/engine_color.h"
 #include "engine/engine_math.h"
 #include "engine/engine_resource.h"
@@ -85,14 +91,39 @@ typedef struct {
 	int side;
 } traverse_result;
 
-extern grid_scene* create_scene(
+/// <summary>
+/// Creates a new instance of a grid scene.
+/// </summary>
+/// <param name="name">Name to give the scene.</param>
+/// <param name="screenWidth">Width of the screen buffer.</param>
+/// <returns>New grid scene instance. NULL if error occurred.</returns>
+extern grid_scene* gridengine_create_new_scene(
 	const char *const name,
 	int screenWidth
 );
-extern void destroy_scene(grid_scene* scene);
-extern void reset_draw_state(draw_state* const state);
 
-extern sprite_obj* create_sprite(
+/// <summary>
+/// Destroys a grid scene.
+/// </summary>
+/// <param name="scene">Scene to destroy.</param>
+extern void gridengine_destroy_scene(grid_scene* scene);
+
+/// <summary>
+/// Resets the provided draw state.
+/// </summary>
+/// <param name="state">Draw State strucure to reset.</param>
+extern void gridengine_reset_draw_state(draw_state* const state);
+
+/// <summary>
+/// Creates a new sprite object and adds it to the scene.
+/// </summary>
+/// <param name="scene">Scene to add the sprite to.</param>
+/// <param name="spriteID">Unique ID to assign the sprite.</param>
+/// <param name="textureID">Texture associated with this sprite.</param>
+/// <param name="position">Position of the sprite in the world.</param>
+/// <param name="spriteHeight">Height of the sprite.</param>
+/// <returns>New sprite object instance. NULL if an error occurred.</returns>
+extern sprite_obj* gridengine_create_sprite(
 	grid_scene* const scene,
 	int spriteID,
 	int textureID,
@@ -100,9 +131,28 @@ extern sprite_obj* create_sprite(
 	float spriteHeight
 );
 
-extern int destroy_sprite(grid_scene* const scene, sprite_obj* sprite);
+/// <summary>
+/// Destroys a sprite object and removes it from the scene.
+/// </summary>
+/// <param name="scene">Scene that contains the sprite object.</param>
+/// <param name="sprite">Sprite object to destroy.</param>
+/// <returns>Non-zero if error occured.</returns>
+extern int gridengine_destroy_sprite(
+	grid_scene* const scene, 
+	sprite_obj* sprite
+);
 
-extern bool move_player(
+/// <summary>
+/// Moves the player within the scene, whilst maintaining collision avoidance.
+/// Uses the supplied input_state as the driver.
+/// </summary>
+/// <param name="inputState">Input state to apply to the player.</param>
+/// <param name="scene">Scene containing the player.</param>
+/// <param name="worldForwards">Forwards vector of the world.</param>
+/// <param name="worldLeft">Left vector of the world.</param>
+/// <param name="deltaTimeMS">Time passed since last update in milliseconds.</param>
+/// <returns></returns>
+extern bool gridengine_move_player(
 	const input_state* const inputState,
 	grid_scene* const scene,
 	const vec2d* const worldForwards,
@@ -110,7 +160,16 @@ extern bool move_player(
 	const float deltaTimeMS
 );
 
-extern int project_grid_ray(
+/// <summary>
+/// Projects a ray through the grid scene and calculates the traverse result.
+/// </summary>
+/// <param name="scene">Scene to project the ray through.</param>
+/// <param name="playerPos">The position of the player in the grid.</param>
+/// <param name="worldForward">The forward vector of the world.</param>
+/// <param name="alpha">The angle offset from forwards that the ray is broadcast.</param>
+/// <param name="result">The calculated result of the projection.</param>
+/// <returns>Non-zero if an error occurred.</returns>
+extern int gridengine_project_ray(
 	grid_scene* const scene,
 	const frame2d* const playerPos,
 	const vec2d* const worldForward,

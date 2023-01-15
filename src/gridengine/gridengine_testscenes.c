@@ -86,11 +86,11 @@ int load_test_textures(
 void destroy_test_sprites(grid_scene* const scene);
 void destroy_test_textures(grid_scene* const scene);
 
-grid_scene* create_test_scene1(
+grid_scene* gridengine_create_test_scene1(
     const char* const name,
     const screen_format* const screenFormat)
 {
-    grid_scene* scene = create_scene(name, screenFormat->width);
+    grid_scene* scene = gridengine_create_new_scene(name, screenFormat->width);
 
     if (scene == NULL)
     {
@@ -104,35 +104,35 @@ grid_scene* create_test_scene1(
 
     int spriteID = 0;
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(32.0f, 30.0f),
+        vec2d_build(32.0f, 30.0f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(35.5f, 28.0f),
+        vec2d_build(35.5f, 28.0f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(32.0f, 29.5f),
+        vec2d_build(32.0f, 29.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(32.0f, 30.5f),
+        vec2d_build(32.0f, 30.5f),
         1000.0f
     );
 
@@ -155,11 +155,11 @@ grid_scene* create_test_scene1(
     return scene;
 }
 
-grid_scene* create_test_scene2(
+grid_scene* gridengine_create_test_scene2(
     const char* const name,
     const screen_format* const screenFormat)
 {
-    grid_scene* scene = create_scene(name, screenFormat->width);
+    grid_scene* scene = gridengine_create_new_scene(name, screenFormat->width);
 
     if (scene == NULL)
     {
@@ -173,75 +173,75 @@ grid_scene* create_test_scene2(
 
     int spriteID = 0;
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(1.5f, 4.5f),
+        vec2d_build(1.5f, 4.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         LAMP_TEX_ID,
-        to_vec2d(1.5f, 6.5f),
+        vec2d_build(1.5f, 6.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(9.5f, 2.5f),
+        vec2d_build(9.5f, 2.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(12.5f, 2.5f),
+        vec2d_build(12.5f, 2.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(15.5f, 2.5f),
+        vec2d_build(15.5f, 2.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(18.5f, 2.5f),
+        vec2d_build(18.5f, 2.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(9.5f, 8.5f),
+        vec2d_build(9.5f, 8.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(12.5f, 8.5f),
+        vec2d_build(12.5f, 8.5f),
         1000.0f
     );
 
-    create_sprite(
+    gridengine_create_sprite(
         scene,
         spriteID++,
         BARREL1_TEX_ID,
-        to_vec2d(15.5f, 8.5f),
+        vec2d_build(15.5f, 8.5f),
         1000.0f
     );
 
@@ -365,11 +365,11 @@ grid_scene* create_test_scene2(
     return scene;
 }
 
-void destroy_test_scene(grid_scene* scene)
+void gridengine_destroy_test_scene(grid_scene* scene)
 {
     destroy_test_sprites(scene);
     destroy_test_textures(scene);
-    destroy_scene(scene);
+    gridengine_destroy_scene(scene);
 }
 
 void add_wall(grid_scene* const scene, int x, int y, int textureID)
@@ -383,7 +383,7 @@ int load_test_textures(
     colformat format)
 {
     int textureLoadError =
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             AMMOCRATE_TEX_PATH,
             AMMOCRATE_TEX_ID,
@@ -391,7 +391,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             BARREL1_TEX_PATH,
             BARREL1_TEX_ID,
@@ -399,7 +399,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             BARREL2_TEX_PATH,
             BARREL2_TEX_ID,
@@ -407,7 +407,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             BRICK_TEX_PATH,
             BRICK_TEX_ID,
@@ -415,7 +415,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             BRICKPILE_TEX_PATH,
             BRICKPILE_TEX_ID,
@@ -423,7 +423,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             CHESS_TEX_PATH,
             CHESS_TEX_ID,
@@ -431,7 +431,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             COBBLES_TEX_PATH,
             COBBLES_TEX_ID,
@@ -439,7 +439,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             CONCRETE_TEX_PATH,
             CONCRETE_TEX_ID,
@@ -447,7 +447,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             CROSSHATCH_TEX_PATH,
             CROSSHATCH_TEX_ID,
@@ -455,7 +455,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             GRASS_TEX_PATH,
             GRASS_TEX_ID,
@@ -463,7 +463,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             KEYCARD_TEX_PATH,
             KEYCARD_TEX_ID,
@@ -471,7 +471,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             LAMP_TEX_PATH,
             LAMP_TEX_ID,
@@ -479,7 +479,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             METAL1_TEX_PATH,
             METAL1_TEX_ID,
@@ -487,7 +487,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             METAL2_TEX_PATH,
             METAL2_TEX_ID,
@@ -495,7 +495,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             OCTOPUS_TEX_PATH,
             OCTOPUS_TEX_ID,
@@ -503,7 +503,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT0_TEX_PATH,
             ROBOT0_TEX_ID,
@@ -511,7 +511,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT1_TEX_PATH,
             ROBOT1_TEX_ID,
@@ -519,7 +519,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT2_TEX_PATH,
             ROBOT2_TEX_ID,
@@ -527,7 +527,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT3_TEX_PATH,
             ROBOT3_TEX_ID,
@@ -535,7 +535,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT4_TEX_PATH,
             ROBOT4_TEX_ID,
@@ -543,7 +543,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT5_TEX_PATH,
             ROBOT5_TEX_ID,
@@ -551,7 +551,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROBOT6_TEX_PATH,
             ROBOT6_TEX_ID,
@@ -559,7 +559,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROCK1_TEX_PATH,
             ROCK1_TEX_ID,
@@ -567,14 +567,14 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROCK2_TEX_PATH,
             ROCK2_TEX_ID,
             format
         );
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROCK3_TEX_PATH,
             ROCK3_TEX_ID,
@@ -582,7 +582,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             ROCK4_TEX_PATH,
             ROCK4_TEX_ID,
@@ -590,7 +590,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             RUST_TEX_PATH,
             RUST_TEX_ID,
@@ -598,7 +598,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             SOIL1_TEX_PATH,
             SOIL1_TEX_ID,
@@ -606,7 +606,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             SOIL2_TEX_PATH,
             SOIL2_TEX_ID,
@@ -614,7 +614,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             TILES_TEX_PATH,
             TILES_TEX_ID,
@@ -622,7 +622,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             WOOD1_TEX_PATH,
             WOOD1_TEX_ID,
@@ -630,7 +630,7 @@ int load_test_textures(
         );
 
     textureLoadError |=
-        create_texture_resources(
+        resource_load_texture_res(
             &scene->resources,
             WOOD2_TEX_PATH,
             WOOD2_TEX_ID,
@@ -668,36 +668,36 @@ void destroy_test_sprites(grid_scene* const scene)
 
 void destroy_test_textures(grid_scene* const scene)
 {
-    destroy_texture_resources(&scene->resources, AMMOCRATE_TEX_ID);
-    destroy_texture_resources(&scene->resources, BARREL1_TEX_ID);
-    destroy_texture_resources(&scene->resources, BARREL2_TEX_ID);
-    destroy_texture_resources(&scene->resources, BRICK_TEX_ID);
-    destroy_texture_resources(&scene->resources, BRICKPILE_TEX_ID);
-    destroy_texture_resources(&scene->resources, CHESS_TEX_ID);
-    destroy_texture_resources(&scene->resources, COBBLES_TEX_ID);
-    destroy_texture_resources(&scene->resources, CONCRETE_TEX_ID);
-    destroy_texture_resources(&scene->resources, CROSSHATCH_TEX_ID);
-    destroy_texture_resources(&scene->resources, GRASS_TEX_ID);
-    destroy_texture_resources(&scene->resources, KEYCARD_TEX_ID);
-    destroy_texture_resources(&scene->resources, LAMP_TEX_ID);
-    destroy_texture_resources(&scene->resources, METAL1_TEX_ID);
-    destroy_texture_resources(&scene->resources, METAL2_TEX_ID);
-    destroy_texture_resources(&scene->resources, OCTOPUS_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT0_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT1_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT2_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT3_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT4_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT5_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROBOT6_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROCK1_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROCK2_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROCK3_TEX_ID);
-    destroy_texture_resources(&scene->resources, ROCK4_TEX_ID);
-    destroy_texture_resources(&scene->resources, RUST_TEX_ID);
-    destroy_texture_resources(&scene->resources, SOIL1_TEX_ID);
-    destroy_texture_resources(&scene->resources, SOIL2_TEX_ID);
-    destroy_texture_resources(&scene->resources, TILES_TEX_ID);
-    destroy_texture_resources(&scene->resources, WOOD1_TEX_ID);
-    destroy_texture_resources(&scene->resources, WOOD2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, AMMOCRATE_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, BARREL1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, BARREL2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, BRICK_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, BRICKPILE_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, CHESS_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, COBBLES_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, CONCRETE_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, CROSSHATCH_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, GRASS_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, KEYCARD_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, LAMP_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, METAL1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, METAL2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, OCTOPUS_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT0_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT3_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT4_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT5_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROBOT6_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROCK1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROCK2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROCK3_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, ROCK4_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, RUST_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, SOIL1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, SOIL2_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, TILES_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, WOOD1_TEX_ID);
+    resource_destroy_loaded_texture(&scene->resources, WOOD2_TEX_ID);
 }

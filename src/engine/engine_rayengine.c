@@ -1,10 +1,11 @@
 #include "engine/engine_rayengine.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "engine/engine_subsystems.h"
 #include "crossplatform/crossplatform_time.h"
 
-input_state blank_input_state()
+input_state engine_get_default_input()
 {
     input_state inputState =
     {
@@ -22,7 +23,25 @@ input_state blank_input_state()
     return inputState;
 }
 
-rayengine *init_engine(const engine_config *const config)
+screen_buffer engine_get_default_screen()
+{
+    screen_buffer screen =
+    {
+        .pixels = NULL,
+        .width = -1,
+        .height = -1,
+        .sizeInPixels = -1,
+        .stride = -1,
+        .sizeInBytes = -1,
+        .bitsPP = -1,
+        .bytesPP = -1,
+        .colorFormat = CF_ARGB
+    };
+
+    return screen;
+}
+
+rayengine *engine_create_new_rayengine(const engine_config *const config)
 {
     rayengine *engine = (rayengine *)malloc(sizeof(rayengine));
 
@@ -33,18 +52,18 @@ rayengine *init_engine(const engine_config *const config)
     }
 
     engine->config = *config;
-    engine->screen = default_screen();
-    engine->input = blank_input_state();
+    engine->screen = engine_get_default_screen();
+    engine->input = engine_get_default_input();
     engine->on_update = NULL;
 
-    if (init_input_subsystem())
+    if (engine_init_input_subsystem())
     {
         return NULL;
     }
 
-    if (init_render_subsystem(&engine->config.format, &engine->screen))
+    if (engine_init_render_subsystem(&engine->config.format, &engine->screen))
     {
-        destroy_input_subsystem();
+        engine_destroy_input_subsystem();
 
         return NULL;
     }
@@ -52,28 +71,28 @@ rayengine *init_engine(const engine_config *const config)
     return engine;
 }
 
-void destroy_engine(rayengine *engine)
+void engine_destroy_rayengine(rayengine *engine)
 {
     if (engine != NULL)
     {
-        destroy_render_subsystem(&engine->screen);
-        destroy_input_subsystem();
+        engine_destroy_render_subsystem(&engine->screen);
+        engine_destroy_input_subsystem();
         free(engine);
     }
 }
 
 int update_engine(rayengine *engine)
 {
-    return update_input_state(&engine->input);
+    return engine_update_input_state(&engine->input);
     // TODO - In future, update AI logic here too
 }
 
 int render_engine(rayengine *engine)
 {
-    return render_screen(&engine->screen);
+    return engine_render_screen(&engine->screen);
 }
 
-int run_engine(rayengine* const engine)
+int engine_run_rayengine(rayengine* const engine)
 {
     // Ensure callbacks have been set
     if (engine->on_update == NULL ||
@@ -84,21 +103,21 @@ int run_engine(rayengine* const engine)
     }
 
     float targetDeltaMS = 1000.0f / (float)engine->config.targetFps;
-    clktick previousTicks = get_ticks();
+    clktick previousTicks = cross_get_ticks();
     clktick currentTicks = previousTicks;
 
-    input_state inputState = blank_input_state();
+    input_state inputState = engine_get_default_input();
 
     while (inputState.quit == false)
     {
-        currentTicks = get_ticks();
-        deltatime deltaTimeMS = get_delta_ms(currentTicks - previousTicks);
+        currentTicks = cross_get_ticks();
+        deltatime deltaTimeMS = cross_delta_ms(currentTicks - previousTicks);
 
         if (deltaTimeMS > targetDeltaMS)
         {
             int res;
 
-            res = update_input_state(&inputState);
+            res = engine_update_input_state(&inputState);
             if (res)
             {
                 return res;
@@ -121,7 +140,7 @@ int run_engine(rayengine* const engine)
                 return res;
             }
 
-            res = render_screen(&engine->screen);
+            res = engine_render_screen(&engine->screen);
             if (res)
             {
                 return res;

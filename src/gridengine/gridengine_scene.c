@@ -8,7 +8,7 @@
 const float TRANS_SPEED = 0.0075f;
 const float ROT_SPEED   = 0.0025f;
 
-grid_scene* create_scene(
+grid_scene* gridengine_create_new_scene(
     const char *const name,
     int screenWidth)
 {
@@ -22,7 +22,7 @@ grid_scene* create_scene(
 
     scene->drawState.numberCols = screenWidth;
     scene->drawState.wallDistances = malloc(sizeof(float) * screenWidth);
-    reset_draw_state(&scene->drawState);
+    gridengine_reset_draw_state(&scene->drawState);
 
     if (scene->drawState.wallDistances == NULL)
     {
@@ -34,22 +34,22 @@ grid_scene* create_scene(
 
     scene->world.wallHeight = 1000.0f;
 
-	scene->colors.floorCol = to_col(255, 32, 32, 32);
-	scene->colors.ceilingCol = to_col(255, 52, 128, 128);
-	scene->colors.wallCol = to_col(255, 32, 32, 56);
-	scene->colors.pSpawnCol = to_col(255, 32, 128, 32);
-	scene->colors.rayCol = to_col(255, 255, 0, 255);
-	scene->colors.intersectCol = to_col(255, 0, 255, 0);
+	scene->colors.floorCol = color_build(255, 32, 32, 32);
+	scene->colors.ceilingCol = color_build(255, 52, 128, 128);
+	scene->colors.wallCol = color_build(255, 32, 32, 56);
+	scene->colors.pSpawnCol = color_build(255, 32, 128, 32);
+	scene->colors.rayCol = color_build(255, 255, 0, 255);
+	scene->colors.intersectCol = color_build(255, 0, 255, 0);
 
 	scene->player.position = 
-		to_frame2d(
+		frame2d_build(
 			(SCENE_WIDTH / 2) + 0.5f, 
 			(SCENE_HEIGHT / 2) + 0.5f, 
-			to_rad(180.0f)
+			to_radf(180.0f)
 		);
 
-    scene->player.fov = to_rad(45.0f);
-    scene->player.playerCol = to_col(255, 255, 0, 0);
+    scene->player.fov = to_radf(45.0f);
+    scene->player.playerCol = color_build(255, 255, 0, 0);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)
 	{
@@ -72,7 +72,7 @@ grid_scene* create_scene(
 	return scene;
 }
 
-void destroy_scene(grid_scene* scene)
+void gridengine_destroy_scene(grid_scene* scene)
 {
     if (scene != NULL)
     {
@@ -84,7 +84,7 @@ void destroy_scene(grid_scene* scene)
     }
 }
 
-void reset_draw_state(draw_state* const state)
+void gridengine_reset_draw_state(draw_state* const state)
 {
     for (int j = 0; j < SCENE_HEIGHT; j++)
     {
@@ -107,7 +107,7 @@ void reset_draw_state(draw_state* const state)
     }
 }
 
-sprite_obj* create_sprite(
+sprite_obj* gridengine_create_sprite(
     grid_scene* const scene,
     int spriteID,
     int textureID,
@@ -136,7 +136,7 @@ sprite_obj* create_sprite(
     list_push(&scene->world.sprites, sprite);
 }
 
-int destroy_sprite(
+int gridengine_destroy_sprite(
     grid_scene* const scene, 
     sprite_obj* sprite)
 {
@@ -167,7 +167,7 @@ int destroy_sprite(
     return -1;
 }
 
-bool move_player(
+bool gridengine_move_player(
     const input_state* const inputState,
     grid_scene* const scene,
     const vec2d* const worldForwards,
@@ -184,8 +184,8 @@ bool move_player(
 
     if (inputState->forwards)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x += transVec.x;
         scene->player.position.y += transVec.y;
         playerMoved = true;
@@ -193,8 +193,8 @@ bool move_player(
 
     if (inputState->backwards)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldForwards);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldForwards);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x -= transVec.x;
         scene->player.position.y -= transVec.y;
         playerMoved = true;
@@ -202,8 +202,8 @@ bool move_player(
 
     if (inputState->left)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x += transVec.x;
         scene->player.position.y += transVec.y;
         playerMoved = true;
@@ -211,8 +211,8 @@ bool move_player(
 
     if (inputState->right)
     {
-        vec2d travelDir = calc_forwards(&scene->player.position, worldLeft);
-        vec2d transVec = mul_vec(&travelDir, transAmt);
+        vec2d travelDir = vec2d_calc_forwards(&scene->player.position, worldLeft);
+        vec2d transVec = vec2d_mul(&travelDir, transAmt);
         scene->player.position.x -= transVec.x;
         scene->player.position.y -= transVec.y;
         playerMoved = true;
@@ -268,7 +268,7 @@ bool move_player(
     return playerMoved;
 }
 
-int project_grid_ray(
+int gridengine_project_ray(
     grid_scene* const scene,
     const frame2d* const playerPos,
     const vec2d* const worldForward,
@@ -289,7 +289,7 @@ int project_grid_ray(
 	int xDir;
 	int yDir;
 
-	vec2d ray = calc_forwards(playerPos, worldForward);
+	vec2d ray = vec2d_calc_forwards(playerPos, worldForward);
 	float deltaDistX = fabsf(1.0f / ray.x);
 	float deltaDistY = fabsf(1.0f / ray.y);
 
@@ -360,9 +360,9 @@ int project_grid_ray(
 
     if (result->wallDistance > 0.0f)
     {
-        vec2d playerOrigin = to_vec2d(playerPos->x, playerPos->y);
-        result->intersectPoint = mul_vec(&ray, result->wallDistance);
-        result->intersectPoint = add_vec(&playerOrigin, &result->intersectPoint);
+        vec2d playerOrigin = vec2d_build(playerPos->x, playerPos->y);
+        result->intersectPoint = vec2d_mul(&ray, result->wallDistance);
+        result->intersectPoint = vec2d_add(&playerOrigin, &result->intersectPoint);
 
         // Correct for perspective
         float pCorrectDist = (result->wallDistance) * cosf(alpha);

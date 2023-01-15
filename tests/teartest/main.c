@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "engine/engine_subsystems.h"
-#include "engine/engine_screen.h"
+#include "engine/engine_rayengine.h"
 #include "engine/engine_color.h"
 #include "crossplatform/crossplatform_time.h"
 
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	printf("Starting...\n");
 
 	barOffset = 0;
-	screen = default_screen();
+	screen = engine_get_default_screen();
 
 	clktimer clock;
 	clktimer clock2;
@@ -35,26 +35,26 @@ int main(int argc, char** argv)
 		.format = CF_RGB565
 	};
 
-	init_render_subsystem(&format, &screen);
+	engine_init_render_subsystem(&format, &screen);
 
 	clear_screen();
 	draw_bars();
-	render_screen(&screen);
-	sleep_secs(1);
+	engine_render_screen(&screen);
+	cross_sleep_s(1);
 
 	int numRuns = 300;
-	start_timer(&clock);
+	clktimer_start(&clock);
 
 	for (int i = 0; i < numRuns; i++)
 	{
-		start_timer(&clock2);
+		clktimer_start(&clock2);
 		clear_screen();
 		draw_bars();
-		innerDrawDelta += elapsed_millis(&clock2);
+		innerDrawDelta += clktimer_elapsed_ms(&clock2);
 
-		start_timer(&clock2);
-		render_screen(&screen);
-		innerFlipDelta += elapsed_millis(&clock2);
+		clktimer_start(&clock2);
+		engine_render_screen(&screen);
+		innerFlipDelta += clktimer_elapsed_ms(&clock2);
 		
 		barOffset++;
 		if (barOffset >= BWIDTH)
@@ -63,16 +63,16 @@ int main(int argc, char** argv)
 		}
 	}
 
-	deltatime delta = elapsed_millis(&clock);
+	deltatime delta = clktimer_elapsed_ms(&clock);
 	deltatime aveDelta = delta / (deltatime)(numRuns);
 	printf("Time taken: %.3fms\n", delta);
 	printf("Ave frame:  %.3fms\n", aveDelta);
 	printf("Inner draw ave:  %.3fms\n", innerDrawDelta / (deltatime)(numRuns));
 	printf("Inner flip ave:  %.3fms\n", innerFlipDelta / (deltatime)(numRuns));
 
-	sleep_secs(1);
+	cross_sleep_s(1);
 
-	destroy_render_subsystem(&screen);
+	engine_destroy_render_subsystem(&screen);
 
 	printf("Done\n");
 	//getchar();

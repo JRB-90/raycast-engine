@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <signal.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
@@ -70,7 +69,7 @@ int main(int argc, char** argv)
             .x = (float)(SWIDTH / 2),
             .y = (float)(SHEIGHT / 2)
         },
-        .rot = to_rad(180.0f)
+        .rot = to_radf(180.0f)
     };
 
     playerPos = (transform2d)
@@ -85,7 +84,7 @@ int main(int argc, char** argv)
             .x = 0.0f,
             .y = 0.0f
         },
-        .rot = to_rad(0.0f)
+        .rot = to_radf(0.0f)
     };
 
     pl1 = (vec2d){  5.0f,  5.0f };
@@ -110,7 +109,7 @@ int main(int argc, char** argv)
         }
     };
 
-    engine = init_engine(&config);
+    engine = engine_create_new_rayengine(&config);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -122,7 +121,7 @@ int main(int argc, char** argv)
     
     while (!engine->input.quit)
     {
-        update_input_state(&engine->input);
+        engine_update_input_state(&engine->input);
         move_shape();
 
         if (shouldRender)
@@ -130,7 +129,7 @@ int main(int argc, char** argv)
             render_shape();
         }
         
-        sleep_millis(1);
+        cross_sleep_ms(1);
     }
 
     cleanup(EXIT_SUCCESS);
@@ -150,7 +149,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy_rayengine(engine);
     }
 
     exit(status);
@@ -160,33 +159,33 @@ void move_shape()
 {
     if (engine->input.forwards)
     {
-        vec2d travelDir = calc_forwards_trans(&playerPos, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        playerPos.trans = add_vec(&playerPos.trans, &transVec);
+        vec2d travelDir = vec2d_calc_forwards_trans(&playerPos, &WORLD_FWD);
+        vec2d transVec = vec2d_mul(&travelDir, TRANS_AMT);
+        playerPos.trans = vec2d_add(&playerPos.trans, &transVec);
         shouldRender = true;
     }
 
     if (engine->input.backwards)
     {
-        vec2d travelDir = calc_forwards_trans(&playerPos, &WORLD_FWD);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        playerPos.trans = sub_vec(&playerPos.trans, &transVec);
+        vec2d travelDir = vec2d_calc_forwards_trans(&playerPos, &WORLD_FWD);
+        vec2d transVec = vec2d_mul(&travelDir, TRANS_AMT);
+        playerPos.trans = vec2d_sub(&playerPos.trans, &transVec);
         shouldRender = true;
     }
 
     if (engine->input.left)
     {
-        vec2d travelDir = calc_forwards_trans(&playerPos, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        playerPos.trans = add_vec(&playerPos.trans, &transVec);
+        vec2d travelDir = vec2d_calc_forwards_trans(&playerPos, &WORLD_LEFT);
+        vec2d transVec = vec2d_mul(&travelDir, TRANS_AMT);
+        playerPos.trans = vec2d_add(&playerPos.trans, &transVec);
         shouldRender = true;
     }
 
     if (engine->input.right)
     {
-        vec2d travelDir = calc_forwards_trans(&playerPos, &WORLD_LEFT);
-        vec2d transVec = mul_vec(&travelDir, TRANS_AMT);
-        playerPos.trans = sub_vec(&playerPos.trans, &transVec);
+        vec2d travelDir = vec2d_calc_forwards_trans(&playerPos, &WORLD_LEFT);
+        vec2d transVec = vec2d_mul(&travelDir, TRANS_AMT);
+        playerPos.trans = vec2d_sub(&playerPos.trans, &transVec);
         shouldRender = true;
     }
 
@@ -222,30 +221,30 @@ void render_shape()
     shouldRender = false;
 
     clktimer timer;
-    start_timer(&timer);
+    clktimer_start(&timer);
 
-    vec2d _sq1 = transform_vec2_inv(&sq1, &playerPos);
-    vec2d _sq2 = transform_vec2_inv(&sq2, &playerPos);
-    vec2d _sq3 = transform_vec2_inv(&sq3, &playerPos);
-    vec2d _sq4 = transform_vec2_inv(&sq4, &playerPos);
+    vec2d _sq1 = vec2_transform_inv(&sq1, &playerPos);
+    vec2d _sq2 = vec2_transform_inv(&sq2, &playerPos);
+    vec2d _sq3 = vec2_transform_inv(&sq3, &playerPos);
+    vec2d _sq4 = vec2_transform_inv(&sq4, &playerPos);
 
-    _sq1 = transform_vec2(&_sq1, &viewPort);
-    _sq2 = transform_vec2(&_sq2, &viewPort);
-    _sq3 = transform_vec2(&_sq3, &viewPort);
-    _sq4 = transform_vec2(&_sq4, &viewPort);
+    _sq1 = vec2_transform(&_sq1, &viewPort);
+    _sq2 = vec2_transform(&_sq2, &viewPort);
+    _sq3 = vec2_transform(&_sq3, &viewPort);
+    _sq4 = vec2_transform(&_sq4, &viewPort);
 
-    vec2d _pl1 = transform_vec2(&pl1, &viewPort);
-    vec2d _pl2 = transform_vec2(&pl2, &viewPort);
-    vec2d _pl3 = transform_vec2(&pl3, &viewPort);
-    vec2d _pl4 = transform_vec2(&pl4, &viewPort);
+    vec2d _pl1 = vec2_transform(&pl1, &viewPort);
+    vec2d _pl2 = vec2_transform(&pl2, &viewPort);
+    vec2d _pl3 = vec2_transform(&pl3, &viewPort);
+    vec2d _pl4 = vec2_transform(&pl4, &viewPort);
 
-    deltatime transformTime = elapsed_millis(&timer);
+    deltatime transformTime = clktimer_elapsed_ms(&timer);
 
-    start_timer(&timer);
+    clktimer_start(&timer);
 
     draw_clear_screen32(&engine->screen, 0xFF000000);
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq1.x, 
@@ -254,7 +253,7 @@ void render_shape()
         (int)_sq2.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq2.x, 
@@ -263,7 +262,7 @@ void render_shape()
         (int)_sq3.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq3.x, 
@@ -272,7 +271,7 @@ void render_shape()
         (int)_sq4.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen, 
         0xFFFFFFFF, 
         (int)_sq4.x, 
@@ -285,7 +284,7 @@ void render_shape()
     float width = _pl2.x - _pl1.x;
     float height = _pl2.y - _pl1.y;
 
-    draw_filled_rect32_safe(
+    draw_filled_rect32(
         &engine->screen,
         0xFFFF0000,
         (int)_pl1.x,
@@ -294,7 +293,7 @@ void render_shape()
         (int)_pl2.y - (int)_pl1.y
     );
 
-    draw_line32_safe(
+    draw_line32(
         &engine->screen,
         0xFFFF0000,
         (int)_pl3.x,
@@ -303,11 +302,11 @@ void render_shape()
         (int)_pl4.y
     );
 
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 
-    deltatime renderTime = elapsed_millis(&timer);
+    deltatime renderTime = clktimer_elapsed_ms(&timer);
 
     printf("Transform time: %.3fms\n", transformTime);
     printf("Render time:    %.3fms\n", transformTime);
-    print_frame2d(&playerPos);
+    frame2d_print(&playerPos);
 }

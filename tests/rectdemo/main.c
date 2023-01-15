@@ -5,7 +5,6 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_color.h"
 #include "engine/engine_subsystems.h"
@@ -42,7 +41,7 @@ int main(int argc, char** argv)
 
     printf("16 BPP test\n");
 
-    engine = init_engine(&config16);
+    engine = engine_create_new_rayengine(&config16);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -51,7 +50,7 @@ int main(int argc, char** argv)
     }
 
     draw_clear_screen16(&engine->screen, 0x00);
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 
     for (int i = 0; i < NUM_RECTS; i++)
     {
@@ -72,7 +71,7 @@ int main(int argc, char** argv)
         {
             draw_filled_rect16(
                 &engine->screen,
-                to_rgb565(&c),
+                color_to_rgb565(&c),
                 x,
                 y,
                 w,
@@ -83,7 +82,7 @@ int main(int argc, char** argv)
         {
             draw_unfilled_rect16(
                 &engine->screen,
-                to_rgb565(&c),
+                color_to_rgb565(&c),
                 x,
                 y,
                 w,
@@ -91,15 +90,15 @@ int main(int argc, char** argv)
             );
         }
 
-        render_screen(&engine->screen);
+        engine_render_screen(&engine->screen);
 
         if (isSlow)
         {
-            sleep_millis(SLOW_SLEEP_TIME);
+            cross_sleep_ms(SLOW_SLEEP_TIME);
         }
     }
 
-    destroy_engine(engine);
+    engine_destroy_rayengine(engine);
 
     engine_config config32 =
     {
@@ -114,7 +113,7 @@ int main(int argc, char** argv)
 
     printf("32 BPP test\n");
 
-    engine = init_engine(&config32);
+    engine = engine_create_new_rayengine(&config32);
     if (engine == NULL)
     {
         fprintf(stderr, "Failed to init engine, shutting down...\n");
@@ -123,7 +122,7 @@ int main(int argc, char** argv)
     }
 
     draw_clear_screen32(&engine->screen, 0x0000);
-    render_screen(&engine->screen);
+    engine_render_screen(&engine->screen);
 
     for (int i = 0; i < NUM_RECTS; i++)
     {
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
         {
             draw_filled_rect32(
                 &engine->screen,
-                to_argb(&c),
+                color_to_argb(&c),
                 x,
                 y,
                 w,
@@ -155,7 +154,7 @@ int main(int argc, char** argv)
         {
             draw_unfilled_rect32(
                 &engine->screen,
-                to_argb(&c),
+                color_to_argb(&c),
                 x,
                 y,
                 w,
@@ -163,15 +162,15 @@ int main(int argc, char** argv)
             );
         }
 
-        render_screen(&engine->screen);
+        engine_render_screen(&engine->screen);
 
         if (isSlow)
         {
-            sleep_millis(SLOW_SLEEP_TIME);
+            cross_sleep_ms(SLOW_SLEEP_TIME);
         }
     }
 
-    destroy_engine(engine);
+    engine_destroy_rayengine(engine);
 
     printf("Demo complete\n");
     exit(EXIT_SUCCESS);
@@ -191,7 +190,7 @@ void cleanup(int status)
 {
     if (engine != NULL)
     {
-        destroy_engine(engine);
+        engine_destroy_rayengine(engine);
     }
 
     exit(status);

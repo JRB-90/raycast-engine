@@ -62,7 +62,7 @@ void init_rpitimer()
 }
 #endif
 
-void sleep_secs(uint32_t secs)
+void cross_sleep_s(uint32_t secs)
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -79,7 +79,7 @@ void sleep_secs(uint32_t secs)
 #endif
 }
 
-void sleep_millis(uint32_t millis)
+void cross_sleep_ms(uint32_t millis)
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -96,7 +96,7 @@ void sleep_millis(uint32_t millis)
 #endif
 }
 
-clktick get_ticks()
+clktick cross_get_ticks()
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -136,7 +136,7 @@ clktick get_ticks()
 #endif
 }
 
-deltatime get_delta_s(const clktick elapsedTicks)
+deltatime cross_delta_s(const clktick elapsedTicks)
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -162,7 +162,7 @@ deltatime get_delta_s(const clktick elapsedTicks)
 #endif
 }
 
-deltatime get_delta_ms(const clktick elapsedTicks)
+deltatime cross_delta_ms(const clktick elapsedTicks)
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -188,7 +188,7 @@ deltatime get_delta_ms(const clktick elapsedTicks)
 #endif
 }
 
-deltatime get_delta_us(const clktick elapsedTicks)
+deltatime cross_delta_us(const clktick elapsedTicks)
 {
 #if TIMER_PLATFORM_WINDOWS
 
@@ -214,48 +214,48 @@ deltatime get_delta_us(const clktick elapsedTicks)
 #endif
 }
 
-void start_timer(clktimer* const timer)
+void clktimer_start(clktimer* const timer)
 {
-	timer->startTime = get_ticks();
+	timer->startTime = cross_get_ticks();
 }
 
-void resart_timer(clktimer* const timer)
+void clktimer_restart(clktimer* const timer)
 {
-	timer->startTime = get_ticks();
+	timer->startTime = cross_get_ticks();
 }
 
-deltatime restart_timer_secs(clktimer* const timer)
+deltatime clktimer_restart_s(clktimer* const timer)
 {
-	deltatime delta = elapsed_secs(timer);
-	resart_timer(timer);
+	deltatime delta = clktimer_elapsed_s(timer);
+	clktimer_restart(timer);
 
 	return delta;
 }
 
-deltatime restart_timer_millis(clktimer* const timer)
+deltatime clktimer_restart_ms(clktimer* const timer)
 {
-	deltatime delta = elapsed_millis(timer);
-	resart_timer(timer);
+	deltatime delta = clktimer_elapsed_ms(timer);
+	clktimer_restart(timer);
 
 	return delta;
 }
 
-deltatime elapsed_secs(const clktimer* const timer)
+deltatime clktimer_elapsed_s(const clktimer* const timer)
 {
-	return get_delta_s(get_ticks() - timer->startTime);
+	return cross_delta_s(cross_get_ticks() - timer->startTime);
 }
 
-deltatime elapsed_millis(const clktimer* const timer)
+deltatime clktimer_elapsed_ms(const clktimer* const timer)
 {
-	return get_delta_ms(get_ticks() - timer->startTime);
+	return cross_delta_ms(cross_get_ticks() - timer->startTime);
 }
 
-void print_elapsed_secs(const clktimer* const timer)
+void clktimer_print_elapsed_s(const clktimer* const timer)
 {
-	printf("%f s\n", elapsed_secs(timer));
+	printf("%f s\n", clktimer_elapsed_s(timer));
 }
 
-void print_elapsed_millis(const clktimer* const timer)
+void clktimer_print_elapsed_ms(const clktimer* const timer)
 {
-	printf("%f ms\n", elapsed_millis(timer));
+	printf("%f ms\n", clktimer_elapsed_ms(timer));
 }

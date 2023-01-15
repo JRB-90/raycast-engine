@@ -1,6 +1,6 @@
 #include "engine/engine_color.h"
 
-color to_col(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+color color_build(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 {
     color c =
     {
@@ -13,7 +13,7 @@ color to_col(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
     return c;
 }
 
-int to_bpp(const colformat colorFormat)
+int colformat_to_bpp(const colformat colorFormat)
 {
     switch (colorFormat)
     {
@@ -26,7 +26,7 @@ int to_bpp(const colformat colorFormat)
     }
 }
 
-col_rgb565 to_rgb565(const color* const color)
+col_rgb565 color_to_rgb565(const color* const color)
 {
     uint16_t r = (color->r >> 3) << 11;
     uint16_t g = (color->g >> 2) << 5;
@@ -35,7 +35,7 @@ col_rgb565 to_rgb565(const color* const color)
     return r | g | b;
 }
 
-col_argb to_argb(const color* const color)
+col_argb color_to_argb(const color* const color)
 {
     return
         ((uint32_t)color->a << 24) |
