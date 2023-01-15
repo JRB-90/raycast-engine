@@ -7,7 +7,7 @@
 */
 
 #include <stdbool.h>
-#include "engine_screen.h"
+#include "engine_color.h"
 
 typedef struct {
     bool quit;
@@ -20,6 +20,24 @@ typedef struct {
     bool toggleDebug;
     bool toggleRenderMode;
 } input_state;
+
+typedef struct {
+    void* pixels;
+    int width;
+    int height;
+    int sizeInPixels;
+    int stride;
+    int sizeInBytes;
+    int bitsPP;
+    int bytesPP;
+    colformat colorFormat;
+} screen_buffer;
+
+typedef struct {
+    int width;
+    int height;
+    colformat format;
+} screen_format;
 
 typedef enum {
     ENGINE_GRID,
@@ -42,9 +60,14 @@ typedef struct {
 } rayengine;
 
 /// <summary>
-/// Returns a blank input state object.
+/// Returns a blank input state structure.
 /// </summary>
 extern input_state engine_get_default_input();
+
+/// <summary>
+/// Returns a blank screen structure.
+/// </summary>
+extern screen_buffer engine_get_default_screen();
 
 /// <summary>
 /// Creates a new engine instance with the supplied configuration.

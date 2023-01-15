@@ -34,12 +34,12 @@ grid_scene* create_scene(
 
     scene->world.wallHeight = 1000.0f;
 
-	scene->colors.floorCol = to_col(255, 32, 32, 32);
-	scene->colors.ceilingCol = to_col(255, 52, 128, 128);
-	scene->colors.wallCol = to_col(255, 32, 32, 56);
-	scene->colors.pSpawnCol = to_col(255, 32, 128, 32);
-	scene->colors.rayCol = to_col(255, 255, 0, 255);
-	scene->colors.intersectCol = to_col(255, 0, 255, 0);
+	scene->colors.floorCol = color_build(255, 32, 32, 32);
+	scene->colors.ceilingCol = color_build(255, 52, 128, 128);
+	scene->colors.wallCol = color_build(255, 32, 32, 56);
+	scene->colors.pSpawnCol = color_build(255, 32, 128, 32);
+	scene->colors.rayCol = color_build(255, 255, 0, 255);
+	scene->colors.intersectCol = color_build(255, 0, 255, 0);
 
 	scene->player.position = 
 		frame2d_build(
@@ -49,7 +49,7 @@ grid_scene* create_scene(
 		);
 
     scene->player.fov = to_radf(45.0f);
-    scene->player.playerCol = to_col(255, 255, 0, 0);
+    scene->player.playerCol = color_build(255, 255, 0, 0);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)
 	{

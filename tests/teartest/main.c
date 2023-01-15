@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "engine/engine_subsystems.h"
-#include "engine/engine_screen.h"
+#include "engine/engine_rayengine.h"
 #include "engine/engine_color.h"
 #include "crossplatform/crossplatform_time.h"
 
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	printf("Starting...\n");
 
 	barOffset = 0;
-	screen = default_screen();
+	screen = engine_get_default_screen();
 
 	clktimer clock;
 	clktimer clock2;

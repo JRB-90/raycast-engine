@@ -1,4 +1,5 @@
 #include "engine/engine_rayengine.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "engine/engine_subsystems.h"
@@ -22,6 +23,24 @@ input_state engine_get_default_input()
     return inputState;
 }
 
+screen_buffer engine_get_default_screen()
+{
+    screen_buffer screen =
+    {
+        .pixels = NULL,
+        .width = -1,
+        .height = -1,
+        .sizeInPixels = -1,
+        .stride = -1,
+        .sizeInBytes = -1,
+        .bitsPP = -1,
+        .bytesPP = -1,
+        .colorFormat = CF_ARGB
+    };
+
+    return screen;
+}
+
 rayengine *engine_create_new(const engine_config *const config)
 {
     rayengine *engine = (rayengine *)malloc(sizeof(rayengine));
@@ -33,7 +52,7 @@ rayengine *engine_create_new(const engine_config *const config)
     }
 
     engine->config = *config;
-    engine->screen = default_screen();
+    engine->screen = engine_get_default_screen();
     engine->input = engine_get_default_input();
     engine->on_update = NULL;
 

@@ -5,7 +5,6 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_color.h"
 #include "engine/engine_subsystems.h"
@@ -72,7 +71,7 @@ int main(int argc, char** argv)
         {
             draw_filled_rect16(
                 &engine->screen,
-                to_rgb565(&c),
+                color_to_rgb565(&c),
                 x,
                 y,
                 w,
@@ -83,7 +82,7 @@ int main(int argc, char** argv)
         {
             draw_unfilled_rect16(
                 &engine->screen,
-                to_rgb565(&c),
+                color_to_rgb565(&c),
                 x,
                 y,
                 w,
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
         {
             draw_filled_rect32(
                 &engine->screen,
-                to_argb(&c),
+                color_to_argb(&c),
                 x,
                 y,
                 w,
@@ -155,7 +154,7 @@ int main(int argc, char** argv)
         {
             draw_unfilled_rect32(
                 &engine->screen,
-                to_argb(&c),
+                color_to_argb(&c),
                 x,
                 y,
                 w,

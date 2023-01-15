@@ -128,7 +128,7 @@ texture_resource* create_new_texture_variant(
 		uint8_t b = (origPixels[i] & 0x000000FF) >> 0;
 
 		color scaledColor = 
-			to_col(
+			color_build(
 				a, 
 				(int)((float)r * scale),
 				(int)((float)g * scale),
@@ -138,12 +138,12 @@ texture_resource* create_new_texture_variant(
 		if (newFormat == CF_ARGB)
 		{
 			((uint32_t*)scaledTexture->texture.pixels)[i] =
-				to_argb(&scaledColor);
+				color_to_argb(&scaledColor);
 		}
 		else if (newFormat == CF_RGB565)
 		{
 			((uint16_t*)scaledTexture->texture.pixels)[i] = 
-				to_rgb565(&scaledColor);
+				color_to_rgb565(&scaledColor);
 		}
 	}
 

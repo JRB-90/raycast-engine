@@ -4,7 +4,6 @@
 #include <time.h>
 #include <inttypes.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_color.h"
 #include "engine/engine_subsystems.h"
@@ -62,7 +61,7 @@ int main(int argc, char** argv)
 
         draw_line16(
             &engine->screen,
-            to_rgb565(&c),
+            color_to_rgb565(&c),
             rand() % SWIDTH,
             rand() % SHEIGHT,
             rand() % SWIDTH,
@@ -115,7 +114,7 @@ int main(int argc, char** argv)
 
         draw_line32(
             &engine->screen,
-            to_argb(&c),
+            color_to_argb(&c),
             rand() % SWIDTH,
             rand() % SHEIGHT,
             rand() % SWIDTH,

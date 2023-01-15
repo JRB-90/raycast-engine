@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gridengine_scene.h"
-#include "engine/engine_screen.h"
+#include "engine/engine_rayengine.h"
 
 extern grid_scene* create_test_scene1(
     const char* const name,

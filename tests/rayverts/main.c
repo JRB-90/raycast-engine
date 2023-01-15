@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "engine/engine_rayengine.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_color.h"
 #include "engine/engine_draw.h"
 #include "engine/engine_math.h"
@@ -134,16 +133,16 @@ int on_render(screen_buffer* const screen)
     {
         draw_ceiling_floor16(
             &engine->screen,
-            to_rgb565(&scene->colors.ceilingCol),
-            to_rgb565(&scene->colors.floorCol)
+            color_to_rgb565(&scene->colors.ceilingCol),
+            color_to_rgb565(&scene->colors.floorCol)
         );
     }
     else
     {
         draw_ceiling_floor32(
             &engine->screen,
-            to_argb(&scene->colors.ceilingCol),
-            to_argb(&scene->colors.floorCol)
+            color_to_argb(&scene->colors.ceilingCol),
+            color_to_argb(&scene->colors.floorCol)
         );
     }
 

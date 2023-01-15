@@ -7,7 +7,6 @@ project(engine
 )
 
 add_library(engine STATIC
-    engine_screen.c
 	engine_color.c
 	engine_rayengine.c
     engine_draw.c
@@ -16,7 +15,7 @@ add_library(engine STATIC
 )
 
 target_include_directories(engine PUBLIC
-	"${PROJECT_INCLUDE_DIR}"
+	${PROJECT_INCLUDE_DIR}
 )
 
 target_link_libraries(engine PUBLIC

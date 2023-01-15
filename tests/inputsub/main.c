@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 		.format = CF_ARGB
 	};
 
-	screen_buffer screen = default_screen();
+	screen_buffer screen = engine_get_default_screen();
 
 	if (engine_init_render_subsystem(&sformat, &screen))
 	{

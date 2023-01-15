@@ -1,5 +1,4 @@
 #include "engine/engine_subsystems.h"
-#include "engine/engine_screen.h"
 #include "engine/engine_rayengine.h"
 #include "SDL.h"
 #include <stdio.h>
@@ -86,7 +85,7 @@ int engine_init_render_subsystem(
 
     screen->width = format->width;
     screen->height = format->height;
-    screen->bitsPP = to_bpp(format->format);
+    screen->bitsPP = colformat_to_bpp(format->format);
     screen->bytesPP = screen->bitsPP / 8;
     screen->sizeInPixels = format->width * format->height;
     screen->stride = screen->width * screen->bytesPP;

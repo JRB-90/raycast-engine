@@ -63,7 +63,7 @@ void run_format_test(colformat format)
 		.format = format
 	};
 
-	screen_buffer screen = default_screen();
+	screen_buffer screen = engine_get_default_screen();
 
 	if (engine_init_render_subsystem(&sformat, &screen))
 	{

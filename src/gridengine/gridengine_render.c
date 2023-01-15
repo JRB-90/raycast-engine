@@ -35,7 +35,7 @@ int render_grid_scene(
 {
     draw_clear_screen32(
         &engine->screen, 
-        to_argb(&scene->colors.floorCol)
+        color_to_argb(&scene->colors.floorCol)
     );
 
     for (int j = 0; j < SCENE_HEIGHT; j++)
@@ -80,7 +80,7 @@ int render_tile(
 
     draw_filled_rect32_safe(
         &engine->screen,
-        to_argb(color),
+        color_to_argb(color),
         posX,
         posY,
         mapPosition->scale,
@@ -157,7 +157,7 @@ int render_grid_player(
 
     draw_line32_safe(
         &engine->screen,
-        to_argb(&player->playerCol),
+        color_to_argb(&player->playerCol),
         posX,
         posY,
         posX + (int)arrow.x,
@@ -166,7 +166,7 @@ int render_grid_player(
 
     draw_filled_rect32_safe(
         &engine->screen,
-        to_argb(&player->playerCol),
+        color_to_argb(&player->playerCol),
         posX - size + 2,
         posY - size + 2,
         (size * 2) - 3,
@@ -277,7 +277,7 @@ int render_grid_rays(
                 if (scene->world.grid[i][j].type == GRID_WALL)
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.wallCol.g)),
@@ -287,7 +287,7 @@ int render_grid_rays(
                 else if (scene->world.grid[i][j].type == GRID_PSPAWN)
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.pSpawnCol.g)),
@@ -297,7 +297,7 @@ int render_grid_rays(
                 else
                 {
                     visColor =
-                        to_col(
+                        color_build(
                             255,
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.r)),
                             (uint8_t)((0.5 * 128) + (0.5 * scene->colors.floorCol.g)),
@@ -323,7 +323,7 @@ int render_grid_rays(
         {
             draw_filled_rect32_safe(
                 &engine->screen,
-                to_argb(&scene->colors.intersectCol),
+                color_to_argb(&scene->colors.intersectCol),
                 (mapPosition->x + (results[k].intersectPoint.x * mapPosition->scale)),
                 (mapPosition->y + (results[k].intersectPoint.y * mapPosition->scale)),
                 2,
