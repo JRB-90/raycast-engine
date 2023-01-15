@@ -162,7 +162,7 @@ int convert_and_save(
 
 	printf("Conversion successful, saving to disk...\n");
 
-	if (save_texture(output, &textureRes))
+	if (resource_save_texture(output, &textureRes))
 	{
 		SDL_FreeSurface(convImg);
 		SDL_FreeSurface(origImg);
@@ -176,7 +176,7 @@ int convert_and_save(
 	printf("Loading texture from disk...\n");
 
 	texture_resource loadedTexture;
-	if (load_texture(output, &loadedTexture))
+	if (resource_load_texture_direct(output, &loadedTexture))
 	{
 		SDL_FreeSurface(convImg);
 		SDL_FreeSurface(origImg);

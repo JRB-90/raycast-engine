@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+	Functions for dealing with resources (textures etc).
+	Provides save/load and file handling for all resource types.
+*/
+
 #include <stdio.h>
 #include <stdint.h>
 #include "engine_color.h"
@@ -46,51 +51,55 @@ typedef struct {
 	texture_resource* texturesLight[MAX_TEXTURES];
 } scene_resources;
 
-int create_texture_resources(
+/// <summary>
+/// Directly loads a texture from disk and puts it in the suplied resource.
+/// </summary>
+/// <param name="path">Path to texture file.</param>
+/// <param name="texture">Resource to store the texture into.</param>
+/// <returns>Non-zero if error occurred.</returns>
+extern int resource_load_texture_direct(
+	const char* const path,
+	texture_resource* const texture
+);
+
+/// <summary>
+/// Loads a texture from disk and assigns it to the given texture slot.
+/// </summary>
+/// <param name="resources">Scenes resource holder to add the texture to.</param>
+/// <param name="path">Path to the texture.</param>
+/// <param name="textureID">Texture slot to assign the texture to.</param>
+/// <param name="format">Color format to convert the texture to.</param>
+/// <returns>Non-zero if error occurred.</returns>
+extern int resource_load_texture_res(
 	scene_resources* const resources,
 	const char* const path,
 	int textureID,
 	colformat format
 );
 
-void destroy_texture_resources(
+/// <summary>
+/// Destroys the provided texture resource.
+/// </summary>
+/// <param name="texture">Texture resource to destroy.</param>
+extern void resource_destroy_direct_texture(texture_resource* texture);
+
+/// <summary>
+/// Destroys a loaded texture resource.
+/// </summary>
+/// <param name="resources">Scene resource holder that contains the texture.</param>
+/// <param name="textureID">Texture slot the texture is residing in.</param>
+extern void resource_destroy_loaded_texture(
 	const scene_resources* const resources,
 	int textureID
 );
 
-texture_resource* create_new_texture_variant(
-	const texture_resource* const texture,
-	colformat newFormat,
-	float scale
-);
-
-int save_texture(
+/// <summary>
+/// Saves a texture to disk.
+/// </summary>
+/// <param name="path">Path to the desired save location.</param>
+/// <param name="texture"></param>
+/// <returns>Non-zero if error occurred.</returns>
+extern int resource_save_texture(
 	const char* const path,
 	const texture_resource* const texture
 );
-
-int load_texture(
-	const char* const path,
-	texture_resource* const texture
-);
-
-void destroy_texture(texture_resource* texture);
-
-int write_resource_header(
-	FILE* const file,
-	const resource_header* const header
-);
-
-int read_resource_header(
-	FILE* const file,
-	resource_header* const header
-);
-
-int write_uint8(FILE* const file, uint8_t value);
-int read_uint8(FILE* const file, uint8_t* const value);
-int write_uint16(FILE* const file, uint16_t value);
-int read_uint16(FILE* const file, uint16_t* const value);
-int write_uint32(FILE* const file, uint32_t value);
-int read_uint32(FILE* const file, uint32_t* const value);
-int write_uint64(FILE* const file, uint64_t value);
-int read_uint64(FILE* const file, uint64_t* const value);
