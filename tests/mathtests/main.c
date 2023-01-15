@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	v3 = vec2d_norm(&v2);
 	vec2d_print(&v3);
 
-	frame2d f1 = frame2d_build(0.3f, 0.4f, to_rad(90.0f));
+	frame2d f1 = frame2d_build(0.3f, 0.4f, to_radf(90.0f));
 	frame2d_print(&f1);
 
 	vec2d fwd = vec2d_build(0.0f, 1.0f);
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	vec2d vf1 = vec2d_calc_forwards(&f1, &fwd);
 	vec2d_print(&vf1);
 
-	f1.theta = to_rad(360.0f);
+	f1.theta = to_radf(360.0f);
 	vf1 = vec2d_calc_forwards(&f1, &fwd);
 	vec2d_print(&vf1);
 

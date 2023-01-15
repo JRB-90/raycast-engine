@@ -70,7 +70,7 @@ int main(int argc, char** argv)
             .x = (float)(SWIDTH / 2),
             .y = (float)(SHEIGHT / 2)
         },
-        .rot = to_rad(180.0f)
+        .rot = to_radf(180.0f)
     };
 
     playerPos = (transform2d)
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
             .x = 0.0f,
             .y = 0.0f
         },
-        .rot = to_rad(0.0f)
+        .rot = to_radf(0.0f)
     };
 
     pl1 = (vec2d){  5.0f,  5.0f };

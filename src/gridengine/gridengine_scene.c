@@ -45,10 +45,10 @@ grid_scene* create_scene(
 		frame2d_build(
 			(SCENE_WIDTH / 2) + 0.5f, 
 			(SCENE_HEIGHT / 2) + 0.5f, 
-			to_rad(180.0f)
+			to_radf(180.0f)
 		);
 
-    scene->player.fov = to_rad(45.0f);
+    scene->player.fov = to_radf(45.0f);
     scene->player.playerCol = to_col(255, 255, 0, 0);
 
 	for (int j = 0; j < SCENE_HEIGHT; j++)
