@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
         if (isSlow)
         {
-            sleep_millis(SLOW_SLEEP_TIME);
+            cross_sleep_ms(SLOW_SLEEP_TIME);
         }
     }
 
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 
         if (isSlow)
         {
-            sleep_millis(SLOW_SLEEP_TIME);
+            cross_sleep_ms(SLOW_SLEEP_TIME);
         }
     }
 

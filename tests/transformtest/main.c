@@ -130,7 +130,7 @@ int main(int argc, char** argv)
             render_shape();
         }
         
-        sleep_millis(1);
+        cross_sleep_ms(1);
     }
 
     cleanup(EXIT_SUCCESS);
@@ -222,7 +222,7 @@ void render_shape()
     shouldRender = false;
 
     clktimer timer;
-    start_timer(&timer);
+    clktimer_start(&timer);
 
     vec2d _sq1 = transform_vec2_inv(&sq1, &playerPos);
     vec2d _sq2 = transform_vec2_inv(&sq2, &playerPos);
@@ -239,9 +239,9 @@ void render_shape()
     vec2d _pl3 = transform_vec2(&pl3, &viewPort);
     vec2d _pl4 = transform_vec2(&pl4, &viewPort);
 
-    deltatime transformTime = elapsed_millis(&timer);
+    deltatime transformTime = clktimer_elapsed_ms(&timer);
 
-    start_timer(&timer);
+    clktimer_start(&timer);
 
     draw_clear_screen32(&engine->screen, 0xFF000000);
 
@@ -305,7 +305,7 @@ void render_shape()
 
     render_screen(&engine->screen);
 
-    deltatime renderTime = elapsed_millis(&timer);
+    deltatime renderTime = clktimer_elapsed_ms(&timer);
 
     printf("Transform time: %.3fms\n", transformTime);
     printf("Render time:    %.3fms\n", transformTime);

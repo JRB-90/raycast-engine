@@ -108,11 +108,11 @@ int main(int argc, char** argv)
             mapPosition.x = (-scene->player.position.x * SSIZE) + (SWIDTH / 2);
             mapPosition.y = (-scene->player.position.y * SSIZE) + (SHEIGHT / 2);
 
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             render_scene();
 
-            deltatime delta = elapsed_millis(&timer);
+            deltatime delta = clktimer_elapsed_ms(&timer);
             printf("Map render took %.3fms\n", delta);
             totalTime += delta;
             renderCount++;
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
         }
 
         shouldRender = false;
-        sleep_millis(1);
+        cross_sleep_ms(1);
     }
 
     destroy_engine(engine);

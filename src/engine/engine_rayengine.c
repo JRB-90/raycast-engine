@@ -84,15 +84,15 @@ int run_engine(rayengine* const engine)
     }
 
     float targetDeltaMS = 1000.0f / (float)engine->config.targetFps;
-    clktick previousTicks = get_ticks();
+    clktick previousTicks = cross_get_ticks();
     clktick currentTicks = previousTicks;
 
     input_state inputState = blank_input_state();
 
     while (inputState.quit == false)
     {
-        currentTicks = get_ticks();
-        deltatime deltaTimeMS = get_delta_ms(currentTicks - previousTicks);
+        currentTicks = cross_get_ticks();
+        deltatime deltaTimeMS = cross_delta_ms(currentTicks - previousTicks);
 
         if (deltaTimeMS > targetDeltaMS)
         {

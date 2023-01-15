@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 			inputState.right
 		);
 
-		sleep_millis(100);
+		cross_sleep_ms(100);
 	}
 
 	if (destroy_input_subsystem())

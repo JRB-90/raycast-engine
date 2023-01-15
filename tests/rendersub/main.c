@@ -9,14 +9,14 @@ void render_16bit(screen_buffer* const screen, uint16_t color)
 	uint16_t* pixels = (uint16_t*)screen->pixels;
 
 	clktimer timer;
-	resart_timer(&timer);
+	clktimer_restart(&timer);
 	for (int j = 0; j < screen->sizeInPixels; j++)
 	{
 		pixels[j] = color;
 	}
-	deltatime drawTime = elapsed_millis(&timer);
+	deltatime drawTime = clktimer_elapsed_ms(&timer);
 
-	resart_timer(&timer);
+	clktimer_restart(&timer);
 	if (render_screen(screen))
 	{
 		fprintf(stderr, "Failed to render screen, exiting...");
@@ -24,7 +24,7 @@ void render_16bit(screen_buffer* const screen, uint16_t color)
 		getchar();
 		exit(EXIT_FAILURE);
 	}
-	deltatime renderTime = elapsed_millis(&timer);
+	deltatime renderTime = clktimer_elapsed_ms(&timer);
 
 	printf("%.3f\t%.3f\n", drawTime, renderTime);
 }
@@ -34,14 +34,14 @@ void render_32bit(screen_buffer* const screen, uint32_t color)
 	uint32_t* pixels = (uint32_t*)screen->pixels;
 
 	clktimer timer;
-	resart_timer(&timer);
+	clktimer_restart(&timer);
 	for (int j = 0; j < screen->sizeInPixels; j++)
 	{
 		pixels[j] = color;
 	}
-	deltatime drawTime = elapsed_millis(&timer);
+	deltatime drawTime = clktimer_elapsed_ms(&timer);
 
-	resart_timer(&timer);
+	clktimer_restart(&timer);
 	if (render_screen(screen))
 	{
 		fprintf(stderr, "Failed to render screen, exiting...");
@@ -49,7 +49,7 @@ void render_32bit(screen_buffer* const screen, uint32_t color)
 		getchar();
 		exit(EXIT_FAILURE);
 	}
-	deltatime renderTime = elapsed_millis(&timer);
+	deltatime renderTime = clktimer_elapsed_ms(&timer);
 
 	printf("%.3f\t%.3f\n", drawTime, renderTime);
 }
@@ -77,21 +77,21 @@ void run_format_test(colformat format)
 	if (format == CF_ARGB)
 	{
 		render_32bit(&screen, 0xFFFF0000);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		render_32bit(&screen, 0xFF00FF00);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		render_32bit(&screen, 0xFF0000FF);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		printf("\n");
 	}
 	else if (format == CF_RGB565)
 	{
 		render_16bit(&screen, 0b1111100000000000);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		render_16bit(&screen, 0b0000011111100000);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		render_16bit(&screen, 0b0000000000011111);
-		sleep_secs(1);
+		cross_sleep_s(1);
 		printf("\n");
 	}
 

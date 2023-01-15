@@ -146,25 +146,25 @@ void run_basic_tests(engine_config config)
 
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        start_timer(&timer);
+        clktimer_start(&timer);
         draw_clear_screen16(&engine->screen, 0xFFFF);
-        delta16 += elapsed_millis(&timer);
+        delta16 += clktimer_elapsed_ms(&timer);
         render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        start_timer(&timer);
+        clktimer_start(&timer);
         draw_clear_screen32(&engine->screen, 0xFFFFFFFF);
-        delta32 += elapsed_millis(&timer);
+        delta32 += clktimer_elapsed_ms(&timer);
         render_screen(&engine->screen);
     }
     
     for (int i = 0; i < CLEAR_ITR; i++)
     {
-        start_timer(&timer);
+        clktimer_start(&timer);
         draw_clear_screen64(&engine->screen, 0xFFFFFFFFFFFFFFFF);
-        delta64 += elapsed_millis(&timer);
+        delta64 += clktimer_elapsed_ms(&timer);
         render_screen(&engine->screen);
     }
 
@@ -218,7 +218,7 @@ void run_basic_line_tests(engine_config config)
 
         for (int i = 0; i < LINE_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_line16_safe(
                 &engine->screen,
@@ -227,7 +227,7 @@ void run_basic_line_tests(engine_config config)
                 180, 100
             );
 
-            delta += elapsed_millis(&timer);
+            delta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -238,7 +238,7 @@ void run_basic_line_tests(engine_config config)
 
         for (int i = 0; i < LINE_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_line32_safe(
                 &engine->screen,
@@ -247,7 +247,7 @@ void run_basic_line_tests(engine_config config)
                 180, 100
             );
 
-            delta += elapsed_millis(&timer);
+            delta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -289,7 +289,7 @@ void run_basic_rect_tests(engine_config config)
 
         for (int i = 0; i < RECT_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_filled_rect16_safe(
                 &engine->screen,
@@ -298,7 +298,7 @@ void run_basic_rect_tests(engine_config config)
                 100, 150
             );
 
-            filledDelta += elapsed_millis(&timer);
+            filledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
 
@@ -307,7 +307,7 @@ void run_basic_rect_tests(engine_config config)
 
         for (int i = 0; i < RECT_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_unfilled_rect16_safe(
                 &engine->screen,
@@ -316,7 +316,7 @@ void run_basic_rect_tests(engine_config config)
                 100, 150
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -327,7 +327,7 @@ void run_basic_rect_tests(engine_config config)
 
         for (int i = 0; i < RECT_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_filled_rect32_safe(
                 &engine->screen,
@@ -336,7 +336,7 @@ void run_basic_rect_tests(engine_config config)
                 100, 150
             );
 
-            filledDelta += elapsed_millis(&timer);
+            filledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
 
@@ -345,7 +345,7 @@ void run_basic_rect_tests(engine_config config)
 
         for (int i = 0; i < RECT_ITR; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_unfilled_rect32_safe(
                 &engine->screen,
@@ -354,7 +354,7 @@ void run_basic_rect_tests(engine_config config)
                 100, 150
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -449,7 +449,7 @@ void run_file_line_tests(engine_config config)
 
         for (int i = 0; i < LINES_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_line16(
                 &engine->screen,
@@ -458,7 +458,7 @@ void run_file_line_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            delta += elapsed_millis(&timer);
+            delta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -469,7 +469,7 @@ void run_file_line_tests(engine_config config)
 
         for (int i = 0; i < LINES_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_line32(
                 &engine->screen,
@@ -478,7 +478,7 @@ void run_file_line_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            delta += elapsed_millis(&timer);
+            delta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -567,7 +567,7 @@ void run_file_rect_tests(engine_config config)
 
         for (int i = 0; i < RECTS_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_unfilled_rect16_safe(
                 &engine->screen,
@@ -576,7 +576,7 @@ void run_file_rect_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -587,7 +587,7 @@ void run_file_rect_tests(engine_config config)
 
         for (int i = 0; i < RECTS_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_unfilled_rect32_safe(
                 &engine->screen,
@@ -596,7 +596,7 @@ void run_file_rect_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -608,7 +608,7 @@ void run_file_rect_tests(engine_config config)
 
         for (int i = 0; i < RECTS_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_filled_rect16_safe(
                 &engine->screen,
@@ -617,7 +617,7 @@ void run_file_rect_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }
@@ -628,7 +628,7 @@ void run_file_rect_tests(engine_config config)
 
         for (int i = 0; i < RECTS_TO_READ; i++)
         {
-            start_timer(&timer);
+            clktimer_start(&timer);
 
             draw_filled_rect32_safe(
                 &engine->screen,
@@ -637,7 +637,7 @@ void run_file_rect_tests(engine_config config)
                 params[i].p3, params[i].p4
             );
 
-            unfilledDelta += elapsed_millis(&timer);
+            unfilledDelta += clktimer_elapsed_ms(&timer);
             render_engine(engine);
         }
     }

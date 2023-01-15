@@ -77,14 +77,14 @@ int main(int argc, char** argv)
         if (shouldRender)
         {
             clktimer timer;
-            start_timer(&timer);
+            clktimer_start(&timer);
             render_scene();
-            deltatime delta = elapsed_millis(&timer);
+            deltatime delta = clktimer_elapsed_ms(&timer);
             printf("Map render took %.3fms\n", delta);
         }
 
         shouldRender = false;
-        sleep_millis(1);
+        cross_sleep_ms(1);
     }
 
     cleanup(EXIT_SUCCESS);
