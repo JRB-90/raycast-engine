@@ -81,20 +81,14 @@ extern int gridengine_render_firstperson(
 /// </summary>
 /// <param name="engine">Engine to render to.</param>
 /// <param name="scene">Scene to render.</param>
-/// <param name="intersectObject">The intersected object to draw.</param>
-/// <param name="intersectPoint">The point of the intersection with the object.</param>
+/// <param name="traverseResult">The result of the ray projection travserval.</param>
 /// <param name="colIndex">The screen column to draw the strip at.</param>
-/// <param name="wallDistance">The distance to the intersection object.</param>
-/// <param name="side">The side of the object that was intersected.</param>
 /// <returns>Non-zero if no error occurred.</returns>
 extern int gridengine_render_vertical_strip16(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side
+    const traverse_result* const traverseResult,
+    int colIndex
 );
 
 /// <summary>
@@ -103,20 +97,14 @@ extern int gridengine_render_vertical_strip16(
 /// </summary>
 /// <param name="engine">Engine to render to.</param>
 /// <param name="scene">Scene to render.</param>
-/// <param name="intersectObject">The intersected object to draw.</param>
-/// <param name="intersectPoint">The point of the intersection with the object.</param>
+/// <param name="traverseResult">The result of the ray projection travserval.</param>
 /// <param name="colIndex">The screen column to draw the strip at.</param>
-/// <param name="wallDistance">The distance to the intersection object.</param>
-/// <param name="side">The side of the object that was intersected.</param>
 /// <returns>Non-zero if no error occurred.</returns>
 extern int gridengine_render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side
+    const traverse_result* const traverseResult,
+    int colIndex
 );
 
 /// <summary>
@@ -125,9 +113,28 @@ extern int gridengine_render_vertical_strip32(
 /// <param name="engine">Engine to render the sprites to.</param>
 /// <param name="scene">Scene containing the list of sprites to render.</param>
 /// <returns>Non-zero if no error occurred.</returns>
-extern int gridengine_render_sprites32(
+extern int gridengine_render_sprites(
     const rayengine* const engine,
     const grid_scene* const scene
+);
+
+/// <summary>
+/// Renders the provided sprite to the screen.
+/// </summary>
+/// <param name="engine">Engine to render the sprite to.</param>
+/// <param name="scene">Scene containing the sprite.</param>
+/// <param name="sprite">The sprite to render.</param>
+/// <param name="x">X offset of the sprite.</param>
+/// <param name="height">Height of the sprite.</param>
+/// <param name="distanceToSprite">Distance from the player to the sprite.</param>
+/// <returns>Non-zero if no error occurred.</returns>
+extern int gridengine_render_sprite16(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const sprite_obj* const sprite,
+    int x,
+    int height,
+    float distanceToSprite
 );
 
 /// <summary>

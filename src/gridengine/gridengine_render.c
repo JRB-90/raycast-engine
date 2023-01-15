@@ -389,11 +389,8 @@ int gridengine_render_firstperson(
                 gridengine_render_vertical_strip16(
                     engine,
                     scene,
-                    result.intersectedObject,
-                    &result.intersectPoint,
-                    i,
-                    result.wallDistance,
-                    result.side
+                    &result,
+                    i
                 );
             }
             else if (engine->screen.colorFormat == CF_ARGB)
@@ -401,11 +398,8 @@ int gridengine_render_firstperson(
                 gridengine_render_vertical_strip32(
                     engine,
                     scene,
-                    result.intersectedObject,
-                    &result.intersectPoint,
-                    i,
-                    result.wallDistance,
-                    result.side
+                    &result,
+                    i
                 );
             }
         }
@@ -419,12 +413,14 @@ int gridengine_render_firstperson(
 int gridengine_render_vertical_strip16(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side)
+    const traverse_result* const traverseResult,
+    int colIndex)
 {
+    grid_object* intersectObject = traverseResult->intersectedObject;
+    vec2d* intersectPoint = &traverseResult->intersectPoint;
+    float wallDistance = traverseResult->wallDistance;
+    int side = traverseResult->side;
+
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
     float h = tanf(scene->player.fov) * wallDistance;
@@ -462,20 +458,20 @@ int gridengine_render_vertical_strip16(
 
     // Find the texture U coord information, based on where intersect on
     // the wall was and the side it hit
-    double integral;
+    float integral;
     int textureU;
     if (side == 0)
     {
         textureU =
             (int)
-            (modf(intersectPoint->y, &integral) *
+            (modff(intersectPoint->y, &integral) *
                 (float)texture->texture.width);
     }
     else
     {
         textureU =
             (int)
-            (modf(intersectPoint->x, &integral) *
+            (modff(intersectPoint->x, &integral) *
                 (float)texture->texture.width);
     }
 
@@ -519,12 +515,14 @@ int gridengine_render_vertical_strip16(
 int gridengine_render_vertical_strip32(
     const rayengine* const engine,
     const grid_scene* const scene,
-    const grid_object* const intersectObject,
-    const vec2d* const intersectPoint,
-    int colIndex,
-    float wallDistance,
-    int side)
+    const traverse_result* const traverseResult,
+    int colIndex)
 {
+    grid_object* intersectObject = traverseResult->intersectedObject;
+    vec2d* intersectPoint = &traverseResult->intersectPoint;
+    float wallDistance = traverseResult->wallDistance;
+    int side = traverseResult->side;
+
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
     float h = tanf(scene->player.fov) * wallDistance;
@@ -616,7 +614,7 @@ int gridengine_render_vertical_strip32(
     return 0;
 }
 
-int gridengine_render_sprites32(
+int gridengine_render_sprites(
     const rayengine* const engine,
     const grid_scene* const scene)
 {
@@ -717,20 +715,116 @@ int gridengine_render_sprites32(
         int spriteX = (engine->screen.width >> 1) + xDisplacement;
 
         // Render the sprite to the screen
-        int renderResult =
-            gridengine_render_sprite32(
-                engine,
-                scene,
-                spriteToRender->sprite,
-                spriteX,
-                spriteHeightPixels,
-                distanceToSprite
-            );
+        int renderResult = 0;
+        if (engine->config.format.format == CF_RGB565)
+        {
+            renderResult =
+                gridengine_render_sprite16(
+                    engine,
+                    scene,
+                    spriteToRender->sprite,
+                    spriteX,
+                    spriteHeightPixels,
+                    distanceToSprite
+                );
+        }
+        else
+        {
+            renderResult =
+                gridengine_render_sprite32(
+                    engine,
+                    scene,
+                    spriteToRender->sprite,
+                    spriteX,
+                    spriteHeightPixels,
+                    distanceToSprite
+                );
+        }
 
         if (renderResult)
         {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+int gridengine_render_sprite16(
+    const rayengine* const engine,
+    const grid_scene* const scene,
+    const sprite_obj* const sprite,
+    int x,
+    int size,
+    float distanceToSprite)
+{
+    texture_resource* texture = scene->resources.textures[sprite->textureID];
+
+    if (texture == NULL)
+    {
+        return -1;
+    }
+
+    int halfHeight = size >> 1;
+    int screenWidth = engine->screen.width;
+    int screenHeight = engine->screen.height;
+    int textureWidth = texture->texture.width;
+    int textureHeight = texture->texture.height;
+
+    int screenX = x - halfHeight;
+    int screenY = (screenHeight >> 1) - halfHeight;
+    int screenPixelIndex = (screenY * screenWidth) + screenX;
+    int screenYOffset = screenWidth - size;
+
+    float texturePixelIndex = 0.0f;
+    float textureHorInc = (float)textureWidth / size;
+    float textureVerInc = (float)textureHeight / size;
+    float u = 0.0f;
+    float v = 0.0f;
+
+    uint16_t* screenPixels = (uint16_t*)engine->screen.pixels;
+    uint16_t* texturePixels = (uint16_t*)texture->texture.pixels;
+
+    for (int j = screenY; j < screenY + size; j++)
+    {
+        if (j < 0)
+        {
+            screenPixelIndex += screenWidth;
+            u = 0.0f;
+            v += textureVerInc;
+            continue;
+        }
+
+        if (j >= screenHeight)
+        {
+            return 0;
+        }
+
+        for (int i = screenX; i < screenX + size; i++)
+        {
+            if (i >= 0 &&
+                i < screenWidth)
+            {
+                float wallDist = scene->drawState.wallDistances[i];
+                if (wallDist > distanceToSprite)
+                {
+                    texturePixelIndex = ((int)v * textureWidth) + (int)u;
+                    uint16_t color = texturePixels[(int)texturePixelIndex];
+
+                    if (color != 0b1111100000011111)
+                    {
+                        screenPixels[screenPixelIndex] = color;
+                    }
+                }
+            }
+
+            screenPixelIndex++;
+            u += textureHorInc;
+        }
+
+        screenPixelIndex += screenYOffset;
+        u = 0.0f;
+        v += textureVerInc;
     }
 
     return 0;

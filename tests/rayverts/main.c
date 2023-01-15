@@ -157,7 +157,7 @@ int on_render(screen_buffer* const screen)
     }
     else
     {
-        gridengine_render_sprites32(
+        gridengine_render_sprites(
             engine,
             scene
         );
