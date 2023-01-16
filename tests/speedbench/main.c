@@ -8,9 +8,9 @@
 #include "crossplatform/crossplatform_time.h"
 
 #define PLAYER_POSES    5
-#define RAY_REPEATS     10000
-#define VERT_REPEATS    1000
-#define SPRITE_REPEATS  500
+#define RAY_REPEATS     50000
+#define VERT_REPEATS    5000
+#define SPRITE_REPEATS  600
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
     int res = 0;
 
-    /*res = run_projection_bench();
+    res = run_projection_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run projection bench, shutting down...\n");
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }*/
+    }
 
     /*res = run_vert_bench();
     if (res)
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }*/
 
-    res = run_sprite_bench();
+    /*res = run_sprite_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run sprite bench, shutting down...\n");
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }
+    }*/
 
     engine_destroy_rayengine(engine);
     gridengine_destroy_test_scene(scene);
@@ -156,21 +156,20 @@ int run_projection_bench()
 
                 deltatime runTime = clktimer_elapsed_ms(&timer);
                 totalTime += runTime;
+                totalRuns++;
 
                 if (res)
                 {
                     return -1;
                 }
             }
-
-            totalRuns++;
         }
     }
 
     printf("\nProjection tests finished\n");
     printf("Runs:     %i\n", totalRuns);
     printf("Tot time: %.3fms\n", totalTime);
-    printf("Ave time: %.6fms\n", totalTime / (float)totalRuns);
+    printf("Ave time: %.6fus\n", totalTime * 1000.0f / (float)totalRuns);
 
     return 0;
 }
@@ -222,21 +221,20 @@ int run_vert_bench()
 
                 deltatime runTime = clktimer_elapsed_ms(&timer);
                 totalTime += runTime;
+                totalRuns++;
 
                 if (res)
                 {
                     return -1;
                 }
             }
-
-            totalRuns++;
         }
     }
 
     printf("\Vert strip tests finished\n");
     printf("Runs:     %i\n", totalRuns);
     printf("Tot time: %.3fms\n", totalTime);
-    printf("Ave time: %.6fms\n", totalTime / (float)totalRuns);
+    printf("Ave time: %.6fus\n", totalTime * 1000.0f / (float)totalRuns);
 
     return 0;
 }

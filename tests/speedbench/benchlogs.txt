@@ -1,0 +1,29 @@
+Bench logs....
+
+==== Projection ====
+Start
+Runs:     160000000
+Tot time: 4672.007ms
+Ave time: 0.029200us
+
+Round 1
+
+
+==== Verts ====
+Start
+Runs:     16000000
+Tot time: 4366.461ms
+Ave time: 0.272904us
+
+Round 1
+
+
+
+==== Sprites ====
+Start
+Runs:     3000
+Tot time: 4577.944ms
+Ave time: 1.525981ms
+
+Round 1
+
