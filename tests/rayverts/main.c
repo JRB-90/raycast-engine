@@ -124,6 +124,8 @@ int on_update(const input_state* const inputState, const float deltaTimeMS)
         deltaTimeMS
     );
 
+    frame2d_print(&scene->player.position);
+
     return 0;
 }
 
