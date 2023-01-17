@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "engine/engine_math.h"
 #include "engine/engine_rayengine.h"
+#include "engine/engine_subsystems.h"
+#include "engine/engine_draw.h"
 #include "gridengine/gridengine_render.h"
 #include "gridengine/gridengine_scene.h"
 #include "gridengine/gridengine_testscenes.h"
@@ -9,8 +12,8 @@
 
 #define PLAYER_POSES    5
 #define RAY_REPEATS     50000
-#define VERT_REPEATS    5000
-#define SPRITE_REPEATS  600
+#define VERT_REPEATS    3000
+#define SPRITE_REPEATS  3000
 
 const colformat SFORMAT = CF_ARGB;
 const int SWIDTH = 640;
@@ -75,7 +78,7 @@ int main(int argc, char** argv)
 
     int res = 0;
 
-    res = run_projection_bench();
+    /*res = run_projection_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run projection bench, shutting down...\n");
@@ -83,7 +86,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }
+    }*/
 
     /*res = run_vert_bench();
     if (res)
@@ -95,7 +98,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }*/
 
-    /*res = run_sprite_bench();
+    res = run_sprite_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run sprite bench, shutting down...\n");
@@ -103,7 +106,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }*/
+    }
 
     engine_destroy_rayengine(engine);
     gridengine_destroy_test_scene(scene);
@@ -182,23 +185,42 @@ int run_vert_bench()
     deltatime totalTime = 0.0f;
     int totalRuns = 0;
 
-    int steps = engine->screen.width;
-    float step = scene->player.fov / (float)steps;
-
     for (int i = 0; i < VERT_REPEATS; i++)
     {
         for (int j = 0; j < PLAYER_POSES; j++)
         {
-            for (int k = 0; k < steps; k++)
-            {
-                frame2d* pose = &poses[j];
-                traverse_result result;
-                float alpha = scene->player.position.theta - pose->theta;
+            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
 
-                int res =
+            scene->player.position = poses[j];
+
+            // Ensure we reset the draw state tracker before we render a new frame
+            gridengine_reset_draw_state(&scene->drawState);
+
+            // Find the steps to take in the ray sweep based on the screen width,
+            // one ray per screen pixel column
+            int steps = engine->screen.width;
+            float step = scene->player.fov / (float)steps;
+
+            frame2d playerPos =
+            {
+                .x = scene->player.position.x,
+                .y = scene->player.position.y,
+                .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
+            };
+
+            int res;
+
+            // Loop through every ray angle
+            for (int i = 0; i < steps; i++)
+            {
+                traverse_result result;
+                float alpha = scene->player.position.theta - playerPos.theta;
+
+                // Find object ray collides with first, if any
+                res =
                     gridengine_project_ray(
                         scene,
-                        pose,
+                        &playerPos,
                         &WORLD_FWD,
                         alpha,
                         &result
@@ -209,24 +231,40 @@ int run_vert_bench()
                     return -1;
                 }
 
-                clktimer_start(&timer);
-
-                res =
-                    gridengine_render_vertical_strip32(
-                        engine,
-                        scene,
-                        &result,
-                        k
-                    );
-
-                deltatime runTime = clktimer_elapsed_ms(&timer);
-                totalTime += runTime;
-                totalRuns++;
-
-                if (res)
+                if (result.objectDistance >= 0.0f)
                 {
-                    return -1;
+                    scene->drawState.wallDistances[i] = result.objectDistance;
                 }
+                else
+                {
+                    scene->drawState.wallDistances[i] = FLT_MAX;
+                }
+
+                // If the ray has hit a wall, render the pixel column with texturing
+                if (result.intersectedObject != NULL &&
+                    result.objectDistance > 0)
+                {
+                    clktimer_start(&timer);
+
+                    res =
+                        gridengine_render_vertical_strip32(
+                            engine,
+                            scene,
+                            &result,
+                            i
+                        );
+
+                    deltatime runTime = clktimer_elapsed_ms(&timer);
+                    totalTime += runTime;
+                    totalRuns++;
+
+                    if (res)
+                    {
+                        return -1;
+                    }
+                }
+
+                playerPos.theta += step;
             }
         }
     }
@@ -247,25 +285,42 @@ int run_sprite_bench()
     deltatime totalTime = 0.0f;
     int totalRuns = 0;
 
-    int steps = engine->screen.width;
-    float step = scene->player.fov / (float)steps;
-
     for (int i = 0; i < SPRITE_REPEATS; i++)
     {
         for (int j = 0; j < PLAYER_POSES; j++)
         {
+            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
+
+            scene->player.position = poses[j];
+
+            // Ensure we reset the draw state tracker before we render a new frame
+            gridengine_reset_draw_state(&scene->drawState);
+
+            // Find the steps to take in the ray sweep based on the screen width,
+            // one ray per screen pixel column
+            int steps = engine->screen.width;
+            float step = scene->player.fov / (float)steps;
+
+            frame2d playerPos =
+            {
+                .x = scene->player.position.x,
+                .y = scene->player.position.y,
+                .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
+            };
+
             int res;
 
-            for (int k = 0; k < steps; k++)
+            // Loop through every ray angle
+            for (int i = 0; i < steps; i++)
             {
-                frame2d* pose = &poses[j];
                 traverse_result result;
-                float alpha = scene->player.position.theta - pose->theta;
+                float alpha = scene->player.position.theta - playerPos.theta;
 
+                // Find object ray collides with first, if any
                 res =
                     gridengine_project_ray(
                         scene,
-                        pose,
+                        &playerPos,
                         &WORLD_FWD,
                         alpha,
                         &result
@@ -276,18 +331,34 @@ int run_sprite_bench()
                     return -1;
                 }
 
-                res =
-                    gridengine_render_vertical_strip32(
-                        engine,
-                        scene,
-                        &result,
-                        k
-                    );
-
-                if (res)
+                if (result.objectDistance >= 0.0f)
                 {
-                    return -1;
+                    scene->drawState.wallDistances[i] = result.objectDistance;
                 }
+                else
+                {
+                    scene->drawState.wallDistances[i] = FLT_MAX;
+                }
+
+                // If the ray has hit a wall, render the pixel column with texturing
+                if (result.intersectedObject != NULL &&
+                    result.objectDistance > 0)
+                {
+                    res =
+                        gridengine_render_vertical_strip32(
+                            engine,
+                            scene,
+                            &result,
+                            i
+                        );
+
+                    if (res)
+                    {
+                        return -1;
+                    }
+                }
+
+                playerPos.theta += step;
             }
 
             clktimer_start(&timer);
@@ -295,7 +366,8 @@ int run_sprite_bench()
             res =
                 gridengine_render_sprites(
                     engine,
-                    scene
+                    scene,
+                    &scene->player.position
                 );
 
             deltatime runTime = clktimer_elapsed_ms(&timer);
@@ -316,3 +388,113 @@ int run_sprite_bench()
 
     return 0;
 }
+
+//int run_sprite_bench()
+//{
+//    printf("Running sprite tests...\n");
+//
+//    clktimer timer;
+//    deltatime totalTime = 0.0f;
+//    int totalRuns = 0;
+//
+//    int steps = engine->screen.width;
+//    float step = scene->player.fov / (float)steps;
+//
+//    for (int i = 0; i < SPRITE_REPEATS; i++)
+//    {
+//        for (int j = 0; j < PLAYER_POSES; j++)
+//        {
+//            frame2d playerPos =
+//            {
+//                .x = poses[j].x,
+//                .y = poses[j].y,
+//                .theta = poses[j].theta - (scene->player.fov / 2.0f)
+//            };
+//
+//            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
+//            gridengine_reset_draw_state(&scene->drawState);
+//
+//            int res;
+//
+//            for (int k = 0; k < steps; k++)
+//            {
+//                traverse_result result;
+//                //float alpha = poses[j].theta - playerPos.theta;
+//                float alpha = playerPos.theta - poses[j].theta;
+//
+//                res =
+//                    gridengine_project_ray(
+//                        scene,
+//                        &playerPos,
+//                        &WORLD_FWD,
+//                        alpha,
+//                        &result
+//                    );
+//
+//                if (res)
+//                {
+//                    return -1;
+//                }
+//
+//                if (result.objectDistance >= 0.0f)
+//                {
+//                    scene->drawState.wallDistances[i] = result.objectDistance;
+//                }
+//                else
+//                {
+//                    scene->drawState.wallDistances[i] = FLT_MAX;
+//                }
+//
+//                if (result.intersectedObject == NULL ||
+//                    result.objectDistance <= 0)
+//                {
+//                    playerPos.theta += step;
+//                    continue;
+//                }
+//
+//                res =
+//                    gridengine_render_vertical_strip32(
+//                        engine,
+//                        scene,
+//                        &result,
+//                        k
+//                    );
+//
+//                if (res)
+//                {
+//                    return -1;
+//                }
+//
+//                playerPos.theta += step;
+//            }
+//
+//            clktimer_start(&timer);
+//
+//            res =
+//                gridengine_render_sprites(
+//                    engine,
+//                    scene,
+//                    &playerPos
+//                );
+//
+//            deltatime runTime = clktimer_elapsed_ms(&timer);
+//            totalTime += runTime;
+//            totalRuns++;
+//
+//            if (res)
+//            {
+//                return -1;
+//            }
+//
+//            engine_render_screen(&engine->screen);
+//            int afcsdvsdv = 0;
+//        }
+//    }
+//
+//    printf("\Sprite tests finished\n");
+//    printf("Runs:     %i\n", totalRuns);
+//    printf("Tot time: %.3fms\n", totalTime);
+//    printf("Ave time: %.6fms\n", totalTime / (float)totalRuns);
+//
+//    return 0;
+//}

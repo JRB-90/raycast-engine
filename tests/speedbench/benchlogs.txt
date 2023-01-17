@@ -8,12 +8,16 @@ Ave time: 0.029200us
 
 Round 1
 
+Runs:     160000000
+Tot time: 4787.909ms
+Ave time: 0.029924us
+
 
 ==== Verts ====
 Start
-Runs:     16000000
-Tot time: 4366.461ms
-Ave time: 0.272904us
+Runs:     9600000
+Tot time: 5152.300ms
+Ave time: 0.536698us
 
 Round 1
 
@@ -21,9 +25,9 @@ Round 1
 
 ==== Sprites ====
 Start
-Runs:     3000
-Tot time: 4577.944ms
-Ave time: 1.525981ms
+Runs:     15000
+Tot time: 5650.654ms
+Ave time: 0.376710ms
 
 Round 1
 

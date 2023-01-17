@@ -115,7 +115,8 @@ extern int gridengine_render_vertical_strip32(
 /// <returns>Non-zero if no error occurred.</returns>
 extern int gridengine_render_sprites(
     const rayengine* const engine,
-    const grid_scene* const scene
+    const grid_scene* const scene,
+    const frame2d* const playerPos
 );
 
 /// <summary>

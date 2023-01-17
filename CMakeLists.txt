@@ -10,6 +10,12 @@ project(raycast
     DESCRIPTION "Experiments in raycast 2.5D graphics"
 )
 
+if(IS_REL)
+    message("Release build")
+else()
+    message("Debug build")
+endif()
+
 if(MSVC)
     message("Using MSVC compiler")
     add_compile_options(/W3)
@@ -17,7 +23,7 @@ if(MSVC)
     if(IS_REL)
         add_compile_options(/O2)
     endif()
-elseif (UNIX)
+elseif(UNIX)
     message("Using GCC compiler")
     add_compile_options(-Wall -lm)
     
@@ -28,7 +34,7 @@ elseif (UNIX)
         add_compile_options(-lrt)
     endif()    
 
-    if (IS_REL)
+    if(IS_REL)
         add_compile_options(-O2)
     else()
         add_compile_options(-g)

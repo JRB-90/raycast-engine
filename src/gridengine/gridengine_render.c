@@ -258,7 +258,7 @@ int gridengine_render_topdown_rays(
             {
                 .intersectedObject = NULL,
                 .intersectPoint = (vec2d) { 0.0f, 0.0f },
-                .wallDistance = -1.0f,
+                .objectDistance = -1.0f,
                 .side = 0,
             };
         }
@@ -319,7 +319,7 @@ int gridengine_render_topdown_rays(
     for (int k = 0; k < engine->screen.width; k++)
     {
         if (results[k].intersectedObject != NULL &&
-            results[k].wallDistance >= 0.0f)
+            results[k].objectDistance >= 0.0f)
         {
             draw_filled_rect32(
                 &engine->screen,
@@ -370,9 +370,9 @@ int gridengine_render_firstperson(
                 &result
             );
 
-        if (result.wallDistance >= 0.0f)
+        if (result.objectDistance >= 0.0f)
         {
-            scene->drawState.wallDistances[i] = result.wallDistance;
+            scene->drawState.wallDistances[i] = result.objectDistance;
         }
         else
         {
@@ -382,7 +382,7 @@ int gridengine_render_firstperson(
         // If the ray has hit a wall, render the pixel column with texturing
         if (err == 0 &&
             result.intersectedObject != NULL &&
-            result.wallDistance > 0)
+            result.objectDistance > 0)
         {
             if (engine->screen.colorFormat == CF_RGB565)
             {
@@ -418,12 +418,12 @@ int gridengine_render_vertical_strip16(
 {
     grid_object* intersectObject = traverseResult->intersectedObject;
     vec2d* intersectPoint = &traverseResult->intersectPoint;
-    float wallDistance = traverseResult->wallDistance;
+    float objectDistance = traverseResult->objectDistance;
     int side = traverseResult->side;
 
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
-    float h = tanf(scene->player.fov) * wallDistance;
+    float h = tanf(scene->player.fov) * objectDistance;
     int wallHeightPixels = scene->world.wallHeight / h;
 
     // Find the start and end of the walls in screen Y coords
@@ -520,12 +520,12 @@ int gridengine_render_vertical_strip32(
 {
     grid_object* intersectObject = traverseResult->intersectedObject;
     vec2d* intersectPoint = &traverseResult->intersectPoint;
-    float wallDistance = traverseResult->wallDistance;
+    float objectDistance = traverseResult->objectDistance;
     int side = traverseResult->side;
 
     // Find size of wall based on distance to it,
     // using TOA to find triangle side
-    float h = tanf(scene->player.fov) * wallDistance;
+    float h = tanf(scene->player.fov) * objectDistance;
     int wallHeightPixels = scene->world.wallHeight / h;
 
     // Find the start and end of the walls in screen Y coords
@@ -616,12 +616,13 @@ int gridengine_render_vertical_strip32(
 
 int gridengine_render_sprites(
     const rayengine* const engine,
-    const grid_scene* const scene)
+    const grid_scene* const scene,
+    const frame2d* const playerPos)
 {
-    vec2d playerPos =
+    vec2d playerPosition =
     {
-        scene->player.position.x,
-        scene->player.position.y
+        playerPos->x,
+        playerPos->y
     };
 
     // Loop through sprites and check if they are in the visible
@@ -649,8 +650,8 @@ int gridengine_render_sprites(
         }
 
         // Calculate angle between the players view and the sprite
-        vec2d forwards = vec2d_calc_forwards(&scene->player.position, &WORLD_FWD);
-        vec2d vecToSprite = vec2d_sub(&sprite->position, &playerPos);
+        vec2d forwards = vec2d_calc_forwards(playerPos, &WORLD_FWD);
+        vec2d vecToSprite = vec2d_sub(&sprite->position, &playerPosition);
         vec2d spriteDir = vec2d_norm(&vecToSprite);
 
         float angle = vec2d_angle_between(&forwards, &spriteDir);
@@ -886,6 +887,7 @@ int gridengine_render_sprite32(
                 i < screenWidth)
             {
                 float wallDist = scene->drawState.wallDistances[i];
+
                 if (wallDist > distanceToSprite)
                 {
                     texturePixelIndex = ((int)v * textureWidth) + (int)u;

@@ -87,7 +87,7 @@ typedef struct {
 typedef struct {
 	grid_object* intersectedObject;
 	vec2d intersectPoint;
-	float wallDistance;
+	float objectDistance;
 	int side;
 } traverse_result;
 

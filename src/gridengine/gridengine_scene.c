@@ -275,98 +275,100 @@ int gridengine_project_ray(
     float alpha,
     traverse_result* const result)
 {
+    // Set result to default values
 	result->intersectedObject = NULL;
     result->intersectPoint = (vec2d){ 0.0f, 0.0f };
-	result->wallDistance = -1.0f;
+	result->objectDistance = -1.0f;
     
-	float posX = playerPos->x;
-	float posY = playerPos->y;
-	int gridX = (int)posX;
-	int gridY = (int)posY;
+    // Set convienience variables
+	float playerX = playerPos->x;
+	float playerY = playerPos->y;
+	int gridCol = (int)playerX;
+	int gridRow = (int)playerY;
+	float distToGridBoundX;
+	float distToGridBoundY;
+	int xDirection;
+	int yDirection;
 
-	float sideDistX;
-	float sideDistY;
-	int xDir;
-	int yDir;
-
+    // Calculate the direction of the ray from the player
 	vec2d ray = vec2d_calc_forwards(playerPos, worldForward);
 	float deltaDistX = fabsf(1.0f / ray.x);
 	float deltaDistY = fabsf(1.0f / ray.y);
 
     if (ray.x < 0)
     {
-        xDir = -1;
-        sideDistX = (posX - (float)gridX) * deltaDistX;
+        xDirection = -1;
+        distToGridBoundX = (playerX - (float)gridCol) * deltaDistX;
     }
     else
     {
-        xDir = 1;
-        sideDistX = ((float)gridX + 1.0f - posX) * deltaDistX;
+        xDirection = 1;
+        distToGridBoundX = ((float)gridCol + 1.0f - playerX) * deltaDistX;
     }
 
     if (ray.y < 0)
     {
-        yDir = -1;
-        sideDistY = (posY - (float)gridY) * deltaDistY;
+        yDirection = -1;
+        distToGridBoundY = (playerY - (float)gridRow) * deltaDistY;
     }
     else
     {
-        yDir = 1;
-        sideDistY = ((float)gridY + 1.0f - posY) * deltaDistY;
+        yDirection = 1;
+        distToGridBoundY = ((float)gridRow + 1.0f - playerY) * deltaDistY;
     }
 
     while (true)
     {
-        if (sideDistX < sideDistY)
+        if (distToGridBoundX < distToGridBoundY)
         {
-            sideDistX += deltaDistX;
-            gridX += xDir;
+            distToGridBoundX += deltaDistX;
+            gridCol += xDirection;
             result->side = 0;
         }
         else
         {
-            sideDistY += deltaDistY;
-            gridY += yDir;
+            distToGridBoundY += deltaDistY;
+            gridRow += yDirection;
             result->side = 1;
         }
 
-        if (gridX < 0 || gridX >= SCENE_WIDTH)
+        if (gridCol < 0 || gridCol >= SCENE_WIDTH)
         {
             break;
         }
 
-        if (gridY < 0 || gridY >= SCENE_HEIGHT)
+        if (gridRow < 0 || gridRow >= SCENE_HEIGHT)
         {
             break;
         }
 
-        result->intersectedObject = &scene->world.grid[gridX][gridY];
-        scene->drawState.visibleTiles[gridX][gridY] = true;
+        result->intersectedObject = &scene->world.grid[gridCol][gridRow];
+        scene->drawState.visibleTiles[gridCol][gridRow] = true;
 
         if (result->intersectedObject->type == GRID_WALL)
         {
             if (result->side == 0)
             {
-                result->wallDistance = sideDistX - deltaDistX;
+                result->objectDistance = distToGridBoundX - deltaDistX;
             }
             else
             {
-                result->wallDistance = sideDistY - deltaDistY;
+                result->objectDistance = distToGridBoundY - deltaDistY;
             }
 
             break;
         }
     }
 
-    if (result->wallDistance > 0.0f)
+    if (result->objectDistance > 0.0f)
     {
+        // If wall intersected, calculate the point of intersection in grid coords
         vec2d playerOrigin = vec2d_build(playerPos->x, playerPos->y);
-        result->intersectPoint = vec2d_mul(&ray, result->wallDistance);
+        result->intersectPoint = vec2d_mul(&ray, result->objectDistance);
         result->intersectPoint = vec2d_add(&playerOrigin, &result->intersectPoint);
 
         // Correct for perspective
-        float pCorrectDist = (result->wallDistance) * cosf(alpha);
-        result->wallDistance = pCorrectDist;
+        result->objectDistance = result->objectDistance * cosf(alpha);;
     }
 
     return 0;

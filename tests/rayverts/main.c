@@ -153,17 +153,11 @@ int on_render(screen_buffer* const screen)
         scene
     );
 
-    if (SFORMAT == CF_RGB565)
-    {
-
-    }
-    else
-    {
-        gridengine_render_sprites(
-            engine,
-            scene
-        );
-    }
+    gridengine_render_sprites(
+        engine,
+        scene,
+        &scene->player.position
+    );
 
     return 0;
 }
