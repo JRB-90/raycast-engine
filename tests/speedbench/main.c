@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }*/
 
-    /*res = run_vert_bench();
+    res = run_vert_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run vert strip bench, shutting down...\n");
@@ -96,9 +96,9 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }*/
+    }
 
-    res = run_sprite_bench();
+    /*res = run_sprite_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run sprite bench, shutting down...\n");
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }
+    }*/
 
     engine_destroy_rayengine(engine);
     gridengine_destroy_test_scene(scene);
