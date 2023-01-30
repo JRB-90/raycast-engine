@@ -404,101 +404,143 @@ int run_render_pipeline_bench()
 {
     printf("Running render pipeline tests...\n");
 
-    clktimer timer;
-    deltatime totalTime = 0.0f;
-    int totalRuns = 0;
+    clktimer clearTimer;
+    deltatime totalClearTime = 0.0f;
+    int totalClearCalls = 0;
 
-    for (int i = 0; i < SPRITE_REPEATS; i++)
+    clktimer projectTimer;
+    deltatime totalProjectTime = 0.0f;
+    int totalProjectCalls = 0;
+
+    clktimer spriteTimer;
+    deltatime totalSpriteTime = 0.0f;
+    int totalSpriteCalls = 0;
+
+    clktimer vertTimer;
+    deltatime totalVertTime = 0.0f;
+    int totalVertCalls = 0;
+
+    clktimer_start(&clearTimer);
+
+    draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
+
+    totalClearTime += clktimer_elapsed_ms(&clearTimer);
+    totalClearCalls++;
+
+    scene->player.position = poses[2];
+
+    // Ensure we reset the draw state tracker before we render a new frame
+    gridengine_reset_draw_state(&scene->drawState);
+
+    // Find the steps to take in the ray sweep based on the screen width,
+    // one ray per screen pixel column
+    int steps = engine->screen.width;
+    float step = scene->player.fov / (float)steps;
+
+    frame2d playerPos =
     {
-        for (int j = 0; j < PLAYER_POSES; j++)
+        .x = scene->player.position.x,
+        .y = scene->player.position.y,
+        .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
+    };
+
+    int res;
+
+    // Loop through every ray angle
+    for (int i = 0; i < steps; i++)
+    {
+        traverse_result result;
+        float alpha = scene->player.position.theta - playerPos.theta;
+
+        clktimer_start(&projectTimer);
+
+        // Find object ray collides with first, if any
+        res =
+            gridengine_project_ray(
+                scene,
+                &playerPos,
+                &WORLD_FWD,
+                alpha,
+                &result
+            );
+
+        totalProjectTime += clktimer_elapsed_ms(&projectTimer);
+        totalProjectCalls++;
+
+        if (res)
         {
-            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
+            return -1;
+        }
 
-            scene->player.position = poses[j];
+        if (result.objectDistance >= 0.0f)
+        {
+            scene->drawState.wallDistances[i] = result.objectDistance;
+        }
+        else
+        {
+            scene->drawState.wallDistances[i] = FLT_MAX;
+        }
 
-            // Ensure we reset the draw state tracker before we render a new frame
-            gridengine_reset_draw_state(&scene->drawState);
-
-            // Find the steps to take in the ray sweep based on the screen width,
-            // one ray per screen pixel column
-            int steps = engine->screen.width;
-            float step = scene->player.fov / (float)steps;
-
-            frame2d playerPos =
-            {
-                .x = scene->player.position.x,
-                .y = scene->player.position.y,
-                .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
-            };
-
-            int res;
-
-            // Loop through every ray angle
-            for (int i = 0; i < steps; i++)
-            {
-                traverse_result result;
-                float alpha = scene->player.position.theta - playerPos.theta;
-
-                // Find object ray collides with first, if any
-                res =
-                    gridengine_project_ray(
-                        scene,
-                        &playerPos,
-                        &WORLD_FWD,
-                        alpha,
-                        &result
-                    );
-
-                if (res)
-                {
-                    return -1;
-                }
-
-                if (result.objectDistance >= 0.0f)
-                {
-                    scene->drawState.wallDistances[i] = result.objectDistance;
-                }
-                else
-                {
-                    scene->drawState.wallDistances[i] = FLT_MAX;
-                }
-
-                // If the ray has hit a wall, render the pixel column with texturing
-                if (result.intersectedObject != NULL &&
-                    result.objectDistance > 0)
-                {
-                    res =
-                        gridengine_render_vertical_strip32(
-                            engine,
-                            scene,
-                            &result,
-                            i
-                        );
-
-                    if (res)
-                    {
-                        return -1;
-                    }
-                }
-
-                playerPos.theta += step;
-            }
+        // If the ray has hit a wall, render the pixel column with texturing
+        if (result.intersectedObject != NULL &&
+            result.objectDistance > 0)
+        {
+            clktimer_start(&vertTimer);
 
             res =
-                gridengine_render_sprites(
+                gridengine_render_vertical_strip32(
                     engine,
                     scene,
-                    &scene->player.position
+                    &result,
+                    i
                 );
+
+            totalVertTime += clktimer_elapsed_ms(&vertTimer);
+            totalVertCalls++;
 
             if (res)
             {
                 return -1;
             }
         }
+
+        playerPos.theta += step;
     }
 
-    printf("\Render pipeline tests finished\n");
+    clktimer_start(&spriteTimer);
+
+    res =
+        gridengine_render_sprites(
+            engine,
+            scene,
+            &scene->player.position
+        );
+
+    totalSpriteTime += clktimer_elapsed_ms(&spriteTimer);
+    totalSpriteCalls++;
+
+    if (res)
+    {
+        return -1;
+    }
+
+    printf("Render pipeline tests finished\n");
+
+    printf("\nClear calls: %i\n", totalClearCalls);
+    printf("Clear total: %.3fms\n", totalClearTime);
+    printf("Clear ave:   %.3fms\n", totalClearTime / (deltatime)totalClearCalls);
+
+    printf("\nProject calls: %i\n", totalProjectCalls);
+    printf("Project total: %.3fms\n", totalProjectTime);
+    printf("Project ave:   %.3fms\n", totalProjectTime / (deltatime)totalProjectCalls);
+
+    printf("\nSprite calls: %i\n", totalSpriteCalls);
+    printf("Sprite total: %.3fms\n", totalSpriteTime);
+    printf("Sprite ave:   %.3fms\n", totalSpriteTime / (deltatime)totalSpriteCalls);
+
+    printf("\nVert calls: %i\n", totalVertCalls);
+    printf("Vert total: %.3fms\n", totalVertTime);
+    printf("Vert ave:   %.3fms\n", totalVertTime / (deltatime)totalVertCalls);
 
     return 0;
 }
