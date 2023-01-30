@@ -39,6 +39,7 @@ void populate_poses();
 int run_projection_bench();
 int run_vert_bench();
 int run_sprite_bench();
+int run_render_pipeline_bench();
 
 int main(int argc, char** argv)
 {
@@ -98,10 +99,20 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }*/
 
-    res = run_sprite_bench();
+    /*res = run_sprite_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run sprite bench, shutting down...\n");
+        engine_destroy_rayengine(engine);
+        gridengine_destroy_test_scene(scene);
+        getchar();
+        exit(EXIT_FAILURE);
+    }*/
+
+    res = run_render_pipeline_bench();
+    if (res)
+    {
+        fprintf(stderr, "Failed to run render pipeline bench, shutting down...\n");
         engine_destroy_rayengine(engine);
         gridengine_destroy_test_scene(scene);
         getchar();
@@ -385,6 +396,109 @@ int run_sprite_bench()
     printf("Runs:     %i\n", totalRuns);
     printf("Tot time: %.3fms\n", totalTime);
     printf("Ave time: %.6fms\n", totalTime / (float)totalRuns);
+
+    return 0;
+}
+
+int run_render_pipeline_bench()
+{
+    printf("Running render pipeline tests...\n");
+
+    clktimer timer;
+    deltatime totalTime = 0.0f;
+    int totalRuns = 0;
+
+    for (int i = 0; i < SPRITE_REPEATS; i++)
+    {
+        for (int j = 0; j < PLAYER_POSES; j++)
+        {
+            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
+
+            scene->player.position = poses[j];
+
+            // Ensure we reset the draw state tracker before we render a new frame
+            gridengine_reset_draw_state(&scene->drawState);
+
+            // Find the steps to take in the ray sweep based on the screen width,
+            // one ray per screen pixel column
+            int steps = engine->screen.width;
+            float step = scene->player.fov / (float)steps;
+
+            frame2d playerPos =
+            {
+                .x = scene->player.position.x,
+                .y = scene->player.position.y,
+                .theta = scene->player.position.theta - (scene->player.fov / 2.0f)
+            };
+
+            int res;
+
+            // Loop through every ray angle
+            for (int i = 0; i < steps; i++)
+            {
+                traverse_result result;
+                float alpha = scene->player.position.theta - playerPos.theta;
+
+                // Find object ray collides with first, if any
+                res =
+                    gridengine_project_ray(
+                        scene,
+                        &playerPos,
+                        &WORLD_FWD,
+                        alpha,
+                        &result
+                    );
+
+                if (res)
+                {
+                    return -1;
+                }
+
+                if (result.objectDistance >= 0.0f)
+                {
+                    scene->drawState.wallDistances[i] = result.objectDistance;
+                }
+                else
+                {
+                    scene->drawState.wallDistances[i] = FLT_MAX;
+                }
+
+                // If the ray has hit a wall, render the pixel column with texturing
+                if (result.intersectedObject != NULL &&
+                    result.objectDistance > 0)
+                {
+                    res =
+                        gridengine_render_vertical_strip32(
+                            engine,
+                            scene,
+                            &result,
+                            i
+                        );
+
+                    if (res)
+                    {
+                        return -1;
+                    }
+                }
+
+                playerPos.theta += step;
+            }
+
+            res =
+                gridengine_render_sprites(
+                    engine,
+                    scene,
+                    &scene->player.position
+                );
+
+            if (res)
+            {
+                return -1;
+            }
+        }
+    }
+
+    printf("\Render pipeline tests finished\n");
 
     return 0;
 }
