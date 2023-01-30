@@ -445,6 +445,7 @@ int gridengine_render_vertical_strip16(
 
     texture_resource* texture;
 
+    // Find the correct light/dark texture based on the wall side
     if (side == 0)
     {
         texture = scene->resources.texturesDark[intersectObject->textureID];
@@ -475,7 +476,7 @@ int gridengine_render_vertical_strip16(
                 (float)texture->texture.width);
     }
 
-    // Find the texture V coord information:
+    // Find the texture V coord information,
     // Where it starts and stops, what step does it take per pixel, etc
     float textureStep =
         (float)texture->texture.height / (float)(wallHeightPixels);
@@ -494,19 +495,9 @@ int gridengine_render_vertical_strip16(
     for (int j = startY; j < endY; j++)
     {
         tPixelIndex = ((int)textureV * texture->texture.width) + textureU;
-        uint16_t wallColor = texturePixels[tPixelIndex];
+        screenPixels[sPixelIndex] = texturePixels[tPixelIndex];
+        sPixelIndex += engine->screen.width;
         textureV += textureStep;
-
-        if (engine->screen.colorFormat == CF_ARGB)
-        {
-            screenPixels[sPixelIndex] = wallColor;
-            sPixelIndex += engine->screen.width;
-        }
-        else
-        {
-            screenPixels[sPixelIndex] = wallColor;
-            sPixelIndex += engine->screen.width;
-        }
     }
 
     return 0;
@@ -547,6 +538,7 @@ int gridengine_render_vertical_strip32(
     
     texture_resource* texture;
 
+    // Find the correct light/dark texture based on the wall side
     if (side == 0)
     {
         texture = scene->resources.texturesDark[intersectObject->textureID];
@@ -577,7 +569,7 @@ int gridengine_render_vertical_strip32(
             (float)texture->texture.width);
     }
 
-    // Find the texture V coord information:
+    // Find the texture V coord information,
     // Where it starts and stops, what step does it take per pixel, etc
     float textureStep =
         (float)texture->texture.height / (float)(wallHeightPixels);
@@ -596,19 +588,9 @@ int gridengine_render_vertical_strip32(
     for (int j = startY; j < endY; j++)
     {
         tPixelIndex = ((int)textureV * texture->texture.width) + textureU;
-        uint32_t wallColor = texturePixels[tPixelIndex];
+        screenPixels[sPixelIndex] = texturePixels[tPixelIndex];
+        sPixelIndex += engine->screen.width;
         textureV += textureStep;
-
-        if (engine->screen.colorFormat == CF_ARGB)
-        {
-            screenPixels[sPixelIndex] = wallColor;
-            sPixelIndex += engine->screen.width;
-        }
-        else
-        {
-            screenPixels[sPixelIndex] = wallColor;
-            sPixelIndex += engine->screen.width;
-        }
     }
 
     return 0;
