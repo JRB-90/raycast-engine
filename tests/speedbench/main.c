@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }*/
 
-    res = run_vert_bench();
+    /*res = run_vert_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run vert strip bench, shutting down...\n");
@@ -96,9 +96,9 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }
+    }*/
 
-    /*res = run_sprite_bench();
+    res = run_sprite_bench();
     if (res)
     {
         fprintf(stderr, "Failed to run sprite bench, shutting down...\n");
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
         gridengine_destroy_test_scene(scene);
         getchar();
         exit(EXIT_FAILURE);
-    }*/
+    }
 
     engine_destroy_rayengine(engine);
     gridengine_destroy_test_scene(scene);
@@ -388,113 +388,3 @@ int run_sprite_bench()
 
     return 0;
 }
-
-//int run_sprite_bench()
-//{
-//    printf("Running sprite tests...\n");
-//
-//    clktimer timer;
-//    deltatime totalTime = 0.0f;
-//    int totalRuns = 0;
-//
-//    int steps = engine->screen.width;
-//    float step = scene->player.fov / (float)steps;
-//
-//    for (int i = 0; i < SPRITE_REPEATS; i++)
-//    {
-//        for (int j = 0; j < PLAYER_POSES; j++)
-//        {
-//            frame2d playerPos =
-//            {
-//                .x = poses[j].x,
-//                .y = poses[j].y,
-//                .theta = poses[j].theta - (scene->player.fov / 2.0f)
-//            };
-//
-//            draw_ceiling_floor32(&engine->screen, 0xFFFFFFFF, 0xFF000000);
-//            gridengine_reset_draw_state(&scene->drawState);
-//
-//            int res;
-//
-//            for (int k = 0; k < steps; k++)
-//            {
-//                traverse_result result;
-//                //float alpha = poses[j].theta - playerPos.theta;
-//                float alpha = playerPos.theta - poses[j].theta;
-//
-//                res =
-//                    gridengine_project_ray(
-//                        scene,
-//                        &playerPos,
-//                        &WORLD_FWD,
-//                        alpha,
-//                        &result
-//                    );
-//
-//                if (res)
-//                {
-//                    return -1;
-//                }
-//
-//                if (result.objectDistance >= 0.0f)
-//                {
-//                    scene->drawState.wallDistances[i] = result.objectDistance;
-//                }
-//                else
-//                {
-//                    scene->drawState.wallDistances[i] = FLT_MAX;
-//                }
-//
-//                if (result.intersectedObject == NULL ||
-//                    result.objectDistance <= 0)
-//                {
-//                    playerPos.theta += step;
-//                    continue;
-//                }
-//
-//                res =
-//                    gridengine_render_vertical_strip32(
-//                        engine,
-//                        scene,
-//                        &result,
-//                        k
-//                    );
-//
-//                if (res)
-//                {
-//                    return -1;
-//                }
-//
-//                playerPos.theta += step;
-//            }
-//
-//            clktimer_start(&timer);
-//
-//            res =
-//                gridengine_render_sprites(
-//                    engine,
-//                    scene,
-//                    &playerPos
-//                );
-//
-//            deltatime runTime = clktimer_elapsed_ms(&timer);
-//            totalTime += runTime;
-//            totalRuns++;
-//
-//            if (res)
-//            {
-//                return -1;
-//            }
-//
-//            engine_render_screen(&engine->screen);
-//            int afcsdvsdv = 0;
-//        }
-//    }
-//
-//    printf("\Sprite tests finished\n");
-//    printf("Runs:     %i\n", totalRuns);
-//    printf("Tot time: %.3fms\n", totalTime);
-//    printf("Ave time: %.6fms\n", totalTime / (float)totalRuns);
-//
-//    return 0;
-//}

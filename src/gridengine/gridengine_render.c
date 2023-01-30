@@ -748,6 +748,7 @@ int gridengine_render_sprite16(
         return -1;
     }
 
+    // Setup useful named variables
     int halfHeight = size >> 1;
     int screenWidth = engine->screen.width;
     int screenHeight = engine->screen.height;
@@ -759,7 +760,7 @@ int gridengine_render_sprite16(
     int screenPixelIndex = (screenY * screenWidth) + screenX;
     int screenYOffset = screenWidth - size;
 
-    float texturePixelIndex = 0.0f;
+    int texturePixelIndex = 0;
     float textureHorInc = (float)textureWidth / size;
     float textureVerInc = (float)textureHeight / size;
     float u = 0.0f;
@@ -768,8 +769,10 @@ int gridengine_render_sprite16(
     uint16_t* screenPixels = (uint16_t*)engine->screen.pixels;
     uint16_t* texturePixels = (uint16_t*)texture->texture.pixels;
 
+    // Raster through the screen space of the sprite
     for (int j = screenY; j < screenY + size; j++)
     {
+        // If pixel is outside of screen bounds, don't attempt to draw
         if (j < 0)
         {
             screenPixelIndex += screenWidth;
@@ -783,18 +786,23 @@ int gridengine_render_sprite16(
             return 0;
         }
 
+        // Pixel is in X bounds of screen, walk through the Y strip and render
         for (int i = screenX; i < screenX + size; i++)
         {
+            // Check pixel is in Y bounds of screen
             if (i >= 0 &&
                 i < screenWidth)
             {
                 float wallDist = scene->drawState.wallDistances[i];
+
+                // Check if sprite strip is behind a wall
                 if (wallDist > distanceToSprite)
                 {
                     texturePixelIndex = ((int)v * textureWidth) + (int)u;
-                    uint16_t color = texturePixels[(int)texturePixelIndex];
+                    uint32_t color = texturePixels[texturePixelIndex];
 
-                    if (color != 0b1111100000011111)
+                    // Check if texture pixel is not transparent magic number
+                    if (color != 0xFFFF00FF)
                     {
                         screenPixels[screenPixelIndex] = color;
                     }
@@ -828,6 +836,7 @@ int gridengine_render_sprite32(
         return -1;
     }
 
+    // Setup useful named variables
     int halfHeight = size >> 1;
     int screenWidth = engine->screen.width;
     int screenHeight = engine->screen.height;
@@ -839,7 +848,7 @@ int gridengine_render_sprite32(
     int screenPixelIndex = (screenY * screenWidth) + screenX;
     int screenYOffset = screenWidth - size;
 
-    float texturePixelIndex = 0.0f;
+    int texturePixelIndex = 0;
     float textureHorInc = (float)textureWidth / size;
     float textureVerInc = (float)textureHeight / size;
     float u = 0.0f;
@@ -848,8 +857,10 @@ int gridengine_render_sprite32(
     uint32_t* screenPixels = (uint32_t*)engine->screen.pixels;
     uint32_t* texturePixels = (uint32_t*)texture->texture.pixels;
 
+    // Raster through the screen space of the sprite
     for (int j = screenY; j < screenY + size; j++)
     {
+        // If pixel is outside of screen bounds, don't attempt to draw
         if (j < 0)
         {
             screenPixelIndex += screenWidth;
@@ -863,18 +874,22 @@ int gridengine_render_sprite32(
             return 0;
         }
 
+        // Pixel is in X bounds of screen, walk through the Y strip and render
         for (int i = screenX; i < screenX + size; i++)
         {
+            // Check pixel is in Y bounds of screen
             if (i >= 0 &&
                 i < screenWidth)
             {
                 float wallDist = scene->drawState.wallDistances[i];
 
+                // Check if sprite strip is behind a wall
                 if (wallDist > distanceToSprite)
                 {
                     texturePixelIndex = ((int)v * textureWidth) + (int)u;
-                    uint32_t color = texturePixels[(int)texturePixelIndex];
+                    uint32_t color = texturePixels[texturePixelIndex];
 
+                    // Check if texture pixel is not transparent magic number
                     if (color != 0xFFFF00FF)
                     {
                         screenPixels[screenPixelIndex] = color;
