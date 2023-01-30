@@ -427,7 +427,7 @@ int run_render_pipeline_bench()
     totalClearTime += clktimer_elapsed_ms(&clearTimer);
     totalClearCalls++;
 
-    scene->player.position = poses[2];
+    scene->player.position = poses[1];
 
     // Ensure we reset the draw state tracker before we render a new frame
     gridengine_reset_draw_state(&scene->drawState);
@@ -524,23 +524,29 @@ int run_render_pipeline_bench()
         return -1;
     }
 
+    deltatime totalTime = totalClearTime + totalProjectTime + totalSpriteTime + totalVertTime;
+
     printf("Render pipeline tests finished\n");
 
     printf("\nClear calls: %i\n", totalClearCalls);
     printf("Clear total: %.3fms\n", totalClearTime);
     printf("Clear ave:   %.3fms\n", totalClearTime / (deltatime)totalClearCalls);
+    printf("Clear per:   %.1f%%\n", (totalClearTime / totalTime) * 100.0f);
 
     printf("\nProject calls: %i\n", totalProjectCalls);
     printf("Project total: %.3fms\n", totalProjectTime);
     printf("Project ave:   %.3fms\n", totalProjectTime / (deltatime)totalProjectCalls);
+    printf("Project per:   %.1f%%\n", (totalProjectTime / totalTime) * 100.0f);
 
     printf("\nSprite calls: %i\n", totalSpriteCalls);
     printf("Sprite total: %.3fms\n", totalSpriteTime);
     printf("Sprite ave:   %.3fms\n", totalSpriteTime / (deltatime)totalSpriteCalls);
+    printf("Sprite per:   %.1f%%\n", (totalSpriteTime / totalTime) * 100.0f);
 
     printf("\nVert calls: %i\n", totalVertCalls);
     printf("Vert total: %.3fms\n", totalVertTime);
     printf("Vert ave:   %.3fms\n", totalVertTime / (deltatime)totalVertCalls);
+    printf("Vert per:   %.1f%%\n", (totalVertTime / totalTime) * 100.0f);
 
     return 0;
 }
